@@ -50,7 +50,7 @@ def parse_bundle(table: wikitextparser.Table):
                     "quality": quality
                 })
     else:
-        gold = 1
+        gold = int(table.cells(1, 1).templates[0].arguments[0].value)
 
     return {
         "name": name,
