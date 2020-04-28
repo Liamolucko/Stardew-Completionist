@@ -1,7 +1,9 @@
 import json
 import re
-import wikitextparser
+from html.parser import HTMLParser
+from itertools import chain
 
+import wikitextparser
 from pywikiapi import *
 
 ingredient_regex = re.compile(
@@ -9,7 +11,9 @@ ingredient_regex = re.compile(
 
 bundle_name_regex = re.compile(r"(?<=]] ).*$")
 bundle_slot_regex = re.compile(r"\[\[File:Bundle Slot\.png\|center\|link=]]")
-bundle_amount_regex = re.compile(r"\((\d+)\)")
+bundle_amount_regex = re.compile(r"(?<=\()\d+(?=\))")
+
+birth_day_regex = re.compile(r"(?<=}} )\d+")
 
 quality_values = {
     "silver": 1,
@@ -18,20 +22,22 @@ quality_values = {
 }
 
 
-def register_item(name: str):
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
+def get_item_info(page: dict):
+    name = page["title"]
     if name not in items:
-        url = name
-        wikitext = wikitextparser.parse(site.__call__(
-            action="parse", page=url, prop="wikitext")["parse"]["wikitext"])
-        while str(wikitext).startswith("#REDIRECT"):
-            url = wikitext.wikilinks[0].title
-            wikitext = wikitextparser.parse(site.__call__(
-                action="parse", page=url, prop="wikitext")["parse"]["wikitext"])
-        if "Infobox" in wikitext.templates[0].string:
-            infobox = wikitext.templates[0]
+        wikitext = wikitextparser.parse(page["revisions"][0]["content"])
+        infoboxes = list(filter(lambda template: "Infobox" in template.string, wikitext.templates))
+        if len(infoboxes) > 0:
+            infobox = infoboxes[0]
 
             item = {
-                "name": name, "url": f"https://stardewvalleywiki.com/{url.replace(' ', '_')}"}
+                "name": name, "url": f"https://stardewvalleywiki.com/{name.replace(' ', '_')}"}
 
             if infobox.has_arg("season"):
                 if len(infobox.get_arg("season").templates) > 0:
@@ -95,19 +101,20 @@ def register_item(name: str):
                 else:
                     item["sources"] = sources.value.strip()
             if infobox.has_arg("craftingstation"):
+                crafting_station = infobox.get_arg(
+                    "craftingstation").templates[0].arguments[0].value.strip()
                 if "sources" in item:
-                    item["sources"] += [infobox.get_arg(
-                        "craftingstation").templates[0].arguments[0].value.strip()]
+                    if crafting_station not in item["sources"]:
+                        item["sources"].append(crafting_station)
                 else:
-                    item["sources"] = [infobox.get_arg(
-                        "craftingstation").templates[0].arguments[0].value]
+                    item["sources"] = [crafting_station]
             if infobox.has_arg("as"):
                 if "sources" in item:
-                    item["sources"] += map(
-                        lambda link: link.title if link.text is None else link.text, infobox.get_arg("as").wikilinks)
+                    item["sources"] += list(map(
+                        lambda link: link.title if link.text is None else link.text, infobox.get_arg("as").wikilinks))
                 else:
-                    item["sources"] = map(
-                        lambda link: link.title if link.text is None else link.text, infobox.get_arg("as").wikilinks)
+                    item["sources"] = list(map(
+                        lambda link: link.title if link.text is None else link.text, infobox.get_arg("as").wikilinks))
             if infobox.has_arg("md"):
                 if "sources" in item:
                     item["sources"] += [template.arguments[0].value.strip()
@@ -127,7 +134,27 @@ def register_item(name: str):
                 item["ingredients"] = dict(map(lambda x: (x.arguments[0].value, int(x.arguments[1].value)) if type(x) == wikitextparser.Template else ((x.group(1) + ' ' + x.group(2)).strip(), int(
                     x.group(3))), sorted([*ingredients.templates, *ingredient_regex.finditer(ingredients.value)], key=lambda x: x.span if type(x) == wikitextparser.Template else x.span())))
 
-            items[name] = item
+            return item
+
+
+class ItemTableParser(HTMLParser):
+    def __init__(self, out_list=None):
+        super().__init__()
+        self.out_list = out_list
+        self.in_table = False
+
+    def handle_starttag(self, tag, attrs):
+        if attrs == [("class", "wikitable")]:
+            self.in_table = True
+
+    def handle_endtag(self, tag):
+        if tag == "table":
+            self.in_table = False
+
+    def handle_data(self, data):
+        if self.in_table and data.strip() != "":
+            self.out_list.append(data)
+            required_items.add(data)
 
 
 def parse_bundle(table: wikitextparser.Table):
@@ -153,7 +180,7 @@ def parse_bundle(table: wikitextparser.Table):
                 else:
                     match = bundle_amount_regex.search(cell.value)
                     if match is not None:
-                        amount = int(match.group(1))
+                        amount = int(match.group())
 
                 quality = 0
                 if template.name == "Quality":
@@ -165,7 +192,7 @@ def parse_bundle(table: wikitextparser.Table):
                     "quality": quality
                 })
 
-                register_item(item_name)
+                required_items.add(item_name)
     else:
         gold = int(table.cells(1, 1).templates[0].arguments[0].value)
 
@@ -180,24 +207,81 @@ def parse_bundle(table: wikitextparser.Table):
 
 site = Site("https://stardewvalleywiki.com/mediawiki/api.php")
 
-items = {}
+required_items = set()
+
+parser = ItemTableParser()
+
+items_shipped = []
+parser.out_list = items_shipped
+parser.feed(site.__call__(action="parse", page="Shipping")["parse"]["text"])
+
+wikitext = wikitextparser.parse(site.__call__(
+    action="parse", page="Fish", prop="wikitext")["parse"]["wikitext"])
+fish = [template.arguments[0].value
+        for template in wikitext.templates if template.name == "Description"]
+required_items.update(fish)
+
+artifacts = []
+parser.out_list = artifacts
+parser.feed(site.__call__(action="parse", page="Artifacts")["parse"]["text"])
+
+minerals = []
+parser.out_list = minerals
+parser.feed(site.__call__(action="parse", page="Minerals")["parse"]["text"])
+
+cooking = []
+parser.out_list = cooking
+parser.feed(site.__call__(action="parse", page="Cooking")["parse"]["text"])
 
 wikitext = wikitextparser.parse(site.__call__(
     action="parse", page="Bundles", prop="wikitext")["parse"]["wikitext"])
-
 # Although the word Bundle occurs elsewhere, only in the bundle titles are they the last word.
 bundles = [parse_bundle(table)
            for table in wikitext.tables if "Bundle\"" in table.string]
 
+wikitext = wikitextparser.parse(site.__call__(
+    action="parse", page="Villagers", prop="wikitext")["parse"]["wikitext"])
+villagers = list(map(lambda link: link.title, chain.from_iterable(map(lambda section: section.wikilinks, filter(
+    lambda section: section.title in ("[[Marriage|Marriage]] Candidates", "Non-marriage candidates"), wikitext.sections)))))[1:]
+friendship = []
+for page in site.query_pages(prop="revisions", titles=villagers, rvprop="content"):
+    wikitext = wikitextparser.parse(page["revisions"][0]["content"])
+    infobox = wikitext.templates[0]
+
+    friendship.append({
+        "name": page["title"],
+        "favorites": list(map(lambda template: template.arguments[0].value, infobox.get_arg("favorites").templates)),
+        "birth_season": infobox.get_arg("birthday").templates[0].arguments[0].value.lower(),
+        "birth_day": birth_day_regex.search(infobox.get_arg("birthday").value).group()
+    })
+
+items = {}
+
+required_items = list(
+    set(map(lambda item: item.split(" (")[0], required_items)))
+for chunk in chunks(required_items, 50):
+    for page in site.query_pages(prop="revisions", titles=chunk, rvprop="content", redirects=True):
+        if "missing" not in page:
+            item = get_item_info(page)
+            if item is not None:
+                items[page["title"]] = item
+
+for page in site.query_pages(prop="revisions", titles=list(filter(lambda item: item not in items, required_items)), rvprop="content", redirects=False):
+    if "missing" not in page:
+        items[page["title"]] = {
+            "name": page["title"],
+            "redirect": wikitextparser.parse(page["revisions"][0]["content"]).wikilinks[0].title
+        }
+
 file = open("output.json", "w")
 json.dump({
-    "items_shipped": [],
-    "fish": [],
-    "artifacts": [],
-    "minerals": [],
-    "cooking": [],
+    "items_shipped": items_shipped,
+    "fish": fish,
+    "artifacts": artifacts,
+    "minerals": minerals,
+    "cooking": cooking,
     "bundles": bundles,
-    "friendship": [],
+    "friendship": friendship,
     "items": items
 }, file)
 file.close()
