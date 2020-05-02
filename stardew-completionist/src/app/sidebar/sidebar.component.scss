@@ -23,6 +23,10 @@
         background-color: #01101010;
       }
 
+      img {
+        image-rendering: pixelated;
+      }
+
       input {
         visibility: hidden;
         position: absolute;
