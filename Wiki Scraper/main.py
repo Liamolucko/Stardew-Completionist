@@ -70,7 +70,7 @@ def get_item_info(page: dict):
                     }
             if infobox.has_arg("location"):
                 location = infobox.get_arg("location")
-                item["location"] = list(map(lambda link: (link.title if link.text is None else link.text).strip(), location.wikilinks)) if len(
+                item["locations"] = list(map(lambda link: (link.title if link.text is None else link.text).strip(), location.wikilinks)) if len(
                     location.wikilinks) > 0 else [location.value.strip()]
             if infobox.has_arg("time"):
                 item["time"] = "-".join(infobox.get_arg("time").value.strip().split(' ')[

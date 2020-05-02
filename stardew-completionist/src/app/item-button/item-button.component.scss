@@ -1,0 +1,38 @@
+a {
+  background-color: transparent;
+  border: none;
+  outline: none;
+
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+
+  &:hover {
+    img {
+      $hover-scale: 4 / 3;
+      transform: scale($hover-scale);
+    }
+
+    &:active {
+      img {
+        transform: scale(1);
+      }
+    }
+  }
+
+  &:active {
+    img {
+      transform: scale(0.9);
+      transition-duration: 20ms;
+    }
+  }
+
+  img {
+    image-rendering: pixelated;
+    transition: all 0.1s ease;
+
+    user-select: none;
+  }
+}
