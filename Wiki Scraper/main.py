@@ -29,15 +29,18 @@ def chunks(lst, n):
 
 
 def get_item_info(page: dict):
-    name = page["title"]
-    if name not in items:
+    title = page["title"]
+    if title not in items:
         wikitext = wikitextparser.parse(page["revisions"][0]["content"])
-        infoboxes = list(filter(lambda template: "Infobox" in template.string, wikitext.templates))
+        infoboxes = list(
+            filter(lambda template: "Infobox" in template.string, wikitext.templates))
         if len(infoboxes) > 0:
             infobox = infoboxes[0]
 
             item = {
-                "name": name, "url": f"https://stardewvalleywiki.com/{name.replace(' ', '_')}"}
+                "name": infobox.get_arg("name").value.strip() if infobox.has_arg("name") else title,
+                "url": f"https://stardewvalleywiki.com/{title.replace(' ', '_')}"
+            }
 
             if infobox.has_arg("season"):
                 if len(infobox.get_arg("season").templates) > 0:
@@ -138,14 +141,16 @@ def get_item_info(page: dict):
 
 
 class ItemTableParser(HTMLParser):
-    def __init__(self, out_list=None):
+    def __init__(self, out_lists=None):
         super().__init__()
-        self.out_list = out_list
+        self.out_lists = iter(out_lists)  # List of output lists, one per table
+        self.out_list = []
         self.in_table = False
 
     def handle_starttag(self, tag, attrs):
         if attrs == [("class", "wikitable")]:
             self.in_table = True
+            self.out_list = next(self.out_lists)
 
     def handle_endtag(self, tag):
         if tag == "table":
@@ -153,6 +158,13 @@ class ItemTableParser(HTMLParser):
 
     def handle_data(self, data):
         if self.in_table and data.strip() != "":
+            if data in special_cases:
+                if hasattr(special_cases[data], "__next__"):
+                    data = next(special_cases[data])
+                else:
+                    data = special_cases[data]
+            else:
+                data = data.split(" (")[0]
             self.out_list.append(data)
             required_items.add(data)
 
@@ -209,29 +221,20 @@ site = Site("https://stardewvalleywiki.com/mediawiki/api.php")
 
 required_items = set()
 
-parser = ItemTableParser()
+special_cases = {
+    "Large Egg (brown)": "Large Brown Egg",
+    "Egg (brown)": "Brown Egg",
+    "Strange Doll": iter(["Strange Doll (green)", "Strange Doll (yellow)"])
+}
 
 items_shipped = []
-parser.out_list = items_shipped
-parser.feed(site.__call__(action="parse", page="Shipping")["parse"]["text"])
-
-wikitext = wikitextparser.parse(site.__call__(
-    action="parse", page="Fish", prop="wikitext")["parse"]["wikitext"])
-fish = [template.arguments[0].value
-        for template in wikitext.templates if template.name == "Description"]
-required_items.update(fish)
-
+fish = []
 artifacts = []
-parser.out_list = artifacts
-parser.feed(site.__call__(action="parse", page="Artifacts")["parse"]["text"])
-
 minerals = []
-parser.out_list = minerals
-parser.feed(site.__call__(action="parse", page="Minerals")["parse"]["text"])
-
 cooking = []
-parser.out_list = cooking
-parser.feed(site.__call__(action="parse", page="Cooking")["parse"]["text"])
+parser = ItemTableParser(
+    [items_shipped, items_shipped, fish, artifacts, minerals, cooking, cooking])
+parser.feed(site.__call__(action="parse", page="Collections")["parse"]["text"])
 
 wikitext = wikitextparser.parse(site.__call__(
     action="parse", page="Bundles", prop="wikitext")["parse"]["wikitext"])
@@ -252,13 +255,12 @@ for page in site.query_pages(prop="revisions", titles=villagers, rvprop="content
         "name": page["title"],
         "favorites": list(map(lambda template: template.arguments[0].value, infobox.get_arg("favorites").templates)),
         "birth_season": infobox.get_arg("birthday").templates[0].arguments[0].value.lower(),
-        "birth_day": birth_day_regex.search(infobox.get_arg("birthday").value).group()
+        "birth_day": int(birth_day_regex.search(infobox.get_arg("birthday").value).group())
     })
 
 items = {}
 
-required_items = list(
-    set(map(lambda item: item.split(" (")[0], required_items)))
+required_items = list(required_items)
 for chunk in chunks(required_items, 50):
     for page in site.query_pages(prop="revisions", titles=chunk, rvprop="content", redirects=True):
         if "missing" not in page:
@@ -272,6 +274,12 @@ for page in site.query_pages(prop="revisions", titles=list(filter(lambda item: i
             "name": page["title"],
             "redirect": wikitextparser.parse(page["revisions"][0]["content"]).wikilinks[0].title
         }
+
+for chunk in chunks(list(map(lambda item: f"File:{item}.png", items.keys())), 50):
+    for page in site.query_pages(prop="imageinfo", titles=chunk, iiprop="url"):
+        item_name = page["title"][5:-4]
+        if item_name in items:
+            items[item_name]["image_url"] = page["imageinfo"][0]["url"]
 
 file = open("output.json", "w")
 json.dump({
