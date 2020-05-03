@@ -18,7 +18,7 @@ mat-sidenav-container {
         height: 48px;
         margin: 4px;
   
-        transition: 100ms linear;
+        transition: background-color 100ms linear;
   
         &:hover {
           background-color: #fafafa;

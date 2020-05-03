@@ -9,9 +9,8 @@ import { DataService, Item } from '../data/data.service';
 export class ItemButtonComponent implements OnInit {
   @Input() itemName: string
   @Input() item: Item
-  dataService: DataService
 
-  constructor(dataService: DataService) { this.dataService = dataService }
+  constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
     if (!this.item) {

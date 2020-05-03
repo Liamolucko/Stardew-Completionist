@@ -10,15 +10,10 @@ import { ActivatedRoute } from '@angular/router';
 export class ItemGridComponent implements OnInit {
   itemGroup: string
   get items() {
-    return this.dataService[this.itemGroup]
+    return this.data[this.itemGroup]
   }
-  dataService: DataService
-  route: ActivatedRoute
 
-  constructor(dataService: DataService, route: ActivatedRoute) {
-    this.dataService = dataService
-    this.route = route
-  }
+  constructor(private data: DataService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.route.url.subscribe(url => {

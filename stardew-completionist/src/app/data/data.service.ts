@@ -17,7 +17,7 @@ export class DataService {
   items: Map<string, Item>
 
   constructor(private http: HttpClient) {
-    http.get<GameInfo>("assets/game-info.json", { "observe": "body", "responseType": "json" }).subscribe(response => {
+    this.http.get<GameInfo>("assets/game-info.json", { "observe": "body", "responseType": "json" }).subscribe(response => {
       this.items = response.items
       
       this.shipping = response.items_shipped.map(item => this.items[item])
