@@ -39,6 +39,7 @@ def get_item_info(page: dict):
 
             item = {
                 "name": infobox.get_arg("name").value.strip() if infobox.has_arg("name") else title,
+                "id": title,
                 "url": f"https://stardewvalleywiki.com/{title.replace(' ', '_')}"
             }
 
@@ -272,6 +273,7 @@ for page in site.query_pages(prop="revisions", titles=list(filter(lambda item: i
     if "missing" not in page:
         items[page["title"]] = {
             "name": page["title"],
+            "id": page["title"],
             "redirect": wikitextparser.parse(page["revisions"][0]["content"]).wikilinks[0].title
         }
 

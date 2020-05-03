@@ -1,1 +1,6 @@
-<p>item-info works!</p>
+<div *ngIf="item">
+  <header>
+    <img src="{{item.image_url}}" alt={{item.name}} id="icon"> 
+    <h1>{{item.name}}</h1>
+  </header>
+</div>

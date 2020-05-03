@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 
 import { Url } from 'url';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,10 +17,13 @@ export class DataService {
   friendship: Villager[]
   items: Map<string, Item>
 
+  ready: Promise<Map<string, Item>>
+
   constructor(private http: HttpClient) {
-    this.http.get<GameInfo>("assets/game-info.json", { "observe": "body", "responseType": "json" }).subscribe(response => {
+    const request = this.http.get<GameInfo>("assets/game-info.json", { "observe": "body", "responseType": "json" })
+    request.subscribe(response => {
       this.items = response.items
-      
+
       this.shipping = response.items_shipped.map(item => this.items[item])
       this.fish = response.fish.map(item => this.items[item])
       this.artifacts = response.artifacts.map(item => this.items[item])
@@ -28,6 +32,8 @@ export class DataService {
       this.bundles = response.bundles
       this.friendship = response.friendship
     })
+
+    this.ready = request.toPromise().then(() => { return this.items })
   }
 }
 
@@ -44,6 +50,7 @@ interface GameInfo {
 
 export interface Item {
   name: string
+  id: string
   url: Url
   image_url: Url
   season: {

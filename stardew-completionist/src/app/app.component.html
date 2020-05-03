@@ -6,9 +6,9 @@
           <mat-icon matListIcon>dashboard</mat-icon>
         </a>
         <mat-divider></mat-divider>
-        <a mat-icon-button [routerLink]="item"
-          *ngFor="let item of ['shipping', 'fish', 'artifacts', 'minerals', 'cooking']">
-          <img matListAvatar src="{{'assets/' + item + '.png'}}" alt="{{item}}">
+        <a mat-icon-button [routerLink]="page"
+          *ngFor="let page of ['shipping', 'fish', 'artifacts', 'minerals', 'cooking']">
+          <img matListAvatar src="{{'assets/' + page + '.png'}}" alt="{{page}}">
         </a>
       </mat-nav-list>
 
@@ -20,8 +20,8 @@
       </mat-action-list>
     </div>
   </mat-sidenav>
-  
-  <mat-sidenav-content>
-    <router-outlet></router-outlet>
+
+  <mat-sidenav-content [@routeAnimations]="prepareRoute(outlet)">
+    <router-outlet #outlet="outlet"></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>
