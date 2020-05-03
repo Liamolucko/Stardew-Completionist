@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 
-import { Observable, throwError, Subscription } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
-
 import { Url } from 'url';
 
 @Injectable({

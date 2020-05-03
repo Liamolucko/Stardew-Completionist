@@ -1,3 +1,27 @@
-<app-sidebar></app-sidebar>
+<mat-sidenav-container>
+  <mat-sidenav #drawer fixedInViewport attr.role="navigation" mode="side" [opened]="true">
+    <div class="list-container">
+      <mat-nav-list>
+        <a mat-icon-button routerLink="dashboard">
+          <mat-icon matListIcon>dashboard</mat-icon>
+        </a>
+        <mat-divider></mat-divider>
+        <a mat-icon-button [routerLink]="item"
+          *ngFor="let item of ['shipping', 'fish', 'artifacts', 'minerals', 'cooking']">
+          <img matListAvatar src="{{'assets/' + item + '.png'}}" alt="{{item}}">
+        </a>
+      </mat-nav-list>
 
-<router-outlet></router-outlet>
+      <mat-action-list>
+        <button mat-icon-button (click)="input.click()">
+          <mat-icon matListIcon>folder</mat-icon>
+          <input #input type="file">
+        </button>
+      </mat-action-list>
+    </div>
+  </mat-sidenav>
+  
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>
