@@ -1,4 +1,4 @@
-<div class="grid-container" *ngIf="items">
+<mat-card class="grid-container" *ngIf="items">
   <item-button *ngFor="let item of items" [item]="item"></item-button>
-</div>
+</mat-card>
 <h1 *ngIf="!items">Page not implemented</h1>
