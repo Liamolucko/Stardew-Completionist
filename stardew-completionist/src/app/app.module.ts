@@ -12,6 +12,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { ItemButtonComponent } from './item-button/item-button.component';
 import { ItemGridComponent } from './item-grid/item-grid.component';
 import { DataService } from './data/data.service';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,8 @@ import { DataService } from './data/data.service';
     BrowserAnimationsModule,
     MatButtonModule,
     MatIconModule,
-    MatDividerModule
+    MatDividerModule,
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [DataService],
   bootstrap: [AppComponent]
