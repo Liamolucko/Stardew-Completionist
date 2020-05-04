@@ -56,15 +56,12 @@ mat-sidenav-container {
     }
   }
 
-  mat-sidenav-content {
-    padding: 20px;
+  #route-container {
+    width: 100%;
+    height: 100%;
 
-    div {
-      position: absolute;
-      left: 20;
-      top: 20;
-
-      width: 100%;
+    router-outlet + ::ng-deep * {
+      padding: 20px;
     }
   }
 }

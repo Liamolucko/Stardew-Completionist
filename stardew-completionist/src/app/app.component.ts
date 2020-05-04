@@ -25,9 +25,8 @@ export class AppComponent {
       const fromElement = document.getElementById(item)
       if (fromElement != null) {
         const fromElementRect = fromElement.getBoundingClientRect()
-        const scrollElement = document.getElementById("grid-container").parentElement
+        const scrollElement = document.getElementsByTagName("item-grid")[0]
         this.lastGridItemRect = new DOMRect(fromElementRect.x, fromElementRect.y + scrollElement.scrollTop, fromElementRect.width, fromElementRect.height)
-        this.lastGridItemRect.y += scrollElement.scrollTop
         if (this.lastGridItemRect != null) {
           return {
             value: outlet && outlet.activatedRouteData && outlet.activatedRouteData['animationState'],
@@ -74,7 +73,6 @@ export class AppComponent {
       animationImg.setAttribute("src", this.data.items[this.lastItem].image_url)
       animationImg.style.opacity = "100%"
 
-      console.log(document.getElementById(this.lastItem), document.getElementById("icon"))
       if (itemButton) itemButton.style.opacity = "0%"
       if (icon) icon.style.opacity = "0%"
     }

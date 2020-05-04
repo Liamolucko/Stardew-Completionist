@@ -10,11 +10,11 @@ export class ItemButtonComponent implements OnInit {
   @Input() itemName: string
   @Input() item: Item
 
-  constructor(private dataService: DataService) { }
+  constructor(private data: DataService) { }
 
   ngOnInit(): void {
     if (!this.item) {
-      this.item = this.dataService.items[this.itemName]
+      this.item = this.data.items[this.itemName]
     }
   }
 }

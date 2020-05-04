@@ -10,7 +10,10 @@ import { Item, DataService } from '../data/data.service';
 export class ItemInfoComponent implements OnInit {
   item: Item
 
-  constructor(private route: ActivatedRoute, private data: DataService) { }
+  constructor(
+    private route: ActivatedRoute,
+    private data: DataService
+  ) { }
 
   async ngOnInit(): Promise<void> {
     await this.data.ready
