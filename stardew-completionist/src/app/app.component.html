@@ -21,8 +21,11 @@
     </div>
   </mat-sidenav>
 
-  <mat-sidenav-content [@routeAnimations]="prepareRoute(outlet)" (@routeAnimations.start)="onRoutingStart($event)" (@routeAnimations.done)="onRoutingDone($event)">
-    <img id="animation-img">
-    <router-outlet #outlet="outlet"></router-outlet>
+  <mat-sidenav-content>
+    <div id="route-container" [@routeAnimations]="prepareRoute(outlet)"
+      (@routeAnimations.start)="onRoutingStart($event)" (@routeAnimations.done)="onRoutingDone($event)">
+      <img id="animation-img">
+      <router-outlet #outlet="outlet"></router-outlet>
+    </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

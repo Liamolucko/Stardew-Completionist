@@ -55,6 +55,18 @@ mat-sidenav-container {
       margin-top: auto;
     }
   }
+
+  mat-sidenav-content {
+    padding: 20px;
+
+    div {
+      position: absolute;
+      left: 20;
+      top: 20;
+
+      width: 100%;
+    }
+  }
 }
 
 #animation-img {

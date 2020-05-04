@@ -65,7 +65,7 @@ export class AppComponent {
   }
 
   async onRoutingStart(event: AnimationEvent) {
-    if (this.lastItem && ((event.fromState, event.toState == "ItemGrid", "ItemInfo") || (event.fromState, event.toState == "ItemInfo", "ItemGrid"))) {
+    if (this.lastItem && ((event.fromState == "ItemGrid" && event.toState == "ItemInfo") || (event.fromState == "ItemInfo" && event.toState == "ItemGrid" && this.data[this.router.url.substr(1)].some((item: { id: string; }) => item.id == this.lastItem)))) {
       const animationImg = document.getElementById("animation-img")
       const itemButton = document.getElementById(this.lastItem)
       const icon = document.getElementById("icon")
@@ -81,7 +81,7 @@ export class AppComponent {
   }
 
   onRoutingDone(event: AnimationEvent) {
-    if ((event.fromState == "ItemGrid" && event.toState == "ItemInfo") || (event.fromState == "ItemInfo" && event.toState == "ItemGrid")) {
+    if ((event.fromState == "ItemGrid" && event.toState == "ItemInfo") || (event.fromState == "ItemInfo" && event.toState == "ItemGrid" && this.data[this.router.url.substr(1)].some((item: { id: string; }) => item.id == this.lastItem))) {
       const animationImg = document.getElementById("animation-img")
       const itemButton = document.getElementById(this.lastItem)
       const icon = document.getElementById("icon")
