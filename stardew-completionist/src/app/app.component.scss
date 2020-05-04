@@ -1,25 +1,25 @@
 mat-sidenav-container {
   height: 100%;
 
-  .list-container {
+  #list-container {
     display: flex;
     flex-direction: column;
 
     width: 56px;
     height: 100%;
-    
+
     mat-nav-list {
       text-align: center;
 
       padding: 8px 0;
-  
+
       button {
         width: 48px;
         height: 48px;
         margin: 4px;
-  
+
         transition: background-color 100ms linear;
-  
+
         &:hover {
           background-color: rgba(0, 0, 0, 0.04);
         }
@@ -37,22 +37,29 @@ mat-sidenav-container {
           margin: 0;
         }
       }
-  
+
       a {
         @extend button;
-  
+
         padding-top: 4px;
       }
-  
+
       mat-divider {
         margin: 8px;
       }
     }
-  
+
     mat-action-list {
       @extend mat-nav-list;
-  
+
       margin-top: auto;
     }
   }
+}
+
+#animation-img {
+  position: fixed;
+  display: block;
+  opacity: 0%;
+  z-index: 1;
 }

@@ -5,21 +5,18 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'item-grid',
   templateUrl: './item-grid.component.html',
-  styleUrls: ['./item-grid.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./item-grid.component.scss']
 })
 export class ItemGridComponent implements OnInit {
   items: Item[]
 
   constructor(
     private data: DataService,
-    private route: ActivatedRoute,
-    private changeDetector: ChangeDetectorRef
+    private route: ActivatedRoute
   ) { }
 
   async ngOnInit(): Promise<void> {
     await this.data.ready
     this.items = this.data[this.route.snapshot.url[0].path]
-    this.changeDetector.detectChanges()
   }
 }

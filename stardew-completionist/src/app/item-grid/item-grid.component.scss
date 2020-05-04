@@ -5,7 +5,7 @@
   
   overflow-y: auto;
 
-  .grid-container {
+  #grid-container {
     display: grid;
     grid-template-columns: repeat(10, 48px);
     gap: 16px;

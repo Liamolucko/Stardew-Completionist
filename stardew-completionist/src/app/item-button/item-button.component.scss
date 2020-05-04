@@ -12,14 +12,16 @@ a {
 
   &:hover {
     img {
-      $hover-scale: 54 / 48;
+      $hover-scale: 52 / 48;
       transform: scale($hover-scale);
     }
   }
 
   img {
+    display: block;
+    
     image-rendering: pixelated;
-    filter: drop-shadow(-3px 3px 0px rgba(0,0,0,0.3));
+    filter: drop-shadow(-3px 3px 0px rgba(0, 0, 0, 0.3));
     transition: all 0.1s ease;
 
     user-select: none;

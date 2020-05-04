@@ -1,6 +1,6 @@
 <mat-sidenav-container>
   <mat-sidenav #drawer fixedInViewport attr.role="navigation" mode="side" [opened]="true">
-    <div class="list-container">
+    <div id="list-container">
       <mat-nav-list>
         <a mat-icon-button routerLink="dashboard">
           <mat-icon matListIcon>dashboard</mat-icon>
@@ -21,7 +21,8 @@
     </div>
   </mat-sidenav>
 
-  <mat-sidenav-content [@routeAnimations]="prepareRoute(outlet)">
+  <mat-sidenav-content [@routeAnimations]="prepareRoute(outlet)" (@routeAnimations.start)="onRoutingStart($event)" (@routeAnimations.done)="onRoutingDone($event)">
+    <img id="animation-img">
     <router-outlet #outlet="outlet"></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, ViewChild, Renderer2, ElementRef } from '@angular/core';
 import { RouterOutlet, ActivatedRoute, Router, UrlHandlingStrategy } from '@angular/router';
+import { AnimationEvent } from '@angular/animations';
 import { routeAnimations } from './animations';
 import { DataService } from './data/data.service';
 
@@ -19,20 +20,23 @@ export class AppComponent {
 
   prepareRoute(outlet: RouterOutlet) {
     if (outlet.activatedRouteData['animationState'] == "ItemInfo") {
-      const item = this.router.url.replace(/%20/g, " ").substr(1)
-      console.log(this.router.url)
+      const item = decodeURI(this.router.url).substr(1)
       this.lastItem = item
       const fromElement = document.getElementById(item)
       if (fromElement != null) {
-        this.lastGridItemRect = fromElement.getBoundingClientRect()
-      }
-      if (fromElement != null && this.lastGridItemRect != null) {
-        fromElement.classList.add("animating") // There's no way to pass parameters to query(), so this was the only solution I could think of.
-        return {
-          value: outlet && outlet.activatedRouteData && outlet.activatedRouteData['animationState'],
-          params: {
-            xMovement: 77 - this.lastGridItemRect.x,
-            yMovement: 20 - this.lastGridItemRect.y
+        const fromElementRect = fromElement.getBoundingClientRect()
+        const scrollElement = document.getElementById("grid-container").parentElement
+        this.lastGridItemRect = new DOMRect(fromElementRect.x, fromElementRect.y + scrollElement.scrollTop, fromElementRect.width, fromElementRect.height)
+        this.lastGridItemRect.y += scrollElement.scrollTop
+        if (this.lastGridItemRect != null) {
+          return {
+            value: outlet && outlet.activatedRouteData && outlet.activatedRouteData['animationState'],
+            params: {
+              fromX: fromElement.getBoundingClientRect().x,
+              fromY: fromElement.getBoundingClientRect().y,
+              toX: 77,
+              toY: 20
+            }
           }
         }
       }
@@ -41,8 +45,10 @@ export class AppComponent {
         return {
           value: outlet && outlet.activatedRouteData && outlet.activatedRouteData['animationState'],
           params: {
-            xMovement: this.lastGridItemRect.x - 77,
-            yMovement: this.lastGridItemRect.y - 20
+            fromX: 77,
+            fromY: 20,
+            toX: this.lastGridItemRect.x,
+            toY: this.lastGridItemRect.y
           }
         }
       }
@@ -50,9 +56,40 @@ export class AppComponent {
     return {
       value: outlet && outlet.activatedRouteData && outlet.activatedRouteData['animationState'],
       params: {
-        xMovement: 0,
-        yMovement: 0
+        fromX: 0,
+        fromY: 0,
+        toX: 0,
+        toY: 0
       }
+    }
+  }
+
+  async onRoutingStart(event: AnimationEvent) {
+    if (this.lastItem && ((event.fromState, event.toState == "ItemGrid", "ItemInfo") || (event.fromState, event.toState == "ItemInfo", "ItemGrid"))) {
+      const animationImg = document.getElementById("animation-img")
+      const itemButton = document.getElementById(this.lastItem)
+      const icon = document.getElementById("icon")
+
+      await this.data.ready
+      animationImg.setAttribute("src", this.data.items[this.lastItem].image_url)
+      animationImg.style.opacity = "100%"
+
+      console.log(document.getElementById(this.lastItem), document.getElementById("icon"))
+      if (itemButton) itemButton.style.opacity = "0%"
+      if (icon) icon.style.opacity = "0%"
+    }
+  }
+
+  onRoutingDone(event: AnimationEvent) {
+    if ((event.fromState == "ItemGrid" && event.toState == "ItemInfo") || (event.fromState == "ItemInfo" && event.toState == "ItemGrid")) {
+      const animationImg = document.getElementById("animation-img")
+      const itemButton = document.getElementById(this.lastItem)
+      const icon = document.getElementById("icon")
+
+      if (itemButton) itemButton.style.opacity = "100%"
+      if (icon) icon.style.opacity = "100%"
+
+      animationImg.style.opacity = "0%"
     }
   }
 }
