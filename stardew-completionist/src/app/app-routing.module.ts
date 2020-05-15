@@ -9,12 +9,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 const routes: Routes = [
   { path: "", redirectTo: "dashboard", pathMatch: "full" },
   { path: "dashboard", component: DashboardComponent },
-  { path: "shipping", component: ItemGridComponent, data: {animationState: "ItemGrid"} },
-  { path: "fish", component: ItemGridComponent, data: {animationState: "ItemGrid"} },
-  { path: "artifacts", component: ItemGridComponent, data: {animationState: "ItemGrid"} },
-  { path: "minerals", component: ItemGridComponent, data: {animationState: "ItemGrid"} },
-  { path: "cooking", component: ItemGridComponent, data: {animationState: "ItemGrid"} },
-  { path: "**", component: ItemInfoComponent, data: {animationState: "ItemInfo"} }
+  { path: "shipping", component: ItemGridComponent },
+  { path: "fish", component: ItemGridComponent },
+  { path: "artifacts", component: ItemGridComponent },
+  { path: "minerals", component: ItemGridComponent },
+  { path: "cooking", component: ItemGridComponent }
 ];
 
 @NgModule({

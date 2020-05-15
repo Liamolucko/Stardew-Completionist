@@ -10,11 +10,19 @@ export class ItemButtonComponent implements OnInit {
   @Input() itemName: string
   @Input() item: Item
 
-  constructor(private data: DataService) { }
+  constructor(
+    private data: DataService,
+    private dialog: MatDialog
+  ) { }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     if (!this.item) {
-      this.item = this.data.items[this.itemName]
+      await this.data.ready
+      this.item = this.data.items.get(this.itemName)
     }
+    }
+
+  onClick() {
+    this.dialog.open(ItemInfoComponent, { autoFocus: false, data: { item: this.item } })
   }
 }

@@ -1,6 +1,60 @@
-<div *ngIf="item">
-  <header>
-    <img src="{{item.image_url}}" alt={{item.name}} id="icon"> 
-    <h1>{{item.name}}</h1>
-  </header>
-</div>
+<header mat-dialog-title>
+  <img src="{{item.imageUrl}}" alt={{item.name}} id="icon">
+  <h1>{{item.name}}</h1>
+  <div id="buttons">
+    <a mat-icon-button href="{{item.url}}" target="_blank">
+      <mat-icon>launch</mat-icon>
+    </a>
+  </div>
+</header>
+<mat-dialog-content>
+  <mat-card *ngIf="item.seasons" class="seasons">
+    <mat-card-subtitle>Seasons</mat-card-subtitle>
+    <ul>
+      <li *ngIf="item.seasons.spring" class="spring"><img
+          src="https://stardewvalleywiki.com//mediawiki/images/thumb/9/9c/Spring.png/24px-Spring.png">Spring</li>
+      <li *ngIf="item.seasons.summer" class="summer"><img
+          src="https://stardewvalleywiki.com/mediawiki/images/thumb/8/85/Summer.png/24px-Summer.png">Summer</li>
+      <li *ngIf="item.seasons.fall" class="fall"><img
+          src="https://stardewvalleywiki.com/mediawiki/images/thumb/5/5d/Fall.png/24px-Fall.png">Fall</li>
+      <li *ngIf="item.seasons.winter" class="winter"><img
+          src="https://stardewvalleywiki.com//mediawiki/images/thumb/a/a7/Winter.png/24px-Winter.png">Winter</li>
+    </ul>
+  </mat-card>
+  <mat-card *ngIf="item.sources || item.monsterDrops || item.artifactSpots" class="sources">
+    <div *ngIf="item.sources || item.monsterDrops">
+      <mat-card-subtitle>Sources</mat-card-subtitle>
+      <ul>
+        <div *ngIf="item.sources">
+          <li *ngFor="let source of item.sources">{{source}}</li>
+        </div>
+        <div *ngIf="item.monsterDrops">
+          <li *ngFor="let monsterDrop of monsterDrops">{{monsterDrop | probability}}</li>
+        </div>
+      </ul>
+    </div>
+    <div *ngIf="item.artifactSpots">
+      <mat-card-subtitle>Artifact Spots</mat-card-subtitle>
+      <ul>
+        <li *ngFor="let artifactSpot of artifactSpots">{{artifactSpot | probability}}</li>
+      </ul>
+    </div>
+  </mat-card>
+
+  <mat-card *ngIf="item.ingredients" class="ingredients">
+    <mat-card-subtitle>Ingredients</mat-card-subtitle>
+    <ul>
+      <li *ngFor="let item of ingredients">{{item[0]}}<span *ngIf="item[1] > 1"> × {{item[1]}}</span></li>
+    </ul>
+  </mat-card>
+
+  <mat-card *ngIf="item.locations" class="location">
+    <mat-card-subtitle>Found in</mat-card-subtitle>
+    <ul>
+      <li *ngFor="let location of item.locations">{{location}}</li>
+    </ul>
+    <span *ngIf="item.time && !(item.time[0] == '600' && item.time[1] == '2600')">{{item.time[0] | time}} –
+      {{item.time[1] | time}}<br></span>
+    <span *ngIf="item.weather && item.weather != 'both'">{{item.weather}}</span>
+  </mat-card>
+</mat-dialog-content>
