@@ -22,6 +22,9 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { ItemInfoComponent } from './item-info/item-info.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { TimePipe } from './time.pipe';
+import { ProbabilityPipe } from './probability.pipe';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,9 @@ import { ItemInfoComponent } from './item-info/item-info.component';
     ItemButtonComponent,
     ItemGridComponent,
     DashboardComponent,
-    ItemInfoComponent
+    ItemInfoComponent,
+    TimePipe,
+    ProbabilityPipe
   ],
   imports: [
     BrowserModule,
@@ -46,8 +51,10 @@ import { ItemInfoComponent } from './item-info/item-info.component';
     LayoutModule,
     MatToolbarModule,
     MatSidenavModule,
-    MatListModule
+    MatListModule,
+    MatDialogModule
   ],
+  entryComponents: [ItemInfoComponent],
   providers: [DataService],
   bootstrap: [AppComponent]
 })

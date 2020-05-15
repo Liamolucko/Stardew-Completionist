@@ -26,7 +26,7 @@ export class ItemGridComponent implements OnInit {
     private route: ActivatedRoute
   ) { }
 
-  async ngOnInit(): Promise<void> {
+  async ngOnInit() {
     await this.data.ready
     this.items = this.data[this.route.snapshot.url[0].path]
   }

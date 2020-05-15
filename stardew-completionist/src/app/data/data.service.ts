@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 
-import { Url } from 'url';
-import { Observable } from 'rxjs';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -22,13 +19,13 @@ export class DataService {
   constructor(private http: HttpClient) {
     const request = this.http.get<GameInfo>("assets/game-info.json", { "observe": "body", "responseType": "json" })
     request.subscribe(response => {
-      this.items = response.items
+      this.items = new Map(Object.entries(response.items))
 
-      this.shipping = response.items_shipped.map(item => this.items[item])
-      this.fish = response.fish.map(item => this.items[item])
-      this.artifacts = response.artifacts.map(item => this.items[item])
-      this.minerals = response.minerals.map(item => this.items[item])
-      this.cooking = response.cooking.map(item => this.items[item])
+      this.shipping = response.shipping.map(item => this.items.get(item))
+      this.fish = response.fish.map(item => this.items.get(item))
+      this.artifacts = response.artifacts.map(item => this.items.get(item))
+      this.minerals = response.minerals.map(item => this.items.get(item))
+      this.cooking = response.cooking.map(item => this.items.get(item))
       this.bundles = response.bundles
       this.friendship = response.friendship
     })
@@ -38,35 +35,43 @@ export class DataService {
 }
 
 interface GameInfo {
-  items_shipped: string[]
+  shipping: string[]
   fish: string[]
   artifacts: string[]
   minerals: string[]
   cooking: string[]
   bundles: Bundle[]
   friendship: Villager[]
-  items: Map<string, Item>
+  items: {
+    [id: string]: Item
+}
 }
 
 export interface Item {
-  name: string
   id: string
-  url: Url
-  image_url: Url
-  season: {
+  name: string
+  url: string
+  imageUrl: string
+  sources?: string[]
+  seasons?: {
     spring: boolean
     summer: boolean
     fall: boolean
     winter: boolean
   }
-  locations: string[]
-  time: string
-  weather: {
-    sun: boolean
-    rain: boolean
+  locations?: string[]
+  time?: string
+  weather?: 'sunny' | 'rainy' | 'both'
+  water?: 'ocean' | 'freshwater'
+  artifactSpots?: {
+    [location: string]: number
   }
-  sources: string[]
-  ingredients: string[]
+  ingredients?: {
+    [id: string]: number
+  }
+  monsterDrops?: {
+    [monster: string]: number
+  }
 }
 
 export interface Bundle {
