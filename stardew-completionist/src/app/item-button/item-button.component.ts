@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DataService, Item } from '../data/data.service';
+import { MatDialog } from '@angular/material/dialog'
+import { ItemInfoComponent } from '../item-info/item-info.component';
 
 @Component({
   selector: 'item-button',
@@ -7,7 +9,7 @@ import { DataService, Item } from '../data/data.service';
   styleUrls: ['./item-button.component.scss']
 })
 export class ItemButtonComponent implements OnInit {
-  @Input() itemName: string
+  @Input() id: string
   @Input() item: Item
 
   constructor(
@@ -18,7 +20,7 @@ export class ItemButtonComponent implements OnInit {
   async ngOnInit() {
     if (!this.item) {
       await this.data.ready
-      this.item = this.data.items.get(this.itemName)
+      this.item = this.data.items.get(this.id)
     }
     }
 

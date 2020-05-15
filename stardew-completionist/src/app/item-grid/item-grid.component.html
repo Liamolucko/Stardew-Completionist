@@ -1,6 +1,6 @@
 <mat-card *ngIf="items">
   <mat-card-title>{{category}}</mat-card-title>
   <div id="grid-container">
-    <item-button *ngFor="let item of items" [item]="item" id="{{item.id}}"></item-button>
+    <item-button *ngFor="let item of items" [item]="item" [id]="item.id"></item-button>
   </div>
 </mat-card>

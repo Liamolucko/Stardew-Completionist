@@ -39,18 +39,14 @@ const locationNames = new Map([
 export class ItemInfoComponent implements OnInit {
   item: Item
   get ingredients() {
-    return Object.entries(this.item.ingredients).map(value => {
+    return new Map(Object.entries(this.item.ingredients).map(value => {
       return [categories.has(value[0]) ? categories.get(value[0]) : this.dataService.items.get(value[0]).name, value[1]]
-    })
+    }))
   }
   get artifactSpots() {
-    return Object.entries(this.item.artifactSpots).map(value => {
+    return new Map(Object.entries(this.item.artifactSpots).map(value => {
       return [locationNames.get(value[0]), value[1]]
-    })
-  }
-
-  get monsterDrops() {
-    return Object.entries(this.item.monsterDrops)
+    }))
   }
 
   constructor(@Inject(MAT_DIALOG_DATA) private data, private dataService: DataService) { }
