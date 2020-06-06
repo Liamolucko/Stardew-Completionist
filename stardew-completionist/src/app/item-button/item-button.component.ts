@@ -1,30 +1,33 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { DataService, Item } from '../data/data.service';
-import { MatDialog } from '@angular/material/dialog'
+import { Component, Input, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { GameInfoService, Item } from '../data/game-info.service';
+import { SaveInfoService } from '../data/save-info.service';
 import { ItemInfoComponent } from '../item-info/item-info.component';
 
 @Component({
-  selector: 'item-button',
+  selector: 'app-item-button',
   templateUrl: './item-button.component.html',
   styleUrls: ['./item-button.component.scss']
 })
 export class ItemButtonComponent implements OnInit {
-  @Input() id: string
-  @Input() item: Item
+  @Input() id: string;
+  @Input() item: Item;
 
-  constructor(
-    private data: DataService,
-    private dialog: MatDialog
-  ) { }
+  @Input() greyOut = false;
 
-  async ngOnInit() {
+  get isGreyedOut(): boolean {
+    return this.playerInfo.collectedItems && this.greyOut && !this.playerInfo.collectedItems.includes(this.item.id);
+  }
+
+  constructor(private gameInfo: GameInfoService, private playerInfo: SaveInfoService, private dialog: MatDialog) { }
+
+  ngOnInit(): void {
     if (!this.item) {
-      await this.data.ready
-      this.item = this.data.items.get(this.id)
+      this.item = this.gameInfo.items.get(this.id);
     }
-    }
+  }
 
-  onClick() {
-    this.dialog.open(ItemInfoComponent, { autoFocus: false, data: { item: this.item } })
+  onClick(): void {
+    this.dialog.open(ItemInfoComponent, { autoFocus: false, data: { item: this.item } });
   }
 }

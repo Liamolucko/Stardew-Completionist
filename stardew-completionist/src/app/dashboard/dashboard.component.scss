@@ -2,20 +2,27 @@
   display: block;
 }
 
-.dashboard-card {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
-}
+#container {
+  display: grid;
+  gap: 16px;
+  grid-template: "s s .";
 
-.more-button {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-}
+  @media only screen and (min-width: 1000px) {
+    grid-template: "s .";
+  }
 
-.dashboard-card-content {
-  text-align: center;
+  .seasonal {
+    max-width: fit-content;
+    grid-area: s;
+
+    app-item-button {
+      width: 32px;
+      margin: 8px 8px 8px 0;
+    }
+
+    .season-img {
+      vertical-align: middle;
+      margin-right: 4px;
+    }
+  }
 }

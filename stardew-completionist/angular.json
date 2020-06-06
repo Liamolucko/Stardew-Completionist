@@ -135,5 +135,8 @@
       }
     }
   },
-  "defaultProject": "stardew-completionist"
+  "defaultProject": "stardew-completionist",
+  "cli": {
+    "analytics": "b386580b-35cd-44c3-914a-22437eaf7861"
+  }
 }

@@ -1,12 +1,15 @@
+import asyncio
 import json
-import re
 from html.parser import HTMLParser
 from itertools import chain, filterfalse
+from os import mkdir
+from os.path import exists
 from typing import Any, Callable, List, Optional
 
 import httpx
-import trio
+import regex
 import wikitextparser
+from PIL import Image
 
 
 def chunks(lst, n):
@@ -29,10 +32,10 @@ class TagRemovalParser(HTMLParser):
         self.output += data
 
 
-tag_removal_regex = re.compile(r'<.+?>')
+tag_removal_regex = regex.compile(r'<.+?>', regex.V1)
 
 
-async def get_raw_text(wikitext: str, client: httpx.AsyncClient, callback: Optional[Callable[[str], Any]] = None) -> str:
+async def get_raw_text(wikitext: str, client: httpx.AsyncClient) -> str:
     response = await client.get('', params={
         'action': 'parse',
         'text': wikitext,
@@ -40,14 +43,11 @@ async def get_raw_text(wikitext: str, client: httpx.AsyncClient, callback: Optio
     })
     parser = TagRemovalParser()
     parser.feed(response.json()['parse']['text'])
-    output = tag_removal_regex.sub('', parser.output.strip())
-    if callback is not None:
-        callback(output)
-    return output
+    return tag_removal_regex.sub('', parser.output.strip())
 
 
-list_split_regex = re.compile(
-    r'(?<=}}) ?(?=\[\[)|(?:(?<=]]|}}) ?| )(?={{name)| (?:•|&bull;) |(?<!^)(?<!>)<[^[\]{}]+>(?!<)(?!$)|\n')
+list_split_regex = regex.compile(
+    r'(?<=}}) ?(?=\[\[)|(?:(?<=]]|}}) ?| )(?=\{\{name)| (?:•|&bull;) |(?<!^)(?<!>)<[^\[\]\{\}]+>(?!<)(?!$)|\n', regex.V1)
 
 
 async def parse_list(wikitext: str, client: httpx.AsyncClient) -> List[str]:
@@ -55,16 +55,8 @@ async def parse_list(wikitext: str, client: httpx.AsyncClient) -> List[str]:
     Parses lists of sources, locations etc. from the wiki in all the typical ways they are formatted.
     '''
     items = list_split_regex.split(wikitext.strip())
-    output = []
 
-    def return_text(text: str):
-        output.append(text)
-
-    async with trio.open_nursery() as nursery:
-        for item in items:
-            nursery.start_soon(get_raw_text, item, client, return_text)
-
-    return output
+    return await asyncio.gather(*(get_raw_text(item, client) for item in items))
 
 
 # Cases where the name of the item differs from the name of the wiki page
@@ -73,8 +65,9 @@ title_special_cases = {
     '127': 'Strange Doll (yellow)',
     '180': 'Brown Egg',
     '182': 'Large Brown Egg',
+    '242': 'Dish o\' The Sea',
+    '390': 'Stone',
     '438': 'Large Goat Milk',
-    '242': 'Dish o\' The Sea'
 }
 
 # Cases where the name and link in Collections do not match the page title
@@ -133,24 +126,6 @@ with open('Monsters.json') as file:
                 monster_drops[item] = {monster: chance}
 
 
-with open('Bundles.json') as file:
-    bundles = []
-    for key, value in json.load(file)['content'].items():
-        split = value.split('/')
-        bundles.append({
-            'name': split[0] + ' Bundle',
-            'section': key.split('/')[0],
-            'slots': int(split[4]) if len(split) >= 5 else len(split[2].split(' ')) // 3,
-            'items': [
-                {
-                    'id': object_id,
-                    'amount': int(count),
-                    'quality': int(quality)
-                } for object_id, count, quality in chunks(split[2].split(' '), 3)
-            ]
-        })
-
-
 # Cases where the name of an item does not match the name of its image
 image_special_cases = {
     '261': 'Warp Totem Desert',
@@ -160,20 +135,21 @@ image_special_cases = {
 }
 
 
-async def get_item_info(item_id: str, client: httpx.AsyncClient, callback: Optional[Callable[[dict], Any]]) -> dict:
+async def get_item_info(item_id: str, client: httpx.AsyncClient) -> dict:
     row: List[str] = items[item_id]
 
     item = {
         'id': item_id,
         'name': row[0],
+        'category': row[3],
         'description': row[5]
     }
 
-    category = row[3]
+    item['category'] = row[3]
 
-    if category == 'Arch':
+    if item['category'] == 'Arch':
         item['artifactSpots'] = parse_dict_text(row[6])
-    elif category == 'Cooking -7':
+    elif item['category'] == 'Cooking -7':
         recipe_name = recipe_special_cases[item_id] if item_id in recipe_special_cases else item['name']
         if recipe_name in recipes:
             recipe = recipes[recipe_name]
@@ -204,7 +180,7 @@ async def get_item_info(item_id: str, client: httpx.AsyncClient, callback: Optio
                     'type': 'tv',
                     'episode': cookingEpisodes[item['name']]
                 })
-    elif category == 'Fish -4':
+    elif item['category'] == 'Fish -4':
         if fish[item_id][1] != 'trap':
             item['time'] = fish[item_id][5].split(' ')
 
@@ -221,21 +197,13 @@ async def get_item_info(item_id: str, client: httpx.AsyncClient, callback: Optio
     title = title_special_cases[item_id] if item_id in title_special_cases else item['name']
     response: httpx.Response = await client.get('', params={
         'action': 'query',
-        'prop': 'revisions|imageinfo',
-        'titles': f'{title}|File:{image_special_cases[item_id] if item_id in image_special_cases else title}.png',
+        'prop': 'revisions',
+        'titles': title,
         'redirects': 'true',
-        'rvprop': 'content',
-        'iiprop': 'url'
+        'rvprop': 'content'
     })
-    pages = response.json()['query']['pages']
+    page = response.json()['query']['pages'][0]
 
-    image_page = [
-        page for page in pages if page['title'].startswith('File:')][0]
-    if 'missing' not in image_page:
-        item['imageUrl'] = image_page['imageinfo'][0]['url']
-
-    page = [
-        page for page in pages if not page['title'].startswith('File:')][0]
     if 'missing' not in page:
         title = page['title']
         item['url'] = f'https://stardewvalleywiki.com/{title}'
@@ -249,11 +217,14 @@ async def get_item_info(item_id: str, client: httpx.AsyncClient, callback: Optio
                 item['sources'] = [source for source in await parse_list(infobox.get_arg('source').value, client) if source != 'Artisan Goods' and not ('monsterDrops' in item and any([monster in source for monster in item['monsterDrops'].keys()]))]
             elif infobox.has_arg('os'):
                 item['sources'] = [source for source in await parse_list(infobox.get_arg('os').value, client) if source != 'Artisan Goods' and not ('monsterDrops' in item and any([monster in source for monster in item['monsterDrops'].keys()]))]
+            if 'sources' in item and item['sources'] == []:
+                item.pop('sources')
 
             if infobox.has_arg('craftingstation'):
                 crafting_station = await get_raw_text(infobox.get_arg('craftingstation').value, client)
                 if 'sources' in item:
-                    if crafting_station not in item['sources']: item['sources'].append(crafting_station)
+                    if crafting_station not in item['sources']:
+                        item['sources'].append(crafting_station)
                 else:
                     item['sources'] = [crafting_station]
 
@@ -276,8 +247,6 @@ async def get_item_info(item_id: str, client: httpx.AsyncClient, callback: Optio
                         'winter': True
                     }
 
-    if callback is not None:
-        callback(item)
     return item
 
 
@@ -311,6 +280,74 @@ class ItemTableParser(HTMLParser):
             self.output[self.index].append(ids[name])
 
 
+with open('Bundles.json') as file:
+    bundles = []
+    for key, value in json.load(file)['content'].items():
+        split = value.split('/')
+        bundles.append({
+            'name': split[0] + ' Bundle',
+            'section': key.split('/')[0],
+            'slots': int(split[4]) if len(split) >= 5 else len(split[2].split(' ')) // 3,
+            'items': [
+                {
+                    'id': object_id,
+                    'amount': int(count),
+                    'quality': int(quality)
+                } for object_id, count, quality in chunks(split[2].split(' '), 3)
+            ]
+        })
+
+
+with open('NPCDispositions.json') as file:
+    npc_dispositions = [value.split('/')
+                        for value in json.load(file)['content'].values()]
+
+with open('NPCGiftTastes.json') as file:
+    content = json.load(file)['content']
+    universal_loves = content['Universal_Love'].split(' ')
+    universal_likes = content['Universal_Like'].split(' ')
+    universal_neutral = content['Universal_Neutral'].split(' ')
+    universal_dislikes = content['Universal_Dislike'].split(' ')
+    universal_hates = content['Universal_Hate'].split(' ')
+    npc_gift_tastes = [value.split('/')
+                       for value in list(content.values())[5:]]
+
+
+def get_villager_info(disposition, gift_taste):
+    villager = {
+        'name': disposition[11],
+        'birthday': disposition[8],
+        'loves': gift_taste[1].split(' '),
+        'likes': gift_taste[3].split(' '),
+        'dislikes': gift_taste[5].split(' '),
+        'hates': gift_taste[7].split(' '),
+        'neutral': gift_taste[9].split(' ')
+    }
+
+    custom_preferences = villager['loves'] + villager['likes'] + \
+        villager['dislikes'] + villager['hates'] + villager['neutral']
+    villager['loves'] += [item for item in universal_loves if item not in custom_preferences]
+    villager['likes'] += [item for item in universal_likes if item not in custom_preferences]
+    villager['neutral'] += [item for item in universal_neutral if item not in custom_preferences]
+    villager['dislikes'] += [item for item in universal_dislikes if item not in custom_preferences]
+    villager['hates'] += [item for item in universal_hates if item not in custom_preferences]
+
+    return villager
+
+
+villagers = [get_villager_info(disposition, gift_taste)
+             for disposition, gift_taste in zip(npc_dispositions, npc_gift_tastes)]
+
+
+spritesheet: Image.Image = Image.open('springobjects.png')
+
+
+def get_sprite(item_id: int):
+    x = item_id % 24 * 16
+    y = item_id // 24 * 16
+    return spritesheet.crop((x, y, x + 16, y + 16))
+
+
 async def main():
     async with httpx.AsyncClient(base_url='https://stardewvalleywiki.com/mediawiki/api.php', params={'format': 'json', 'formatversion': 2}, timeout=20) as client:
         response: httpx.Response = await client.get('', params={
@@ -327,8 +364,8 @@ async def main():
         minerals = parser.output[4]
         cooking = parser.output[5]
 
-        crafting = [recipe[2].split(' ')[0] for recipe in craftingRecipes.values(
-        ) if recipe[2].split(' ')[0] in items]
+        crafting = [recipe[2].split(' ')[0] for recipe in craftingRecipes.values()
+                    if recipe[2].split(' ')[0] in items]
 
         output = {
             'shipping': items_shipped,
@@ -338,18 +375,17 @@ async def main():
             'cooking': cooking,
             'crafting': crafting,
             'bundles': bundles,
-            'items': {}
+            'friendship': villagers,
+            'items': {item['id']: item for item in await asyncio.gather(*(get_item_info(item_id, client) for item_id in items.keys()))}
         }
 
-        def add_item(item: dict):
-            output['items'][item['id']] = item
-
-        async with trio.open_nursery() as nursery:
-            for item_id in items.keys():
-                nursery.start_soon(get_item_info, item_id, client, add_item)
+        if not exists('./sprites'):
+            mkdir('./sprites')
+        for item in items.keys():
+            get_sprite(int(item)).save(f'./sprites/{item}.png')
 
         with open('output.json', 'w') as file:
             json.dump(output, file)
 
 if __name__ == '__main__':
-    trio.run(main)
+    asyncio.run(main())

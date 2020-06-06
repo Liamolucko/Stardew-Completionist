@@ -1,40 +1,45 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http'
-import { NgModule } from '@angular/core';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LayoutModule } from '@angular/cdk/layout';
+import { HttpClientModule } from '@angular/common/http';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
-import { ItemButtonComponent } from './item-button/item-button.component';
-import { ItemGridComponent } from './item-grid/item-grid.component';
-import { DataService } from './data/data.service';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatCardModule } from '@angular/material/card';
-import { MatMenuModule } from '@angular/material/menu';
-import { LayoutModule } from '@angular/cdk/layout';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
+import { GameInfoService } from './data/game-info.service';
+import { SaveInfoService } from './data/save-info.service';
+import { ItemButtonComponent } from './item-button/item-button.component';
+import { ItemGridPageComponent } from './item-grid-page/item-grid-page.component';
 import { ItemInfoComponent } from './item-info/item-info.component';
-import { MatDialogModule } from '@angular/material/dialog';
-import { TimePipe } from './time.pipe';
 import { ProbabilityPipe } from './probability.pipe';
+import { TimePipe } from './time.pipe';
+import { ItemGridComponent } from './item-grid/item-grid.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     ItemButtonComponent,
-    ItemGridComponent,
+    ItemGridPageComponent,
     DashboardComponent,
     ItemInfoComponent,
     TimePipe,
-    ProbabilityPipe
+    ProbabilityPipe,
+    ItemGridComponent
   ],
   imports: [
     BrowserModule,
@@ -52,10 +57,20 @@ import { ProbabilityPipe } from './probability.pipe';
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTableModule,
+    MatSortModule
   ],
   entryComponents: [ItemInfoComponent],
-  providers: [DataService],
+  providers: [
+    SaveInfoService,
+    GameInfoService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (gameInfo: GameInfoService) => () => gameInfo.load(),
+      deps: [GameInfoService],
+      multi: true
+    }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

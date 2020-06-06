@@ -8,14 +8,14 @@
         <mat-divider></mat-divider>
         <a mat-icon-button [routerLink]="page"
           *ngFor="let page of ['shipping', 'fish', 'artifacts', 'minerals', 'cooking']">
-          <img matListAvatar [src]="'assets/' + page + '.png'" alt="{{page}}">
+          <img matListAvatar [src]="'assets/' + page + '.png'" [alt]="page">
         </a>
       </mat-nav-list>
 
       <mat-action-list>
         <button mat-icon-button (click)="input.click()">
           <mat-icon matListIcon>folder</mat-icon>
-          <input #input type="file">
+          <input #input id="file-input" type="file">
         </button>
       </mat-action-list>
     </div>
