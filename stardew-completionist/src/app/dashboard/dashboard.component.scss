@@ -4,10 +4,16 @@
 
 #container {
   display: grid;
-  gap: 16px;
+  gap: 24px;
   grid-template:
-    "b . s"
-    "b . .";
+    "b"
+    "s";
+
+  @media only screen and (min-width: 1000px) {
+    grid-template:
+      "b s"
+      "b .";
+  }
 
   .seasonal {
     max-width: fit-content;
@@ -20,7 +26,7 @@
 
     min-width: 704px;
     min-height: 100%;
-    
+
     grid-area: b;
 
     mat-card-content {
