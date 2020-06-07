@@ -1,10 +1,5 @@
 <header mat-dialog-title>
-  <img
-    src="assets/sprites/{{ item.id }}.png"
-    [alt]="item.name"
-    id="icon"
-    width="48"
-  />
+  <img src="assets/sprites/{{ item.id }}.png" [alt]="item.name" id="icon" />
   <h1>{{ item.name }}</h1>
   <div id="buttons">
     <a mat-icon-button [href]="item.url" target="_blank">
@@ -65,6 +60,13 @@
         <span *ngIf="item.quantity > 1"> × {{ item.quantity }}</span>
       </li>
     </ul>
+
+    <div *ngIf="item.recipeSources">
+      <mat-card-subtitle>Recipe Sources</mat-card-subtitle>
+      <ul>
+        <li *ngFor="let source of item.recipeSources">{{ source }}</li>
+      </ul>
+    </div>
   </mat-card>
 
   <mat-card *ngIf="item.locations" class="location">

@@ -7,6 +7,11 @@ header {
 
   img {
     image-rendering: pixelated;
+
+    min-width: 32px;
+    max-width: 48px;
+    min-height: 48px;
+    max-height: 64px;
   }
 
   h1 {

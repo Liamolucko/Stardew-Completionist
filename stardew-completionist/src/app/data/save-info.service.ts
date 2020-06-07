@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject, Observable } from 'rxjs';
+import { GameInfoService } from './game-info.service';
 
 @Injectable({
   providedIn: 'root',
@@ -8,6 +9,7 @@ export class SaveInfoService implements SaveInfo {
   currentDay?: number;
   currentSeason?: number;
   currentYear?: number;
+  currentDate?: number;
 
   collectedItems?: string[];
 
@@ -16,6 +18,7 @@ export class SaveInfoService implements SaveInfo {
       currentDay: this.currentDay,
       currentSeason: this.currentSeason,
       currentYear: this.currentYear,
+      currentDate: this.currentDate,
       collectedItems: this.collectedItems
     };
   }
@@ -24,7 +27,7 @@ export class SaveInfoService implements SaveInfo {
 
   private updateSubject = new ReplaySubject<SaveInfo>(1);
 
-  constructor() {
+  constructor(private gameInfo: GameInfoService) {
     this.updated = this.updateSubject.asObservable();
 
     if (window.localStorage.getItem('lastSaveFile')) {
@@ -53,28 +56,31 @@ export class SaveInfoService implements SaveInfo {
     this.currentYear = parseInt(
       xmlDoc.querySelector('yearForSaveGame').textContent, 10
     );
+    this.currentDate = this.currentSeason * 28 + this.currentDay;
 
     this.collectedItems = [];
-    xmlDoc.querySelector('Farmer > basicShipped').querySelectorAll('item')
-      .forEach((item) => {
-        this.collectedItems.push(item.querySelector('key').textContent);
-      });
-    xmlDoc.querySelector('Farmer > mineralsFound').querySelectorAll('item')
-      .forEach((item) => {
-        this.collectedItems.push(item.querySelector('key').textContent);
-      });
-    xmlDoc.querySelector('Farmer > recipesCooked').querySelectorAll('item')
-      .forEach((item) => {
-        this.collectedItems.push(item.querySelector('key').textContent);
-      });
-    xmlDoc.querySelector('Farmer > fishCaught').querySelectorAll('item')
-      .forEach((item) => {
-        this.collectedItems.push(item.querySelector('key').textContent);
-      });
-    xmlDoc.querySelector('Farmer > archaeologyFound').querySelectorAll('item')
-      .forEach((item) => {
-        this.collectedItems.push(item.querySelector('key').textContent);
-      });
+    xmlDoc.querySelector('Farmer > basicShipped').querySelectorAll('item').forEach(item => {
+      this.collectedItems.push(item.querySelector('key').textContent);
+    });
+    xmlDoc.querySelector('Farmer > mineralsFound').querySelectorAll('item').forEach(item => {
+      this.collectedItems.push(item.querySelector('key').textContent);
+    });
+    xmlDoc.querySelector('Farmer > recipesCooked').querySelectorAll('item').forEach(item => {
+      this.collectedItems.push(item.querySelector('key').textContent);
+    });
+    xmlDoc.querySelector('Farmer > fishCaught').querySelectorAll('item').forEach(item => {
+      this.collectedItems.push(item.querySelector('key').textContent);
+    });
+    xmlDoc.querySelector('Farmer > archaeologyFound').querySelectorAll('item').forEach(item => {
+      this.collectedItems.push(item.querySelector('key').textContent);
+    });
+
+    xmlDoc.querySelector('Farmer > craftingRecipes').querySelectorAll('item').forEach(item => {
+      const recipeName = item.querySelector('key').textContent;
+      const amountMade = parseInt(item.querySelector('value').textContent, 10);
+      const recipe = this.gameInfo.crafting.find(value => value.name === recipeName);
+      if (amountMade > 0) { this.collectedItems.push(recipe.result.id); }
+    });
 
     this.updateSubject.next(this.data);
   }
@@ -84,6 +90,7 @@ export interface SaveInfo {
   currentDay?: number;
   currentSeason?: number;
   currentYear?: number;
+  currentDate?: number;
 
   collectedItems?: string[];
 }

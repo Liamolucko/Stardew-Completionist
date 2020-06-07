@@ -7,8 +7,8 @@
         </a>
         <mat-divider></mat-divider>
         <a mat-icon-button [routerLink]="page"
-          *ngFor="let page of ['shipping', 'fish', 'artifacts', 'minerals', 'cooking']">
-          <img matListAvatar [src]="'assets/' + page + '.png'" [alt]="page">
+          *ngFor="let page of ['shipping', 'fish', 'artifacts', 'minerals', 'cooking', 'crafting']">
+          <img matListAvatar src="assets/{{page}}.png" [alt]="page">
         </a>
       </mat-nav-list>
 

@@ -5,24 +5,48 @@
 #container {
   display: grid;
   gap: 16px;
-  grid-template: "s s .";
-
-  @media only screen and (min-width: 1000px) {
-    grid-template: "s .";
-  }
+  grid-template:
+    "b . s"
+    "b . .";
 
   .seasonal {
     max-width: fit-content;
     grid-area: s;
+  }
+
+  .birthdays {
+    display: flex;
+    flex-flow: column nowrap;
+
+    min-width: 704px;
+    min-height: 100%;
+    
+    grid-area: b;
+
+    mat-card-content {
+      flex-grow: 1;
+    }
+
+    table {
+      width: 100%;
+    }
+
+    td {
+      padding-right: 24px;
+    }
 
     app-item-button {
       width: 32px;
-      margin: 8px 8px 8px 0;
-    }
+      height: 32px;
+      margin: 0 4px;
 
-    .season-img {
-      vertical-align: middle;
-      margin-right: 4px;
+      &:first-of-type {
+        margin-left: 0;
+      }
+
+      &:last-of-type {
+        margin-right: 0;
+      }
     }
   }
 }

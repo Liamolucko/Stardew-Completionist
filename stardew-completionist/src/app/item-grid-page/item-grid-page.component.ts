@@ -9,7 +9,8 @@ const categoryNames = new Map<string, string>([
   ['minerals', 'Minerals'],
   ['cooking', 'Cooking'],
   ['bundles', 'Bundles'],
-  ['friendship', 'Friendship']
+  ['friendship', 'Friendship'],
+  ['crafting', 'Crafting']
 ]);
 
 @Component({
@@ -22,10 +23,14 @@ export class ItemGridPageComponent implements OnInit {
   items: Item[];
 
   constructor(gameInfo: GameInfoService, route: ActivatedRoute) {
-    route.params.subscribe((params: { collection?: 'shipping' | 'fish' | 'artifacts' | 'minerals' | 'cooking' }) => {
+    route.params.subscribe((params: { collection?: 'shipping' | 'fish' | 'artifacts' | 'minerals' | 'cooking' | 'crafting' }) => {
       if (params.collection) {
-        this.items = gameInfo[params.collection];
         this.category = categoryNames.get(params.collection);
+        if (params.collection === 'cooking' || params.collection === 'crafting') {
+          this.items = gameInfo[params.collection].map(recipe => recipe.result);
+        } else {
+          this.items = gameInfo[params.collection];
+        }
       }
     });
   }

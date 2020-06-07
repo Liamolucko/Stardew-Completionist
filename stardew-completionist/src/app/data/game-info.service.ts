@@ -1,5 +1,44 @@
 import { Injectable } from '@angular/core';
 
+export const categories = new Map<string, string>([
+  ['-4', 'Any Fish'],
+  ['-5', 'Egg'],
+  ['-6', 'Milk'],
+  ['-777', 'Wild Seeds']
+]);
+
+export const locationNames = new Map([
+  ['Farm', 'Farm'],
+  ['UndergroundMine', 'Mines'],
+  ['Mine', 'Mines'],
+  ['Desert', 'Desert'],
+  ['BusStop', 'Bus Stop'],
+  ['Forest', 'Forest'],
+  ['Town', 'Pelican Town'],
+  ['Mountain', 'Mountain'],
+  ['Backwoods', 'Backwoods'],
+  ['Railroad', 'Railroad'],
+  ['Beach', 'Beach'],
+  ['Woods', 'Woods'],
+  ['Sewer', 'Sewers'],
+  ['BugLand', 'Bug Land'],
+  ['WitchSwamp', 'Witch Swamp'],
+  ['fishingGame', 'Fishing Game'],
+  ['Temp', '???']
+]);
+
+export const seasonNames = new Map([
+  [0, 'Spring'],
+  [1, 'Summer'],
+  [2, 'Fall'],
+  [3, 'Winter']
+]);
+
+export const weatherNames = new Map([
+  ['rainy', 'Rain'],
+  ['sunny', 'Sun']
+]);
+
 @Injectable({
   providedIn: 'root',
 })
@@ -8,34 +47,36 @@ export class GameInfoService implements GameInfo {
   fish: Item[];
   artifacts: Item[];
   minerals: Item[];
-  cooking: Item[];
+  cooking: Recipe[];
+  crafting: Recipe[];
   bundles: Bundle[];
-  friendship: Villager[];
+  villagers: Villager[];
   items: Map<string, Item>;
+  recipes: Map<string, Recipe>;
 
   constructor() { }
 
   async load(): Promise<GameInfo> {
-    const json = await fetch('assets/game-info.json').then((response) =>
-      response.json()
-    ) as _GameInfo;
+    const json = await fetch('assets/game-info.json').then(response => response.json()) as _GameInfo;
 
-    const items = new Map(Object.entries(json.items));
-
-    this.items = items;
-    this.shipping = json.shipping.map(id => items.get(id));
-    this.fish = json.fish.map(id => items.get(id));
-    this.artifacts = json.artifacts.map(id => items.get(id));
-    this.minerals = json.minerals.map(id => items.get(id));
-    this.cooking = json.cooking.map(id => items.get(id));
+    this.items = new Map(Object.entries(json.items));
+    this.recipes = new Map(Object.entries(json.recipes).map(([id, recipe]) => [id, { ...recipe, result: this.items.get(recipe.result) }]));
+    this.shipping = json.shipping.map(id => this.items.get(id));
+    this.fish = json.fish.map(id => this.items.get(id));
+    this.artifacts = json.artifacts.map(id => this.items.get(id));
+    this.minerals = json.minerals.map(id => this.items.get(id));
+    this.cooking = json.cooking.map(id => this.recipes.get(id));
+    this.crafting = json.crafting.map(id => this.recipes.get(id));
     this.bundles = json.bundles;
-    this.friendship = json.friendship.map((villager) => ({
-      ...villager,
-      loves: villager.loves.map(id => items.get(id)),
-      likes: villager.likes.map(id => items.get(id)),
-      neutral: villager.neutral.map(id => items.get(id)),
-      dislikes: villager.dislikes.map(id => items.get(id)),
-      hates: villager.hates.map(id => items.get(id))
+    this.villagers = json.villagers.map(villager => ({
+      name: villager.name,
+      birthday: `${seasonNames.get(villager.birthSeason)} ${villager.birthDay}`,
+      birthDate: villager.birthSeason * 28 + villager.birthDay,
+      loves: villager.loves.map(id => this.items.get(id)),
+      likes: villager.likes.map(id => this.items.get(id)),
+      neutral: villager.neutral.map(id => this.items.get(id)),
+      dislikes: villager.dislikes.map(id => this.items.get(id)),
+      hates: villager.hates.map(id => this.items.get(id))
     }));
 
     return this as GameInfo;
@@ -49,11 +90,36 @@ interface _GameInfo {
   artifacts: string[];
   minerals: string[];
   cooking: string[];
+  crafting: string[];
   bundles: Bundle[];
-  friendship: _Villager[];
+  villagers: _Villager[];
   items: {
     [id: string]: Item;
   };
+  recipes: {
+    [id: string]: _Recipe;
+  };
+}
+
+interface _Recipe {
+  name: string;
+  ingredients: {
+    [id: string]: number;
+  };
+  result: string;
+  amount: number;
+  recipeSources?: string[];
+}
+
+interface _Villager {
+  name: string;
+  loves: string[];
+  likes: string[];
+  neutral: string[];
+  dislikes: string[];
+  hates: string[];
+  birthDay: number;
+  birthSeason: number;
 }
 
 export interface GameInfo {
@@ -61,10 +127,22 @@ export interface GameInfo {
   fish: Item[];
   artifacts: Item[];
   minerals: Item[];
-  cooking: Item[];
+  cooking: Recipe[];
+  crafting: Recipe[];
   bundles: Bundle[];
-  friendship: Villager[];
+  villagers: Villager[];
   items: Map<string, Item>;
+  recipes: Map<string, Recipe>;
+}
+
+interface Recipe {
+  name: string;
+  ingredients: {
+    [id: string]: number;
+  };
+  result: Item;
+  amount: number;
+  recipeSources?: string[];
 }
 
 export interface Item {
@@ -92,6 +170,7 @@ export interface Item {
   monsterDrops?: {
     [monster: string]: number;
   };
+  recipeSources: string[];
 }
 
 export interface Bundle {
@@ -106,16 +185,6 @@ export interface Bundle {
   gold: number;
 }
 
-interface _Villager {
-  name: string;
-  loves: string[];
-  likes: string[];
-  neutral: string[];
-  dislikes: string[];
-  hates: string[];
-  birthday: string;
-}
-
 export interface Villager {
   name: string;
   loves: Item[];
@@ -124,4 +193,5 @@ export interface Villager {
   dislikes: Item[];
   hates: Item[];
   birthday: string;
+  birthDate: number;
 }

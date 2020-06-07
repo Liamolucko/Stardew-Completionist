@@ -1,3 +1,7 @@
 <button (click)="onClick()" *ngIf="item">
-  <img src="assets/sprites/{{item.id}}.png" [alt]="item.name" [class]="isGreyedOut ? 'grey' : ''">
+  <img
+    src="assets/sprites/{{ item.id }}.png"
+    [alt]="item.name"
+    [ngClass]="{ grey: isGreyedOut }"
+  />
 </button>

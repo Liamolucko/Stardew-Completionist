@@ -9,6 +9,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -24,10 +25,10 @@ import { GameInfoService } from './data/game-info.service';
 import { SaveInfoService } from './data/save-info.service';
 import { ItemButtonComponent } from './item-button/item-button.component';
 import { ItemGridPageComponent } from './item-grid-page/item-grid-page.component';
+import { ItemGridComponent } from './item-grid/item-grid.component';
 import { ItemInfoComponent } from './item-info/item-info.component';
 import { ProbabilityPipe } from './probability.pipe';
 import { TimePipe } from './time.pipe';
-import { ItemGridComponent } from './item-grid/item-grid.component';
 
 
 @NgModule({
@@ -59,7 +60,8 @@ import { ItemGridComponent } from './item-grid/item-grid.component';
     MatListModule,
     MatDialogModule,
     MatTableModule,
-    MatSortModule
+    MatSortModule,
+    MatPaginatorModule
   ],
   entryComponents: [ItemInfoComponent],
   providers: [
