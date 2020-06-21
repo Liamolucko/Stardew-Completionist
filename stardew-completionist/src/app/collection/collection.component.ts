@@ -33,11 +33,14 @@ export class CollectionPageComponent implements OnInit {
         if (params.collection === 'cooking' || params.collection === 'crafting') {
           this.recipes = gameInfo[params.collection];
           this.items = this.recipes.map(recipe => recipe.result);
-          this.unknownRecipes = this.recipes.filter(recipe => !save.knownRecipes.includes(recipe.name));
         } else {
           this.items = gameInfo[params.collection];
         }
       }
+    });
+
+    save.updated.subscribe(newSave => {
+      this.unknownRecipes = this.recipes.filter(recipe => !newSave.knownRecipes.includes(recipe.name));
     });
   }
 
