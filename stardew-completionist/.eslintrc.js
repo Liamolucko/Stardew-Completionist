@@ -113,7 +113,8 @@ module.exports = {
                 },
                 "FunctionExpression": {
                     "parameters": "first"
-                }
+                },
+                "SwitchCase": 1
             }
         ],
         "@typescript-eslint/keyword-spacing": "off",

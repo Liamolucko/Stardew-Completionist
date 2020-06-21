@@ -29,6 +29,10 @@ class TagRemovalParser(HTMLParser):
         super().__init__()
         self.output = ''
 
+    def handle_startendtag(self, tag, attrs):
+        if tag == 'br':
+            self.output += ' '
+
     def handle_data(self, data):
         self.output += data
 
@@ -49,7 +53,7 @@ async def get_raw_text(wikitext: str, client: httpx.AsyncClient) -> str:
 
 
 list_split_regex = regex.compile(
-    r'(?<=}}) ?(?=\[\[)|(?:(?<=]]|}}) ?|(?<=\)) )(?=\{\{)| (?:•|&bull;) |(?<!^)(?<!>)<[^\[\]\{\}]+>(?!<)(?!$)|\n', regex.V1)
+    r'(?<=}}) ?(?=\[\[)|(?:(?<=]]|}}) ?|(?<=\)) )(?=\{\{)| (?:•|&bull;) |(?<!^)(?<!>)</?[^\[\]\{\}/]+(?:/>(?!\()|>)(?!<)(?!$)|\n', regex.V1)
 
 
 async def parse_list(wikitext: str, client: httpx.AsyncClient) -> List[str]:
@@ -290,6 +294,7 @@ seasons = {
 def get_villager_info(disposition, gift_taste):
     villager = {
         'name': disposition[11],
+        'datable': disposition[5] == 'datable',
         'loves': [item for item in gift_taste[1].split(' ') if item in objects],
         'likes': [item for item in gift_taste[3].split(' ') if item in objects],
         'dislikes': [item for item in gift_taste[5].split(' ') if item in objects],
@@ -335,7 +340,7 @@ def get_sprite(item_id: str):
 
 
 async def main():
-    async with httpx.AsyncClient(base_url='https://stardewvalleywiki.com/mediawiki/api.php', params={'format': 'json', 'formatversion': 2}, timeout=20) as client:
+    async with httpx.AsyncClient(base_url='https://stardewvalleywiki.com/mediawiki/api.php', params={'format': 'json', 'formatversion': 2}, timeout=60) as client:
         response: httpx.Response = await client.get('', params={
             'action': 'parse',
             'page': 'Collections',
@@ -370,11 +375,11 @@ async def main():
 
             return recipe
 
-        recipes = {recipe['result']: recipe for recipe in
+        recipes = {recipe['name']: recipe for recipe in
                    (get_recipe_info(row) for row in [*crafting_recipes.values(), *cooking_recipes.values()])}
 
-        crafting = ['c' + row[3].split(' ')[0] if row[4] == 'true' else row[3].split(' ')[0]
-                    for row in crafting_recipes.values()]
+        cooking = [cooking_recipes[item][0] for item in cooking]
+        crafting = [recipe[0] for recipe in crafting_recipes.values()]
 
         output = {
             'shipping': items_shipped,

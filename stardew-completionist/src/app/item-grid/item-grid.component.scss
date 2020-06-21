@@ -1,12 +1,10 @@
 :host {
-  display: flex;
-  flex-flow: row wrap;
-  align-content: center;
-  gap: 16px;
-
-  app-item-button {
-    width: 64px;
-    height: 64px;
-    margin: 4px;
-  }
+  display: inline-grid;
+  gap: 8px;
+  grid-auto-flow: row;
+  grid-auto-rows: 64px;
+  grid-template-rows: repeat(auto-fit, 64px);
+  grid-template-columns: repeat(auto-fit, 64px);
+  
+  justify-content: center;
 }

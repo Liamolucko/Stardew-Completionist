@@ -1,0 +1,39 @@
+<h1>Friendship</h1>
+
+<mat-card>
+  <table mat-table [dataSource]="villagers" matSort matSortActive="hearts" matSortDirection="asc">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Villager</th>
+      <td mat-cell *matCellDef="let villager">{{ villager.name }}</td>
+    </ng-container>
+    <ng-container matColumnDef="bestGifts">
+      <th mat-header-cell *matHeaderCellDef>Best Gifts</th>
+      <td mat-cell *matCellDef="let villager" class="best-gifts">
+        <app-item-button
+          *ngFor="let item of villager.loves"
+          [item]="item"
+        ></app-item-button>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="hearts">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Hearts</th>
+      <td mat-cell *matCellDef="let villager">
+        <ul class="hearts">
+          <img
+            *ngFor="let i of range(villager.relationship?.maxHearts || 10, 1)"
+            src="assets/heart-{{
+              villager.relationship?.hearts >= i ? 'filled' : 'outline'
+            }}.png"
+          />
+        </ul>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="birthday">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Birthday</th>
+      <td mat-cell *matCellDef="let villager">{{ villager.birthday }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="shownColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: shownColumns"></tr>
+  </table>
+</mat-card>

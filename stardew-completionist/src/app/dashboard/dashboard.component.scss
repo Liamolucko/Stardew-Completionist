@@ -5,27 +5,49 @@
 #container {
   display: grid;
   gap: 24px;
-  grid-template:
+  grid-template-areas:
     "b"
     "s";
 
-  @media only screen and (min-width: 1000px) {
-    grid-template:
-      "b s"
-      "b .";
+  @media only screen and (min-width: 1250px) {
+    grid-template-areas: "b s";
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: min-content;
   }
 
   .seasonal {
-    max-width: fit-content;
+    display: flex;
+    flex-flow: column nowrap;
+
     grid-area: s;
+
+    mat-card-content {
+      flex-grow: 1;
+    }
+
+    .seasonal-items {
+      display: grid;
+      grid-auto-flow: row;
+      grid-auto-rows: 64px;
+      grid-template-columns: repeat(auto-fill, 64px);
+      gap: 8px;
+
+      @media only screen and (min-width: 1250px) {
+        grid-template-columns: repeat(2, 64px);
+      }
+
+      app-item-button {
+        width: 64px;
+        height: 64px;
+      }
+    }
   }
 
   .birthdays {
     display: flex;
     flex-flow: column nowrap;
 
-    min-width: 704px;
-    min-height: 100%;
+    height: max-content;
 
     grid-area: b;
 
@@ -52,6 +74,18 @@
 
       &:last-of-type {
         margin-right: 0;
+      }
+    }
+
+    .hearts {
+      display: flex;
+      align-content: center;
+
+      margin: 0;
+      padding: 0;
+
+      img {
+        margin-right: 2px;
       }
     }
   }

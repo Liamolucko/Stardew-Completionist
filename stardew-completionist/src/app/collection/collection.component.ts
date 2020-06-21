@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { GameInfoService, Item } from '../data/game-info.service';
+import { GameInfoService, Item, Recipe } from '../data/game-info.service';
+import { SaveInfoService } from '../data/save-info.service';
 
 const categoryNames = new Map<string, string>([
   ['shipping', 'Items Shipped'],
@@ -14,20 +15,25 @@ const categoryNames = new Map<string, string>([
 ]);
 
 @Component({
-  selector: 'app-item-grid-page',
-  templateUrl: './item-grid-page.component.html',
-  styleUrls: ['./item-grid-page.component.scss']
+  selector: 'app-collection',
+  templateUrl: './collection.component.html',
+  styleUrls: ['./collection.component.scss']
 })
-export class ItemGridPageComponent implements OnInit {
+export class CollectionPageComponent implements OnInit {
   category: string;
+  recipes?: Recipe[];
   items: Item[];
 
-  constructor(gameInfo: GameInfoService, route: ActivatedRoute) {
+  unknownRecipes?: Recipe[];
+
+  constructor(gameInfo: GameInfoService, route: ActivatedRoute, save: SaveInfoService) {
     route.params.subscribe((params: { collection?: 'shipping' | 'fish' | 'artifacts' | 'minerals' | 'cooking' | 'crafting' }) => {
       if (params.collection) {
         this.category = categoryNames.get(params.collection);
         if (params.collection === 'cooking' || params.collection === 'crafting') {
-          this.items = gameInfo[params.collection].map(recipe => recipe.result);
+          this.recipes = gameInfo[params.collection];
+          this.items = this.recipes.map(recipe => recipe.result);
+          this.unknownRecipes = this.recipes.filter(recipe => !save.knownRecipes.includes(recipe.name));
         } else {
           this.items = gameInfo[params.collection];
         }

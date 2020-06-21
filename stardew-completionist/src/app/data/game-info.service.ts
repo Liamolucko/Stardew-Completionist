@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Relationship } from './save-info.service';
 
 export const categories = new Map<string, string>([
   ['-4', 'Any Fish'],
@@ -60,16 +61,18 @@ export class GameInfoService implements GameInfo {
     const json = await fetch('assets/game-info.json').then(response => response.json()) as _GameInfo;
 
     this.items = new Map(Object.entries(json.items));
-    this.recipes = new Map(Object.entries(json.recipes).map(([id, recipe]) => [id, { ...recipe, result: this.items.get(recipe.result) }]));
+    this.recipes = new Map(Object.entries(json.recipes)
+      .map(([name, recipe]) => [name, { ...recipe, result: this.items.get(recipe.result) }]));
     this.shipping = json.shipping.map(id => this.items.get(id));
     this.fish = json.fish.map(id => this.items.get(id));
     this.artifacts = json.artifacts.map(id => this.items.get(id));
     this.minerals = json.minerals.map(id => this.items.get(id));
-    this.cooking = json.cooking.map(id => this.recipes.get(id));
-    this.crafting = json.crafting.map(id => this.recipes.get(id));
+    this.cooking = json.cooking.map(name => this.recipes.get(name));
+    this.crafting = json.crafting.map(name => this.recipes.get(name));
     this.bundles = json.bundles;
     this.villagers = json.villagers.map(villager => ({
       name: villager.name,
+      datable: villager.datable,
       birthday: `${seasonNames.get(villager.birthSeason)} ${villager.birthDay}`,
       birthDate: villager.birthSeason * 28 + villager.birthDay,
       loves: villager.loves.map(id => this.items.get(id)),
@@ -97,7 +100,7 @@ interface _GameInfo {
     [id: string]: Item;
   };
   recipes: {
-    [id: string]: _Recipe;
+    [name: string]: _Recipe;
   };
 }
 
@@ -113,6 +116,7 @@ interface _Recipe {
 
 interface _Villager {
   name: string;
+  datable: boolean;
   loves: string[];
   likes: string[];
   neutral: string[];
@@ -135,7 +139,7 @@ export interface GameInfo {
   recipes: Map<string, Recipe>;
 }
 
-interface Recipe {
+export interface Recipe {
   name: string;
   ingredients: {
     [id: string]: number;
@@ -187,6 +191,7 @@ export interface Bundle {
 
 export interface Villager {
   name: string;
+  datable: boolean;
   loves: Item[];
   likes: Item[];
   neutral: Item[];
@@ -194,4 +199,5 @@ export interface Villager {
   hates: Item[];
   birthday: string;
   birthDate: number;
+  relationship?: Relationship;
 }

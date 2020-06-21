@@ -1,0 +1,35 @@
+<mat-card *ngIf="items" class="grid">
+  <mat-card-title>{{ category }}</mat-card-title>
+  <app-item-grid [items]="items" [greyOut]="true" columns="10"></app-item-grid>
+</mat-card>
+
+<mat-card
+  *ngIf="this.category == 'Crafting' || this.category == 'Cooking'"
+  class="recipes"
+>
+  <mat-card-header>
+    <mat-card-title>Unknown Recipes</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <table mat-table [dataSource]="unknownRecipes">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Recipe</th>
+        <td mat-cell *matCellDef="let recipe">
+          <app-item-button [item]="recipe.result"></app-item-button>
+          {{ recipe.name }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="recipeSources">
+        <th mat-header-cell *matHeaderCellDef>Sources</th>
+        <td mat-cell *matCellDef="let recipe">
+          <ul *ngIf="recipe.recipeSources">
+            <li *ngFor="let source of recipe.recipeSources">{{ source }}</li>
+          </ul>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['name', 'recipeSources']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['name', 'recipeSources']"></tr>
+    </table>
+  </mat-card-content>
+</mat-card>

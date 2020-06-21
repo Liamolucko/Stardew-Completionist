@@ -26,14 +26,15 @@
       user-select: none;
 
       &.grey {
-        filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.3)) saturate(0) brightness(0.7);
+        filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.3)) saturate(0)
+          brightness(0.7);
       }
 
       &:hover {
         $hover-scale: 52 / 48;
         transform: scale($hover-scale);
       }
-    }    
+    }
   }
 
   &[padding] img {
@@ -46,14 +47,22 @@
   &:not([padding]) img {
     height: 100%;
   }
-
-  &.shadow {
-    img {
-      filter: drop-shadow(-3px 3px 0px rgba(0, 0, 0, 0.3));
-
+  
+  @for $dist from 1 through 16 {
+    &.shadow-#{$dist} img {
+      filter: drop-shadow(-#{$dist}px #{$dist}px 0px rgba(0, 0, 0, 0.3));
+  
       &.grey:hover {
-        filter: drop-shadow(-3px 3px 0px rgba(0, 0, 0, 0.3));
+        filter: drop-shadow(-#{$dist}px #{$dist}px 0px rgba(0, 0, 0, 0.3));
       }
+    }
+  }
+  
+  &.shadow img {
+    filter: drop-shadow(-3px 3px 0px rgba(0, 0, 0, 0.3));
+
+    &.grey:hover {
+      filter: drop-shadow(-3px 3px 0px rgba(0, 0, 0, 0.3));
     }
   }
 }

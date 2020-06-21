@@ -24,23 +24,25 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { GameInfoService } from './data/game-info.service';
 import { SaveInfoService } from './data/save-info.service';
 import { ItemButtonComponent } from './item-button/item-button.component';
-import { ItemGridPageComponent } from './item-grid-page/item-grid-page.component';
+import { CollectionPageComponent } from './collection/collection.component';
 import { ItemGridComponent } from './item-grid/item-grid.component';
 import { ItemInfoComponent } from './item-info/item-info.component';
 import { ProbabilityPipe } from './probability.pipe';
 import { TimePipe } from './time.pipe';
+import { FriendshipComponent } from './friendship/friendship.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     ItemButtonComponent,
-    ItemGridPageComponent,
+    CollectionPageComponent,
     DashboardComponent,
     ItemInfoComponent,
     TimePipe,
     ProbabilityPipe,
-    ItemGridComponent
+    ItemGridComponent,
+    FriendshipComponent
   ],
   imports: [
     BrowserModule,

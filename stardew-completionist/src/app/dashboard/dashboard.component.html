@@ -16,26 +16,50 @@
         </ng-container>
         <ng-container matColumnDef="bestGifts">
           <th mat-header-cell *matHeaderCellDef>Best Gifts</th>
-          <td mat-cell *matCellDef="let birthday">
+          <td mat-cell *matCellDef="let birthday" class="best-gifts">
             <app-item-button
               *ngFor="let item of birthday.bestGifts"
               [item]="item"
             ></app-item-button>
           </td>
         </ng-container>
+        <ng-container matColumnDef="hearts">
+          <th mat-header-cell *matHeaderCellDef>Hearts</th>
+          <td mat-cell *matCellDef="let birthday">
+            <ul class="hearts">
+              <img
+                *ngFor="
+                  let i of range(save.relationships.get(birthday.villager).maxHearts || 10, 1)
+                "
+                src="assets/heart-{{
+                  save.relationships.get(birthday.villager).hearts >= i
+                    ? 'filled'
+                    : 'outline'
+                }}.png"
+              />
+            </ul>
+          </td>
+        </ng-container>
 
         <tr
           mat-header-row
-          *matHeaderRowDef="['villager', 'day', 'bestGifts']"
+          *matHeaderRowDef="['villager', 'hearts', 'day', 'bestGifts']"
         ></tr>
         <tr
           mat-row
-          *matRowDef="let row; columns: ['villager', 'day', 'bestGifts']"
+          *matRowDef="
+            let row;
+            columns: ['villager', 'hearts', 'day', 'bestGifts']
+          "
         ></tr>
       </table>
     </mat-card-content>
     <mat-card-footer>
-      <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20, 50]" showFirstLastButtons></mat-paginator>
+      <mat-paginator
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 20, 50]"
+        showFirstLastButtons
+      ></mat-paginator>
     </mat-card-footer>
   </mat-card>
 
@@ -44,7 +68,9 @@
       <mat-card-title>{{ seasonNames.get(save.currentSeason) }}</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <app-item-grid [items]="seasonalItems"></app-item-grid>
+      <div class="seasonal-items">
+        <app-item-button *ngFor="let item of seasonalItems" [item]="item" padding></app-item-button>
+      </div>
     </mat-card-content>
   </mat-card>
 </div>
