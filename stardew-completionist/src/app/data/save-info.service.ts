@@ -39,7 +39,7 @@ export class SaveInfoService implements SaveInfo {
       this.updateSaveFileInfo(window.localStorage.getItem('lastSaveFile'));
     }
 
-    document.querySelector('#file-input').addEventListener('change', async event => {
+    document.querySelector('#file-input')?.addEventListener('change', async event => {
       const input: HTMLInputElement = event.target as HTMLInputElement;
       const xml = await input.files[0].text();
       window.localStorage.setItem('lastSaveFile', xml);
