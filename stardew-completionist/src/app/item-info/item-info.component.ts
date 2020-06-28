@@ -3,7 +3,6 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { categories, GameInfoService, Item, locationNames, weatherNames } from '../data/game-info.service';
 
 @Component({
-  selector: 'app-item-info',
   templateUrl: './item-info.component.html',
   styleUrls: ['./item-info.component.scss']
 })

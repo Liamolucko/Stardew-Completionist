@@ -11,6 +11,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -20,16 +21,18 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CollectionPageComponent } from './collection/collection.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { GameInfoService } from './data/game-info.service';
 import { SaveInfoService } from './data/save-info.service';
+import { FriendshipComponent } from './friendship/friendship.component';
 import { ItemButtonComponent } from './item-button/item-button.component';
-import { CollectionPageComponent } from './collection/collection.component';
 import { ItemGridComponent } from './item-grid/item-grid.component';
 import { ItemInfoComponent } from './item-info/item-info.component';
+import { NGFORAGE_CONFIG_PROVIDER } from './ngforage.config';
 import { ProbabilityPipe } from './probability.pipe';
+import { SaveSelectComponent } from './save-select/save-select.component';
 import { TimePipe } from './time.pipe';
-import { FriendshipComponent } from './friendship/friendship.component';
 
 
 @NgModule({
@@ -42,7 +45,8 @@ import { FriendshipComponent } from './friendship/friendship.component';
     TimePipe,
     ProbabilityPipe,
     ItemGridComponent,
-    FriendshipComponent
+    FriendshipComponent,
+    SaveSelectComponent
   ],
   imports: [
     BrowserModule,
@@ -52,7 +56,7 @@ import { FriendshipComponent } from './friendship/friendship.component';
     MatButtonModule,
     MatIconModule,
     MatDividerModule,
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.serviceWorker }),
     MatGridListModule,
     MatCardModule,
     MatMenuModule,
@@ -63,9 +67,14 @@ import { FriendshipComponent } from './friendship/friendship.component';
     MatDialogModule,
     MatTableModule,
     MatSortModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatSnackBarModule,
+    MatListModule
   ],
-  entryComponents: [ItemInfoComponent],
+  entryComponents: [
+    ItemInfoComponent,
+    SaveSelectComponent
+  ],
   providers: [
     SaveInfoService,
     GameInfoService,
@@ -74,7 +83,8 @@ import { FriendshipComponent } from './friendship/friendship.component';
       useFactory: (gameInfo: GameInfoService) => () => gameInfo.load(),
       deps: [GameInfoService],
       multi: true
-    }],
+    },
+    NGFORAGE_CONFIG_PROVIDER],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

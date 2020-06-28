@@ -1,10 +1,13 @@
 {
-  "name": "stardew-completionist",
-  "version": "0.5.0",
+  "name": "stardew-completionist-src",
+  "version": "0.5.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:electron": "ng build --base-href='./' && rm -r ../electron/site/* && cp -r ./dist/stardew-completionist/* ../electron/site",
+    "build:electron:prod": "ng build -c electron --base-href='./' && rm -r ../electron/site/* && cp -r ./dist/stardew-completionist/* ../electron/site",
+    "deploy": "ng deploy --base-href='/Stardew-Completionist/'",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -23,6 +26,8 @@
     "@angular/platform-browser-dynamic": "^9.1.9",
     "@angular/router": "^9.1.9",
     "@angular/service-worker": "^9.1.9",
+    "localforage": "^1.5.0",
+    "ngforage": "^6.0.0",
     "rxjs": "~6.5.4",
     "tslib": "^1.13.0",
     "zone.js": "~0.10.2"
@@ -47,7 +52,6 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jsdoc": "^27.0.4",
     "eslint-plugin-prefer-arrow": "^1.2.1",
-    "http-server": "^0.12.3",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "^5.0.9",

@@ -29,10 +29,10 @@
             <ul class="hearts">
               <img
                 *ngFor="
-                  let i of range(save.relationships.get(birthday.villager).maxHearts || 10, 1)
+                  let i of range(save.relationships.get(birthday.villager)?.maxHearts || 10, 1)
                 "
                 src="assets/heart-{{
-                  save.relationships.get(birthday.villager).hearts >= i
+                  save.relationships.get(birthday.villager)?.hearts >= i
                     ? 'filled'
                     : 'outline'
                 }}.png"

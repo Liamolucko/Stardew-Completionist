@@ -11,8 +11,10 @@ $item-grid-width: (72px * 10) + 32px;
     "r";
 
   @media only screen and (min-width: 1425px) {
-    grid-template-areas: "g r";
-    grid-template-columns: auto 1fr;
+    &.has-unknown-recipes {
+      grid-template-areas: "g r";
+      grid-template-columns: auto 1fr;
+    }
   }
 
   width: 100%;

@@ -1,141 +1,155 @@
+/// <reference path="./backend.d.ts" />
+
 import { Injectable } from '@angular/core';
-import { ReplaySubject, Observable } from 'rxjs';
+import { NgForage } from 'ngforage';
+import { Observable, ReplaySubject } from 'rxjs';
 import { GameInfoService, Villager } from './game-info.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SaveInfoService implements SaveInfo {
-  currentDay?: number;
-  currentSeason?: number;
-  currentYear?: number;
-  currentDate?: number;
+  get name(): string { return this.currentSave?.name; }
+  get lastSaved(): number { return this.currentSave?.lastSaved; }
 
-  collectedItems?: string[];
-  knownRecipes?: string[];
+  get currentDay(): number { return this.currentSave?.currentDay; }
+  get currentSeason(): number { return this.currentSave?.currentSeason; }
+  get currentYear(): number { return this.currentSave?.currentYear; }
+  get currentDate(): number { return this.currentSave?.currentDate; }
 
-  relationships: Map<string, Relationship>;
+  get collectedItems(): string[] { return this.currentSave?.collectedItems; }
+  get knownRecipes(): string[] { return this.currentSave?.knownRecipes; }
 
-  get data(): SaveInfo {
-    return {
-      currentDay: this.currentDay,
-      currentSeason: this.currentSeason,
-      currentYear: this.currentYear,
-      currentDate: this.currentDate,
-      collectedItems: this.collectedItems,
-      knownRecipes: this.knownRecipes,
-      relationships: this.relationships
-    };
-  }
+  get relationships(): Map<string, Relationship> { return this.currentSave?.relationships; }
+
+  get isElectron(): boolean { return window.backend != null; }
+
+  currentSave?: SaveInfo;
 
   updated: Observable<SaveInfo>;
 
   private updateSubject = new ReplaySubject<SaveInfo>(1);
 
-  constructor(private gameInfo: GameInfoService) {
+  constructor(private gameInfo: GameInfoService, private storage: NgForage) {
     this.updated = this.updateSubject.asObservable();
 
-    if (window.localStorage.getItem('lastSaveFile')) {
-      this.updateSaveFileInfo(window.localStorage.getItem('lastSaveFile'));
-    }
-
-    document.querySelector('#file-input').addEventListener('change', async event => {
-      const input: HTMLInputElement = event.target as HTMLInputElement;
-      const xml = await input.files[0].text();
-      window.localStorage.setItem('lastSaveFile', xml);
-      input.value = null;
-      this.updateSaveFileInfo(xml);
+    void this.storage.getItem('lastSaveFile').then((lastSaveFile: SaveInfo) => {
+      if (lastSaveFile) {
+        this.setSaveFile(lastSaveFile);
+      }
     });
   }
 
-  updateSaveFileInfo(xml: string): void {
+  async getSaveFiles(): Promise<SaveInfo[] | null> {
+    if (window.backend) {
+      const saveFiles = await backend.getSaveFiles();
+      return saveFiles.map(save => this.getSaveFileInfo(save, false));
+    } else {
+      return null;
+    }
+  }
+
+  async updateFromFile(file: File): Promise<void> {
+    const xml = await file.text();
+    void this.storage.setItem('lastSaveFile', this.getSaveFileInfo(xml));
+  }
+
+  getSaveFileInfo(xml: string, updateCurrent = true): SaveInfo {
     const parser = new DOMParser();
-    const xmlDoc: XMLDocument = parser.parseFromString(xml, 'text/xml');
+    const xmlDoc: XMLDocument = parser.parseFromString(xml.trim(), 'text/xml');
 
-    this.currentDay = parseInt(
-      xmlDoc.querySelector('dayOfMonthForSaveGame').textContent, 10
-    );
-    this.currentSeason = parseInt(
-      xmlDoc.querySelector('seasonForSaveGame').textContent, 10
-    );
-    this.currentYear = parseInt(
-      xmlDoc.querySelector('yearForSaveGame').textContent, 10
-    );
-    this.currentDate = this.currentSeason * 28 + this.currentDay;
+    let saveInfo: Partial<SaveInfo>;
+    try {
+      saveInfo = {
+        name: xmlDoc.querySelector('Farmer > name').textContent.trim(),
+        currentDay: parseInt(xmlDoc.querySelector('dayOfMonthForSaveGame').textContent.trim(), 10),
+        currentSeason: parseInt(xmlDoc.querySelector('seasonForSaveGame').textContent.trim(), 10),
+        currentYear: parseInt(xmlDoc.querySelector('yearForSaveGame').textContent.trim(), 10),
+        lastSaved: parseInt(xmlDoc.querySelector('saveTime').textContent.trim(), 10)
+      };
+    } catch {
+      throw new Error('Invalid save file');
+    }
 
-    this.collectedItems = [];
+    saveInfo.currentDate = saveInfo.currentSeason * 28 + saveInfo.currentDay;
+
+    saveInfo.collectedItems = [];
     xmlDoc.querySelector('Farmer > basicShipped').querySelectorAll('item').forEach(item => {
-      this.collectedItems.push(item.querySelector('key').textContent);
+      saveInfo.collectedItems.push(item.querySelector('key').textContent.trim());
     });
     xmlDoc.querySelector('Farmer > mineralsFound').querySelectorAll('item').forEach(item => {
-      this.collectedItems.push(item.querySelector('key').textContent);
+      saveInfo.collectedItems.push(item.querySelector('key').textContent.trim());
     });
     xmlDoc.querySelector('Farmer > recipesCooked').querySelectorAll('item').forEach(item => {
-      this.collectedItems.push(item.querySelector('key').textContent);
+      saveInfo.collectedItems.push(item.querySelector('key').textContent.trim());
     });
     xmlDoc.querySelector('Farmer > fishCaught').querySelectorAll('item').forEach(item => {
-      this.collectedItems.push(item.querySelector('key').textContent);
+      saveInfo.collectedItems.push(item.querySelector('key').textContent.trim());
     });
     xmlDoc.querySelector('Farmer > archaeologyFound').querySelectorAll('item').forEach(item => {
-      this.collectedItems.push(item.querySelector('key').textContent);
+      saveInfo.collectedItems.push(item.querySelector('key').textContent.trim());
     });
 
-    this.knownRecipes = [];
+    saveInfo.knownRecipes = [];
     xmlDoc.querySelector('Farmer > craftingRecipes').querySelectorAll('item').forEach(item => {
-      const recipeName = item.querySelector('key').textContent;
-      const amountMade = parseInt(item.querySelector('value').textContent, 10);
+      const recipeName = item.querySelector('key').textContent.trim();
+      const amountMade = parseInt(item.querySelector('value').textContent.trim(), 10);
       const recipe = this.gameInfo.recipes.get(recipeName);
-      this.knownRecipes.push(recipeName);
-      if (amountMade > 0) { this.collectedItems.push(recipe.result.id); }
+      saveInfo.knownRecipes.push(recipeName);
+      if (amountMade > 0) { saveInfo.collectedItems.push(recipe.result.id); }
     });
     xmlDoc.querySelectorAll('Farmer > cookingRecipes > item').forEach(item => {
-      this.knownRecipes.push(item.querySelector('key').textContent);
+      saveInfo.knownRecipes.push(item.querySelector('key').textContent.trim());
     });
 
 
-    this.gameInfo.villagers = this.gameInfo.villagers.map(villager => ({ ...villager, relationship: undefined }));
-    this.relationships = new Map<string, Relationship>();
-
+    saveInfo.relationships = new Map<string, Relationship>();
     xmlDoc.querySelectorAll('Farmer > friendshipData > item').forEach(relationship => {
       const friendship = relationship.querySelector('value > Friendship');
-      const name = relationship.querySelector('key').textContent;
+      const name = relationship.querySelector('key').textContent.trim();
       const villager = this.gameInfo.villagers.find(value => value.name === name);
-      if (villager != null) {
-        villager.relationship = {
+      if (villager) {
+        saveInfo.relationships.set(name, {
           villager,
-          hearts: parseInt(friendship.querySelector('Points').textContent, 10) / 250,
-          maxHearts: relationship.querySelector('Status').textContent === 'Married' ? 14 : villager.datable ? 8 : 10,
-          giftsThisWeek: parseInt(relationship.querySelector('GiftsThisWeek').textContent, 10)
-        };
-        this.relationships.set(
-          name,
-          villager.relationship
+          hearts: parseInt(friendship.querySelector('Points').textContent.trim(), 10) / 250,
+          maxHearts: relationship.querySelector('Status').textContent.trim() === 'Married' ? 14 : villager.datable ? 8 : 10,
+          giftsThisWeek: parseInt(relationship.querySelector('GiftsThisWeek').textContent.trim(), 10)
+        }
         );
       }
     });
 
-    for (const villager of this.gameInfo.villagers.filter(value => !this.relationships.has(value.name))) {
-      this.relationships.set(villager.name, {
-        villager,
-        hearts: 0,
-        maxHearts: 10,
-        giftsThisWeek: 0
-      });
+    if (updateCurrent) {
+      this.setSaveFile(saveInfo as SaveInfo);
+    }
+
+    return saveInfo as SaveInfo;
+  }
+
+  setSaveFile(save: SaveInfo): void {
+    this.currentSave = save;
+
+    for (const villager of this.gameInfo.villagers) {
       villager.relationship = this.relationships.get(villager.name);
     }
 
-    this.updateSubject.next(this.data);
+    void this.storage.setItem('lastSaveFile', save);
+
+    this.updateSubject.next(save);
   }
 }
 
 export interface SaveInfo {
-  currentDay?: number;
-  currentSeason?: number;
-  currentYear?: number;
-  currentDate?: number;
+  name: string;
+  lastSaved: number;
 
-  collectedItems?: string[];
-  knownRecipes?: string[];
+  currentDay: number;
+  currentSeason: number;
+  currentYear: number;
+  currentDate: number;
+
+  collectedItems: string[];
+  knownRecipes: string[];
 
   relationships: Map<string, Relationship>;
 }

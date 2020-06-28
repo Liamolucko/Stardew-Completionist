@@ -96,19 +96,13 @@ interface _GameInfo {
   crafting: string[];
   bundles: Bundle[];
   villagers: _Villager[];
-  items: {
-    [id: string]: Item;
-  };
-  recipes: {
-    [name: string]: _Recipe;
-  };
+  items: Record<string, Item>;
+  recipes: Record<string, _Recipe>;
 }
 
 interface _Recipe {
   name: string;
-  ingredients: {
-    [id: string]: number;
-  };
+  ingredients: Record<string, number>;
   result: string;
   amount: number;
   recipeSources?: string[];
@@ -165,15 +159,9 @@ export interface Item {
   time?: string;
   weather?: 'sunny' | 'rainy' | 'both';
   water?: 'ocean' | 'freshwater';
-  artifactSpots?: {
-    [location: string]: number;
-  };
-  ingredients?: {
-    [id: string]: number;
-  };
-  monsterDrops?: {
-    [monster: string]: number;
-  };
+  artifactSpots?: Record<string, number>;
+  ingredients?: Record<string, number>;
+  monsterDrops?: Record<string, number>;
   recipeSources: string[];
 }
 
