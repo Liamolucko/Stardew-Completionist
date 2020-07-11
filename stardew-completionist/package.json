@@ -5,9 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build:electron": "ng build --base-href='./' && rm -r ../electron/site/* && cp -r ./dist/stardew-completionist/* ../electron/site",
-    "build:electron:prod": "ng build -c electron --base-href='./' && rm -r ../electron/site/* && cp -r ./dist/stardew-completionist/* ../electron/site",
-    "deploy": "ng deploy --base-href='/Stardew-Completionist/'",
+    "build:electron": "ng build --base-href=./ && rm -r ../electron/site/* && cp -r ./dist/stardew-completionist/* ../electron/site",
+    "build:electron:prod": "ng build -c electron --base-href=./ && rm -r ../electron/site/* && cp -r ./dist/stardew-completionist/* ../electron/site",
+    "deploy": "ng deploy --base-href=/Stardew-Completionist/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

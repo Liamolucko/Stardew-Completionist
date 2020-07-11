@@ -1,9 +1,6 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 
-// It tries to compile json for some reason
-require('electron-compile').addBypassChecker(path => path.endsWith('json'));
-
 function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
@@ -13,7 +10,7 @@ function createWindow() {
       preload: path.join(app.getAppPath(), 'src/backend.js'),
       contextIsolation: true
     },
-    autoHideMenuBar: true,
+    autoHideMenuBar: true
   });
 
   // and load the index.html of the app.

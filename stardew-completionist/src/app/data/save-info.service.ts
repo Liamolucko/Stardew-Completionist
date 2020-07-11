@@ -33,7 +33,7 @@ export class SaveInfoService implements SaveInfo {
   constructor(private gameInfo: GameInfoService, private storage: NgForage) {
     this.updated = this.updateSubject.asObservable();
 
-    void this.storage.getItem('lastSaveFile').then((lastSaveFile: SaveInfo) => {
+    void this.storage.getItem<SaveInfo>('lastSaveFile').then(lastSaveFile => {
       if (lastSaveFile) {
         this.setSaveFile(lastSaveFile);
       }
