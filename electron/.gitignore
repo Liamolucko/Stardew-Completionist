@@ -1,4 +1,1 @@
-.vscode/*
-/node_modules
-/site
-out/
+dist

@@ -1,44 +1,57 @@
 import asyncio
 import json
+import re
+from base64 import b64encode
 from html.parser import HTMLParser
-from itertools import chain, filterfalse
+from io import BytesIO
 from os import mkdir
 from os.path import exists
-from typing import Any, Callable, List, Optional
+from typing import Dict, Generator, List, Optional, Tuple, TypeVar, cast
 
 import httpx
-import regex
 import wikitextparser
 from PIL import Image
 
+from typings import Bundle, BundleItem, Recipe, Villager, MediaWikiResponse, Item
 
-def chunks(lst, n):
-    '''Yield successive n-sized chunks from lst.'''
+T = TypeVar('T')
+
+
+def chunks(lst: List[T], n: int) -> Generator[List[T], None, None]:
+    """Yield successive n-sized chunks from lst."""
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
 
-def parse_dict_text(text: str) -> Optional[dict]:
-    '''Convert string structured as 'key value key value...' to dict'''
+def parse_dict_text(text: str) -> Dict[str, float]:
+    """Convert string structured as 'key value key value...' to dict"""
+    if len(text) == 0:
+        return {}
     split_text = text.split(' ')
-    return {key: float(value) for key, value in chunks(split_text, 2)} if len(split_text) % 2 == 0 else None
+    assert len(split_text) % 2 == 0, f'\'{text}\' is invalid dict text'
+    return {key: float(value) for key, value in chunks(split_text, 2)}
 
 
 class TagRemovalParser(HTMLParser):
+    output: str
+
     def __init__(self):
         super().__init__()
         self.output = ''
 
-    def handle_startendtag(self, tag, attrs):
+    def handle_startendtag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]):
         if tag == 'br':
             self.output += ' '
 
-    def handle_data(self, data):
+    def handle_data(self, data: str):
         self.output += data
 
+    def error(self, message: str):
+        pass
 
-tag_removal_regex = regex.compile(r'<.+?>', regex.V1)
-multiple_space_regex = regex.compile(r'  +', regex.V1)
+
+tag_removal_regex = re.compile(r'<.+?>')
+multiple_space_regex = re.compile(r'  +')
 
 
 async def get_raw_text(wikitext: str, client: httpx.AsyncClient) -> str:
@@ -48,21 +61,22 @@ async def get_raw_text(wikitext: str, client: httpx.AsyncClient) -> str:
         'prop': 'text'
     })
     parser = TagRemovalParser()
-    parser.feed(response.json()['parse']['text'])
+    parser.feed(cast(MediaWikiResponse, response.json())['parse']['text'])
     return multiple_space_regex.sub(' ', tag_removal_regex.sub('', parser.output.strip())).replace('\n\n\n', ': ')
 
 
-list_split_regex = regex.compile(
-    r'(?<=}}) ?(?=\[\[)|(?:(?<=]]|}}) ?|(?<=\)) )(?=\{\{)| (?:•|&bull;) |(?<!^)(?<!>)</?[^\[\]\{\}/]+(?:/>(?!\()|>)(?!<)(?!$)|\n', regex.V1)
+list_split_regex = re.compile(
+    r'(?<=}}) ?(?=\[\[)|(?:(?<=]]|}}) ?|(?<=\)) )(?={{)| (?:•|&bull;) |(?<!^)(?<!>)</?[^\[\]{\}/]+(?:/>(?!\()|>)('
+    r'?!<)(?!$)|\n')
 
 
 async def parse_list(wikitext: str, client: httpx.AsyncClient) -> List[str]:
-    '''
+    """
     Parses lists of sources, locations etc. from the wiki in all the typical ways they are formatted.
-    '''
+    """
     items = list_split_regex.split(wikitext.strip())
 
-    return await asyncio.gather(*(get_raw_text(item, client) for item in items))
+    return cast(List[str], await asyncio.gather(*[get_raw_text(item, client) for item in items]))
 
 
 # Cases where the name of the item differs from the name of the wiki page
@@ -86,80 +100,78 @@ ids = {
     'Jelly (any)': '344',
 }
 with open('ObjectInformation.json') as file:
-    objects = {key: value.split('/')
-               for key, value in json.load(file)['content'].items()}
+    object_data: Dict[str, List[str]] = {object_id: data.split('/') for object_id, data in
+                                         json.load(file)['content'].items()}
 
 with open('BigCraftablesInformation.json') as file:
-    craftables = {key: value.split('/')
-                  for key, value in json.load(file)['content'].items()}
+    craftable_data: Dict[str, List[str]] = {craftable_id: data.split('/') for craftable_id, data in
+                                            json.load(file)['content'].items()}
 
-for key, value in objects.items():
-    ids[value[0]] = key
-for key, value in craftables.items():
-    ids[value[0]] = 'c' + key
-for key, value in title_special_cases.items():
-    ids[value] = key
-
+for item_id, data in object_data.items():
+    ids[data[0]] = item_id
+for item_id, data in craftable_data.items():
+    ids[data[0]] = 'c' + item_id
+for item_id, data in title_special_cases.items():
+    ids[data] = item_id
 
 with open('CookingChannel.json') as file:
-    cooking_episodes = {value.split('/')[0]: int(key)
-                        for key, value in json.load(file)['content'].items()}
+    cooking_episode_ids: Dict[str, int] = {data.split('/')[0]: int(episode_id) for episode_id, data in
+                                           json.load(file)['content'].items()}
 
 with open('CraftingRecipes.json') as file:
-    crafting_recipes = {value.split('/')[2].split(' ')[0]: [key, *value.split('/')]
-                        for key, value in json.load(file)['content'].items()}
+    crafting_recipe_data: Dict[str, List[str]] = {data.split('/')[2].split(' ')[0]: [recipe_name, *data.split('/')]
+                                                  for recipe_name, data in json.load(file)['content'].items()}
 
 with open('CookingRecipes.json') as file:
-    cooking_recipes = {value.split('/')[2].split(' ')[0]: [key, *value.split('/')]
-                       for key, value in json.load(file)['content'].items()}
+    cooking_recipe_data: Dict[str, List[str]] = {data.split('/')[2].split(' ')[0]: [recipe_name, *data.split('/')]
+                                                 for recipe_name, data in json.load(file)['content'].items()}
 
 with open('Fish.json') as file:
-    fish = {key: value.split('/')
-            for key, value in json.load(file)['content'].items()}
+    fish_data: Dict[str, List[str]] = {fish_id: data.split('/') for fish_id, data in json.load(file)['content'].items()}
 
 with open('Monsters.json') as file:
-    monster_drops = {}
-    for monster, chance in json.load(file)['content'].items():
-        drops = parse_dict_text(chance.split('/')[6])
-        for item, chance in drops.items():
-            if item in monster_drops:
-                monster_drops[item][monster] = chance
+    monster_drops: Dict[str, Dict[str, float]] = {}
+    for monster_name, data in json.load(file)['content'].items():
+        drops = parse_dict_text(data.split('/')[6])
+        for item_id, chance in drops.items():
+            if item_id in monster_drops:
+                monster_drops[item_id][monster_name] = chance
             else:
-                monster_drops[item] = {monster: chance}
+                monster_drops[item_id] = {monster_name: chance}
 
 
-async def get_item_info(item_id: str, client: httpx.AsyncClient, craftable=False) -> dict:
-    row: List[str] = craftables[item_id] if craftable else objects[item_id]
+async def get_item_info(item_id: str, client: httpx.AsyncClient, craftable: bool = False) -> Item:
+    row: List[str] = craftable_data[item_id] if craftable else object_data[item_id]
 
-    item = {
+    item = cast(Item, {
         'id': 'c' + item_id if craftable else item_id,
+        'isCraftable': craftable,
         'name': row[0],
         'category': row[3],
         'description': row[4 if craftable else 5]
-    }
+    })
 
     if item['category'] == 'Arch':
         item['artifactSpots'] = parse_dict_text(row[6])
     elif item['category'] == 'Fish -4':
-        if fish[item_id][1] != 'trap':
-            item['time'] = fish[item_id][5].split(' ')
+        if fish_data[item_id][1] != 'trap':
+            item['time'] = [int(time) for time in fish_data[item_id][5].split(' ')]
 
-            item['weather'] = fish[item_id][7]
+            item['weather'] = fish_data[item_id][7]
         else:
-            item['water'] = fish[item_id][4]
+            item['water'] = fish_data[item_id][4]
 
-    if item_id in cooking_recipes:
-        item['ingredients'] = {
-            key: value for key, value in parse_dict_text(cooking_recipes[item_id][1]).items()}
-    elif item_id in crafting_recipes and (crafting_recipes[item_id][4] == 'true') == craftable:
-        item['ingredients'] = {key: value for key, value in parse_dict_text(
-            crafting_recipes[item_id][1]).items()}
+    if item_id in cooking_recipe_data:
+        item['ingredients'] = {item_id: int(amount) for item_id, amount in
+                               parse_dict_text(cooking_recipe_data[item_id][1]).items()}
+    elif item_id in crafting_recipe_data and (crafting_recipe_data[item_id][4] == 'true') == craftable:
+        item['ingredients'] = {item_id: int(amount) for item_id, amount in
+                               parse_dict_text(crafting_recipe_data[item_id][1]).items()}
 
     if item_id in monster_drops and not craftable:
         item['monsterDrops'] = monster_drops[item_id]
 
-    title = title_special_cases[item['id']
-                                ] if item['id'] in title_special_cases else item['name']
+    title = title_special_cases[item['id']] if item['id'] in title_special_cases else item['name']
     response: httpx.Response = await client.get('', params={
         'action': 'query',
         'prop': 'revisions',
@@ -167,26 +179,35 @@ async def get_item_info(item_id: str, client: httpx.AsyncClient, craftable=False
         'redirects': 'true',
         'rvprop': 'content'
     })
-    page = response.json()['query']['pages'][0]
+    page = cast(MediaWikiResponse, response.json())['query']['pages'][0]
 
     if 'missing' not in page:
         title = page['title']
         item['url'] = f'https://stardewvalleywiki.com/{title}'
 
         wikitext = wikitextparser.parse(page['revisions'][0]['content'])
-        infoboxes = [
-            template for template in wikitext.templates if 'Infobox' in template.name]
+        infoboxes = [template for template in wikitext.templates if 'Infobox' in template.name]
         if len(infoboxes) > 0:
             infobox = infoboxes[0]
             if infobox.has_arg('source'):
-                item['sources'] = [source for source in await parse_list(infobox.get_arg('source').value, client) if source != 'Artisan Goods' and not ('monsterDrops' in item and any([monster in source for monster in item['monsterDrops'].keys()]))]
+                item['sources'] = [source for source in
+                                   await parse_list(cast(wikitextparser.Argument, infobox.get_arg('source')).value,
+                                                    client)
+                                   if source != 'Artisan Goods' and not
+                                   ('monsterDrops' in item and any(
+                                       [monster in source for monster in item['monsterDrops'].keys()]))]
             elif infobox.has_arg('os'):
-                item['sources'] = [source for source in await parse_list(infobox.get_arg('os').value, client) if source != 'Artisan Goods' and not ('monsterDrops' in item and any([monster in source for monster in item['monsterDrops'].keys()]))]
+                item['sources'] = [source for source in
+                                   await parse_list(cast(wikitextparser.Argument, infobox.get_arg('os')).value, client)
+                                   if source != 'Artisan Goods' and not
+                                   ('monsterDrops' in item and any(
+                                       [monster in source for monster in item['monsterDrops'].keys()]))]
             if 'sources' in item and item['sources'] == []:
-                item.pop('sources')
+                del item['sources']
 
             if infobox.has_arg('craftingstation'):
-                crafting_station = await get_raw_text(infobox.get_arg('craftingstation').value, client)
+                crafting_station = await get_raw_text(
+                    cast(wikitextparser.Argument, infobox.get_arg('craftingstation')).value, client)
                 if 'sources' in item:
                     if crafting_station not in item['sources']:
                         item['sources'].append(crafting_station)
@@ -194,10 +215,11 @@ async def get_item_info(item_id: str, client: httpx.AsyncClient, craftable=False
                     item['sources'] = [crafting_station]
 
             if infobox.has_arg('location'):
-                item['locations'] = await parse_list(infobox.get_arg('location').value, client)
+                item['locations'] = await parse_list(cast(wikitextparser.Argument, infobox.get_arg('location')).value,
+                                                     client)
 
             if infobox.has_arg('season'):
-                seasons = infobox.get_arg('season').value.strip().lower()
+                seasons = cast(wikitextparser.Argument, infobox.get_arg('season')).value.strip().lower()
                 item['seasons'] = {
                     'spring': 'spring' in seasons,
                     'summer': 'summer' in seasons,
@@ -209,13 +231,16 @@ async def get_item_info(item_id: str, client: httpx.AsyncClient, craftable=False
                         'spring': True,
                         'summer': True,
                         'fall': True,
-                        'winter': True
+                        'winter': True,
                     }
 
             if infobox.has_arg('recipe'):
-                item['recipeSources'] = [source for source in await parse_list(infobox.get_arg('recipe').value.replace('[[File:HeartIconLarge.png|16px|link=]]', '❤'), client) if source != 'Starter']
-                if item['recipeSources'] == []:
-                    item.pop('recipeSources')
+                item['recipeSources'] = [source for source in await parse_list(
+                    cast(wikitextparser.Argument, infobox.get_arg('recipe')).value.replace(
+                        '[[File:HeartIconLarge.png|16px|link=]]', '❤'), client
+                ) if source != 'Starter']
+                if not item['recipeSources']:
+                    del item['recipeSources']
 
     return item
 
@@ -225,65 +250,64 @@ use_title = ['Honey (any)', 'Wine (any)', 'Juice (any)',
 
 
 class ItemTableParser(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.output = []
-        self.in_table = False
-        self.index = -1
+    output: List[List[str]] = []
+    index = -1
+    in_table = False
+    last_title: str
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]):
         attr_dict = dict(attrs)
         if 'class' in attr_dict and attr_dict['class'] == 'wikitable':
             self.in_table = True
             self.index += 1
             self.output.append([])
         elif tag == 'a' and 'title' in attr_dict:
-            self.last_title = attr_dict['title']
+            self.last_title = cast(str, attr_dict['title'])
 
-    def handle_endtag(self, tag):
+    def handle_endtag(self, tag: str):
         if tag == 'table':
             self.in_table = False
 
-    def handle_data(self, data):
+    def handle_data(self, data: str):
         if self.in_table and data.strip() != '':
             name = self.last_title if data in use_title else data
             self.output[self.index].append(ids[name])
 
+    def error(self, message: str):
+        pass
+
 
 with open('Bundles.json') as file:
-    bundles = []
-    for key, value in json.load(file)['content'].items():
-        split = value.split('/')
+    bundles: List[Bundle] = []
+    for bundle_id, data in json.load(file)['content'].items():
+        split: str = data.split('/')
         bundles.append({
             'name': split[0] + ' Bundle',
-            'section': key.split('/')[0],
+            'section': bundle_id.split('/')[0],
             'slots': int(split[4]) if len(split) >= 5 else len(split[2].split(' ')) // 3,
             'items': [
-                {
+                cast(BundleItem, {
                     'id': object_id,
                     'amount': int(count),
                     'quality': int(quality)
-                } for object_id, count, quality in chunks(split[2].split(' '), 3)
-            ]
+                }) for object_id, count, quality in chunks(split[2].split(' '), 3) if object_id != '-1'
+            ],
+            'gold': int(split[2].split(' ')[1]) if split[2].startswith('-1') else 0
         })
 
-
 with open('NPCDispositions.json') as file:
-    npc_dispositions = {key: value.split('/')
-                        for key, value in json.load(file)['content'].items()}
+    npc_dispositions = {name: data.split('/') for name, data in json.load(file)['content'].items()}
 
 with open('NPCGiftTastes.json') as file:
-    content = json.load(file)['content']
+    content: Dict[str, str] = json.load(file)['content']
     universal_loves = content['Universal_Love'].split(' ')
     universal_likes = content['Universal_Like'].split(' ')
     universal_neutral = content['Universal_Neutral'].split(' ')
     universal_dislikes = content['Universal_Dislike'].split(' ')
     universal_hates = content['Universal_Hate'].split(' ')
-    npc_gift_tastes = {key: value.split('/')
-                       for key, value in list(content.items())[5:]}
+    npc_gift_tastes = {name: data.split('/') for name, data in list(content.items())[5:]}
 
-
-seasons = {
+season_IDs = {
     'spring': 0,
     'summer': 1,
     'fall': 2,
@@ -291,36 +315,27 @@ seasons = {
 }
 
 
-def get_villager_info(disposition, gift_taste):
-    villager = {
+def get_villager_info(disposition: List[str], gift_taste: List[str]) -> Villager:
+    villager: Villager = {
         'name': disposition[11],
         'datable': disposition[5] == 'datable',
-        'loves': [item for item in gift_taste[1].split(' ') if item in objects],
-        'likes': [item for item in gift_taste[3].split(' ') if item in objects],
-        'dislikes': [item for item in gift_taste[5].split(' ') if item in objects],
-        'hates': [item for item in gift_taste[7].split(' ') if item in objects],
-        'neutral': [item for item in gift_taste[9].split(' ') if item in objects]
+        'loves': [item for item in gift_taste[1].split(' ') if item in object_data],
+        'likes': [item for item in gift_taste[3].split(' ') if item in object_data],
+        'dislikes': [item for item in gift_taste[5].split(' ') if item in object_data],
+        'hates': [item for item in gift_taste[7].split(' ') if item in object_data],
+        'neutral': [item for item in gift_taste[9].split(' ') if item in object_data]
     }
 
     if len(disposition[8]) > 0:
         birthday = disposition[8].split(' ')
         villager['birthDay'] = int(birthday[1])
-        villager['birthSeason'] = seasons[birthday[0]]
-
-    # custom_preferences = villager['loves'] + villager['likes'] + \
-    #     villager['dislikes'] + villager['hates'] + villager['neutral']
-    # villager['loves'] += [item for item in universal_loves if item not in custom_preferences]
-    # villager['likes'] += [item for item in universal_likes if item not in custom_preferences]
-    # villager['neutral'] += [item for item in universal_neutral if item not in custom_preferences]
-    # villager['dislikes'] += [item for item in universal_dislikes if item not in custom_preferences]
-    # villager['hates'] += [item for item in universal_hates if item not in custom_preferences]
+        villager['birthSeason'] = season_IDs[birthday[0]]
 
     return villager
 
 
 villagers = [get_villager_info(npc_dispositions[villager], npc_gift_tastes[villager])
              for villager in npc_gift_tastes.keys()]
-
 
 object_spritesheet: Image.Image = Image.open('springobjects.png')
 craftable_spritesheet: Image.Image = Image.open('Craftables.png')
@@ -340,14 +355,15 @@ def get_sprite(item_id: str):
 
 
 async def main():
-    async with httpx.AsyncClient(base_url='https://stardewvalleywiki.com/mediawiki/api.php', params={'format': 'json', 'formatversion': 2}, timeout=60) as client:
+    async with httpx.AsyncClient(base_url='https://stardewvalleywiki.com/mediawiki/api.php',
+                                 params={'format': 'json', 'formatversion': 2}, timeout=60) as client:
         response: httpx.Response = await client.get('', params={
             'action': 'parse',
             'page': 'Collections',
             'prop': 'text'
         })
         parser = ItemTableParser()
-        parser.feed(response.json()['parse']['text'])
+        parser.feed(cast(MediaWikiResponse, response.json())['parse']['text'])
 
         # Getting lists from Collections page so they're in the correct order
         items_shipped = parser.output[0] + parser.output[1]
@@ -357,14 +373,14 @@ async def main():
         cooking = parser.output[5]
 
         items = {item['id']: item for item in await asyncio.gather(*(
-            [get_item_info(item_id, client, False) for item_id in objects.keys()] +
-            [get_item_info(item_id, client, True)
-             for item_id in craftables.keys()]))}
+                [get_item_info(item_id, client, False) for item_id in object_data.keys()] +
+                [get_item_info(item_id, client, True)
+                 for item_id in craftable_data.keys()]))}
 
         def get_recipe_info(row: List[str]):
             result = row[3].split(' ')
             item_id = 'c' + result[0] if row[4] == 'true' else result[0]
-            recipe = {
+            recipe: Recipe = {
                 'name': row[0],
                 'result': item_id,
                 'amount': int(result[1]) if len(result) > 1 else 1,
@@ -376,10 +392,10 @@ async def main():
             return recipe
 
         recipes = {recipe['name']: recipe for recipe in
-                   (get_recipe_info(row) for row in [*crafting_recipes.values(), *cooking_recipes.values()])}
+                   (get_recipe_info(row) for row in [*crafting_recipe_data.values(), *cooking_recipe_data.values()])}
 
-        cooking = [cooking_recipes[item][0] for item in cooking]
-        crafting = [recipe[0] for recipe in crafting_recipes.values()]
+        cooking = [cooking_recipe_data[item][0] for item in cooking]
+        crafting = [recipe[0] for recipe in crafting_recipe_data.values()]
 
         output = {
             'shipping': items_shipped,
@@ -394,13 +410,14 @@ async def main():
             'recipes': recipes
         }
 
-        if not exists('./sprites'):
-            mkdir('./sprites')
         for item in items.keys():
-            get_sprite(item).save(f'./sprites/{item}.png')
+            data = BytesIO()
+            get_sprite(item).save(data, 'png')
+            items[item]['imgData'] = 'data:image/png;base64,' + b64encode(data.getvalue()).decode()
 
-        with open('output.json', 'w') as file:
+        with open('../static/game-info.json' if exists('../static') else 'output.json', 'w') as file:
             json.dump(output, file)
+
 
 if __name__ == '__main__':
     asyncio.run(main())
