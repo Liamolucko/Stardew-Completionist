@@ -206,9 +206,8 @@
           </p>
         {/if}
         {#if platformName === 'Windows' || platformName === 'macOS'}
-          Then navigate to your chosen save file and choose
-          <code>SaveGameInfo</code>
-          .
+          Then navigate to your chosen save file and choose the file with the
+          same name as the enclosing folder.
         {/if}
       {:else}
         <p>Please select your save file.</p>

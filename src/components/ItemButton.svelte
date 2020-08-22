@@ -39,8 +39,9 @@
       user-select: none;
 
       &.sprite {
-
         display: inline-block;
+
+        transition: inherit;
 
         margin: auto;
         width: calc(16px * var(--scale));
