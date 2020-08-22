@@ -2,6 +2,10 @@
   "name": "stardew-completionist",
   "productName": "Stardew Completionist",
   "version": "0.7.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Liamolucko/Stardew-Completionist.git"
+  },
   "description": "An app designed to help people 100% Stardew Valley.",
   "main": "electron/dist/index.js",
   "scripts": {

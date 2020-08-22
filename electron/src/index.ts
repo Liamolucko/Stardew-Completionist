@@ -68,6 +68,7 @@ app.on('web-contents-created', (_event, contents) => {
   });
 });
 
+// Use same server for additional windows
 app.on('second-instance', () => {
   createWindow();
 });
