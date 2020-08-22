@@ -1,4 +1,3 @@
-// @ts-ignore
 import { files, shell, timestamp } from '@sapper/service-worker';
 
 const ASSETS = `cache${timestamp}`;

@@ -11,39 +11,43 @@
   import Dialog, { Actions, Content, Title } from '@smui/dialog';
   import IconButton from '@smui/icon-button';
   import List, { Item as ListItem, Text } from '@smui/list';
+  import Textfield from '@smui/textfield';
+  import 'blob-polyfill';
   import { setContext } from 'svelte';
   import backend from '../backend';
   import ItemInfo from '../components/ItemInfo.svelte';
   import type { Item } from '../game-info';
   import save, {
     getSaveFiles,
-    processSaveFile,
     isValidSaveFile,
+    processSaveFile,
   } from '../save-info';
   import type { SaveInfo } from '../save-info';
-  import Textfield from '@smui/textfield';
 
-  const platformName = !process.browser
-    ? null
-    : navigator.platform.startsWith('Win')
-    ? 'Windows'
-    : navigator.platform.startsWith('Mac')
-    ? 'macOS'
-    : navigator.platform.startsWith('Linux')
-    ? 'Linux'
-    : null;
+  const platformName =
+    typeof navigator === 'undefined'
+      ? null
+      : navigator.platform.startsWith('Win')
+      ? 'Windows'
+      : navigator.platform.startsWith('Mac')
+      ? 'macOS'
+      : navigator.platform.startsWith('Linux')
+      ? 'Linux'
+      : null;
 
-  const savesDirPath = !process.browser
-    ? null
-    : navigator.platform.startsWith('Win')
-    ? '%APPDATA%\\StardewValley\\Saves'
-    : '~/.config/StardewValley/Saves';
+  const savesDirPath =
+    typeof navigator === 'undefined'
+      ? null
+      : navigator.platform.startsWith('Win')
+      ? '%APPDATA%\\StardewValley\\Saves'
+      : '~/.config/StardewValley/Saves';
 
-  const savePath = !process.browser
-    ? null
-    : navigator.platform.startsWith('Win')
-    ? '%APPDATA%\\StardewValley\\Saves\\<save>\\SaveGameInfo'
-    : '~/.config/StardewValley/Saves/<save>/SaveGameInfo';
+  const savePath =
+    typeof navigator === 'undefined'
+      ? null
+      : navigator.platform.startsWith('Win')
+      ? '%APPDATA%\\StardewValley\\Saves\\<save>\\SaveGameInfo'
+      : '~/.config/StardewValley/Saves/<save>/SaveGameInfo';
 
   let saveSelectDialog: Dialog;
   let fileInput: HTMLInputElement;
@@ -71,10 +75,12 @@
 
     display: flex;
     flex-flow: row nowrap;
+    align-items: stretch;
+
+    overflow: auto;
 
     .nav-rail {
       width: 56px + 1px;
-      height: 100%;
       padding: 8px 0;
 
       border-right: 1px solid;
@@ -94,6 +100,8 @@
 
         img {
           display: block;
+          image-rendering: crisp-edges;
+          image-rendering: pixelated;
         }
 
         :global(.rail-button) {
@@ -109,13 +117,9 @@
     main {
       flex-grow: 1;
 
-      height: 100%;
-
       overflow: auto;
 
-      background-color: #fafafa;
-
-      &.electron {
+      &.border {
         border-top: 1px solid;
         border-color: rgba(0, 0, 0, 0.12);
       }
@@ -138,9 +142,9 @@
       <IconButton class="material-icons rail-button" href="dashboard">
         dashboard
       </IconButton>
-      {#each ['shipping', 'fish', 'artifacts', 'minerals', 'cooking', 'crafting', 'friendship'] as page}
+      {#each ['shipping', 'fish', 'artifacts', 'minerals', 'cooking', 'crafting', 'bundles', 'friendship'] as page}
         <IconButton class="rail-button" href={page}>
-          <img src="{page}.png" alt="{page} icon" />
+          <img width="24" height="24" src="{page}.png" alt="{page} icon" />
         </IconButton>
       {/each}
     </div>
@@ -153,7 +157,8 @@
     </div>
   </nav>
 
-  <main class:electron={typeof backend !== 'undefined'}>
+  <main
+    class:border={typeof backend !== 'undefined' && /Windows(?: NT)? 10\.0/.test(navigator.userAgent)}>
     <slot />
   </main>
 </div>
@@ -228,7 +233,8 @@
     </Actions>
   {:else}
     {#await saves}
-      <Content>Loading...</Content>
+      <!-- MDC requires a focusable element -->
+      <Content style="outline: none" tabindex="0">Loading...</Content>
     {:then saveOptions}
       <Content>
         <List>
@@ -236,7 +242,7 @@
             <ListItem
               selected={$save !== null && saveOption.id === $save.id}
               on:click={() => {
-                save.set(saveOption.id);
+                save.set(saveOption.id ?? saveOption);
                 saveSelectDialog.close();
               }}>
               <Text>{saveOption.name}</Text>
@@ -244,7 +250,7 @@
           {/each}
         </List>
       </Content>
-    {:catch error}
+    {:catch}
       <Content>
         <p>
           {#if usingCustomDir}

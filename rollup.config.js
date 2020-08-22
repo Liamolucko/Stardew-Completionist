@@ -53,7 +53,7 @@ export default {
 				publicPath: '/client/'
 			}),
 			svelte({
-				preprocess: autoPreprocess({ typescript: { tsconfigFile: 'src/tsconfig.json' } }),
+				preprocess: autoPreprocess(),
 				dev,
 				hydratable: true,
 				emitCss: true
@@ -80,7 +80,7 @@ export default {
 					]
 				]
 			}),
-			typescript({ tsconfig: 'src/tsconfig.json' }),
+			typescript(),
 
 			legacy && babel({
 				extensions: ['.js', '.mjs', '.html', '.svelte'],
@@ -137,7 +137,7 @@ export default {
 				'process.env.NODE_ENV': JSON.stringify(mode)
 			}),
 			svelte({
-				preprocess: autoPreprocess({ typescript: { tsconfigFile: 'src/tsconfig.json' } }),
+				preprocess: autoPreprocess(),
 				generate: 'ssr',
 				dev
 			}),
@@ -167,7 +167,7 @@ export default {
 					]
 				]
 			}),
-			typescript({ tsconfig: 'src/tsconfig.json' })
+			typescript()
 		],
 		external: Object.keys(pkg.dependencies).concat(
 			require('module').builtinModules || Object.keys(process.binding('natives'))

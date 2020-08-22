@@ -1,0 +1,11 @@
+.vscode
+
+.eslintrc.json
+.gitignore
+out
+
+electron
+cypress
+cypress.json
+LICENSE
+README.md

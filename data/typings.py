@@ -75,6 +75,7 @@ class BundleItem(TypedDict):
 class Bundle(TypedDict):
     name: str
     section: str
+    sectionId: int
     slots: int
     items: List[BundleItem]
     gold: int

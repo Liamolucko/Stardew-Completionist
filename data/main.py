@@ -4,7 +4,6 @@ import re
 from base64 import b64encode
 from html.parser import HTMLParser
 from io import BytesIO
-from os import mkdir
 from os.path import exists
 from typing import Dict, Generator, List, Optional, Tuple, TypeVar, cast
 
@@ -284,6 +283,7 @@ with open('Bundles.json') as file:
         bundles.append({
             'name': split[0] + ' Bundle',
             'section': bundle_id.split('/')[0],
+            'sectionId': int(bundle_id.split('/')[1]),
             'slots': int(split[4]) if len(split) >= 5 else len(split[2].split(' ')) // 3,
             'items': [
                 cast(BundleItem, {

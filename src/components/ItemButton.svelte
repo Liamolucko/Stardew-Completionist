@@ -1,11 +1,14 @@
 <script lang="ts">
   import { getContext } from 'svelte';
   import type { Item } from '../game-info';
+  import { qualityNames } from '../names';
 
   export let item: Item;
   export let scale = 2;
   export let shadow: boolean = false;
   export let grey: boolean = false;
+  export let quality = 0;
+  export let quantity = 1;
 
   let dialog = getContext('item-info-dialog');
 
@@ -14,6 +17,7 @@
 
 <style lang="scss">
   button {
+    position: relative; // Make `position: absolute` work for subsequent elements
     display: inline-block;
     background-color: transparent;
     border: none;
@@ -26,40 +30,65 @@
     width: var(--size);
     height: var(--size);
 
+    transition: transform 0.1s ease, filter 0.1s ease;
+
     img {
-      display: inline-block;
-
-      margin: auto;
-      width: calc(16px * var(--scale));
-
-      vertical-align: middle;
-
       image-rendering: crisp-edges;
       image-rendering: pixelated;
 
-      transition: transform 0.1s ease;
-
       user-select: none;
 
-      &.shadow {
-        --drop-dist: calc(1px * var(--scale));
-        filter: drop-shadow(
-          calc(var(--drop-dist) * -1) var(--drop-dist) 0px rgba(0, 0, 0, 0.3)
-        );
+      &.sprite {
+
+        display: inline-block;
+
+        margin: auto;
+        width: calc(16px * var(--scale));
+
+        vertical-align: middle;
+
+        &.shadow {
+          --drop-dist: calc(1px * var(--scale));
+          filter: drop-shadow(
+            calc(var(--drop-dist) * -1) var(--drop-dist) 0px rgba(0, 0, 0, 0.3)
+          );
+        }
+
+        &.grey {
+          filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.3)) saturate(0)
+            brightness(0.7);
+        }
       }
 
-      &.grey {
-        filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.3)) saturate(0)
-          brightness(0.7);
+      &.quality {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+
+        width: calc(6px * var(--scale));
       }
     }
 
-    &:hover img,
-    &:focus img {
+    .quantity {
+      position: absolute;
+      right: calc(-1px * var(--scale));
+      bottom: calc(-1px * var(--scale));
+
+      display: flex;
+      flex-flow: row nowrap;
+      gap: 1px;
+
+      img {
+        width: calc(3.5px * var(--scale));
+      }
+    }
+
+    &:hover,
+    &:focus {
       $hover-scale: 52 / 48;
       transform: scale($hover-scale);
 
-      &.grey.shadow {
+      img.sprite.grey.shadow {
         filter: drop-shadow(
           calc(var(--drop-dist) * -1) var(--drop-dist) 0px rgba(0, 0, 0, 0.3)
         );
@@ -69,14 +98,25 @@
 </style>
 
 <button
-  style="--size: {size}px"
+  style="--size: {size}px; --scale: {scale}"
   on:click={() => {
     dialog.open(item);
   }}>
   <img
+    class="sprite"
     src={item.imgData}
     alt={item.name}
-    style="--scale: {scale}"
     class:grey
     class:shadow />
+  <img
+    class="quality"
+    src="quality-{quality}.png"
+    alt="{qualityNames.get(quality)} quality" />
+  {#if quantity > 1}
+    <div class="quantity">
+      {#each quantity.toString() as char}
+        <img src="numbers/{char}.png" alt={char} />
+      {/each}
+    </div>
+  {/if}
 </button>

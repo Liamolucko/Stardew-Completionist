@@ -1,9 +1,9 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { existsSync as exists } from 'fs';
 import * as path from 'path';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
+if (require('electron-squirrel-startup') || !app.requestSingleInstanceLock()) { // eslint-disable-line global-require
   app.quit();
 } else {
   // Fix CWD
@@ -59,5 +59,15 @@ app.on('activate', () => {
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
+app.on('web-contents-created', (_event, contents) => {
+  contents.on('new-window', (event, url) => {
+    if (!url.startsWith(`http://localhost:${process.env.PORT}`)) {
+      event.preventDefault();
+      shell.openExternal(url);
+    }
+  });
+});
+
+app.on('second-instance', () => {
+  createWindow();
+});

@@ -101,7 +101,7 @@
         img {
           position: relative;
           top: 3px;
-          margin-right: 6px;
+          margin-right: 4px;
         }
       }
     }

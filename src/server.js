@@ -1,11 +1,10 @@
-// @ts-ignore
 import * as sapper from '@sapper/server';
 import compression from 'compression';
 import polka from 'polka';
 import sirv from 'sirv';
 
-const { PORT, NODE_ENV } = process.env;
-const dev = NODE_ENV === 'development';
+const dev = process.env.NODE_ENV === 'development';
+process.env.PORT = process.env.PORT || 9619;
 
 polka() // You can also use Express
 	.use(
@@ -13,6 +12,6 @@ polka() // You can also use Express
 		sirv('static', { dev }),
 		sapper.middleware()
 	)
-	.listen(PORT, err => {
+	.listen(process.env.PORT, err => {
 		if (err) console.log('error', err);
 	});

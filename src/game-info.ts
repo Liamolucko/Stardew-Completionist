@@ -85,6 +85,7 @@ export interface Item {
 export interface Bundle {
   name: string;
   section: string;
+  sectionId: number;
   slots: number;
   items: {
     id: string;
@@ -112,7 +113,7 @@ interface GameInfoModule extends Partial<GameInfo> {
 }
 
 export const gameInfo: GameInfoModule = {
-  async fetch(customFetch = fetch) {
+  async fetch(customFetch = globalThis.fetch) {
     if (this.items == null) {
       const json = await customFetch('game-info.json').then(response => response.json()) as _GameInfo;
 
