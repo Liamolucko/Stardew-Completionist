@@ -10,7 +10,7 @@
   export let quality = 0;
   export let quantity = 1;
 
-  let dialog = getContext('item-info-dialog');
+  let dialog = getContext<{ open(item: Item): void }>('item-info-dialog');
 
   $: size = (item.isCraftable ? 32 : 16) * scale;
 </script>
@@ -105,7 +105,7 @@
   }}>
   <img
     class="sprite"
-    src={item.imgData}
+    src="data:image/png;base64,{item.sprite}"
     alt={item.name}
     class:grey
     class:shadow />

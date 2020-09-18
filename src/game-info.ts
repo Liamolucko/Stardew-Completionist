@@ -1,7 +1,5 @@
-import { seasonNames } from "./names";
-
 // Structure of actual json file
-interface _GameInfo {
+export interface RawGameInfo {
   shipping: string[];
   fish: string[];
   artifacts: string[];
@@ -9,29 +7,25 @@ interface _GameInfo {
   cooking: string[];
   crafting: string[];
   bundles: Bundle[];
-  villagers: _Villager[];
+  villagers: Record<string, RawVillager>;
   items: Record<string, Item>;
-  recipes: Record<string, _Recipe>;
+  recipes: Record<string, RawRecipe>;
 }
 
-interface _Recipe {
+export interface RawRecipe {
   name: string;
   ingredients: Record<string, number>;
   result: string;
   amount: number;
-  recipeSources?: string[];
+  sources?: string[];
 }
 
-interface _Villager {
+export interface RawVillager {
   name: string;
   datable: boolean;
-  loves: string[];
-  likes: string[];
-  neutral: string[];
-  dislikes: string[];
-  hates: string[];
-  birthDay: number;
-  birthSeason: number;
+  bestGifts: string[];
+  birthday: string;
+  birthDate: number;
 }
 
 export interface GameInfo {
@@ -42,19 +36,17 @@ export interface GameInfo {
   cooking: Recipe[];
   crafting: Recipe[];
   bundles: Bundle[];
-  villagers: Villager[];
-  items: Map<string, Item>;
-  recipes: Map<string, Recipe>;
+  villagers: Record<string, Villager>;
+  items: Record<string, Item>;
+  recipes: Record<string, Recipe>;
 }
 
 export interface Recipe {
   name: string;
-  ingredients: {
-    [id: string]: number;
-  };
+  ingredients: Record<string, number>;
   result: Item;
   amount: number;
-  recipeSources?: string[];
+  sources?: string[];
 }
 
 export interface Item {
@@ -63,29 +55,24 @@ export interface Item {
   name: string;
   description: string;
   category: string;
-  url: string;
+  sprite: string;
+  url?: string;
   sources?: string[];
-  seasons?: {
-    spring: boolean;
-    summer: boolean;
-    fall: boolean;
-    winter: boolean;
-  };
+  seasons?: string[];
   locations?: string[];
-  time?: [number, number];
-  weather?: 'sunny' | 'rainy' | 'both';
-  water?: 'ocean' | 'freshwater';
+  time?: string;
+  weather?: string;
+  water?: string;
   artifactSpots?: Record<string, number>;
   ingredients?: Record<string, number>;
   monsterDrops?: Record<string, number>;
-  recipeSources: string[];
-  imgData: string;
+  recipeSources?: string[];
 }
 
 export interface Bundle {
   name: string;
+  id: number;
   section: string;
-  sectionId: number;
   slots: number;
   items: {
     id: string;
@@ -98,11 +85,7 @@ export interface Bundle {
 export interface Villager {
   name: string;
   datable: boolean;
-  loves: Item[];
-  likes: Item[];
-  neutral: Item[];
-  dislikes: Item[];
-  hates: Item[];
+  bestGifts: Item[];
   birthday: string;
   birthDate: number;
 }
@@ -113,31 +96,34 @@ interface GameInfoModule extends Partial<GameInfo> {
 }
 
 export const gameInfo: GameInfoModule = {
-  async fetch(customFetch = globalThis.fetch) {
+  async fetch(this: Required<GameInfoModule>, customFetch = globalThis.fetch) {
     if (this.items == null) {
-      const json = await customFetch('game-info.json').then(response => response.json()) as _GameInfo;
+      const json = await customFetch("game-info.json").then((response) =>
+        response.json()
+      ) as RawGameInfo;
 
-      this.items = new Map(Object.entries(json.items));
-      this.recipes = new Map(Object.entries(json.recipes)
-        .map(([name, recipe]) => [name, { ...recipe, result: this.items.get(recipe.result)! }]));
-      this.shipping = json.shipping.map(id => this.items.get(id)!);
-      this.fish = json.fish.map(id => this.items.get(id)!);
-      this.artifacts = json.artifacts.map(id => this.items.get(id)!);
-      this.minerals = json.minerals.map(id => this.items.get(id)!);
-      this.cooking = json.cooking.map(name => this.recipes.get(name)!);
-      this.crafting = json.crafting.map(name => this.recipes.get(name)!);
+      this.items = json.items;
+      this.recipes = Object.fromEntries(
+        Object.entries(json.recipes)
+          .map(([name, recipe]) => [name, {
+            ...recipe,
+            result: json.items[recipe.result],
+          }]),
+      );
+      this.shipping = json.shipping.map((id) => this.items[id]);
+      this.fish = json.fish.map((id) => this.items[id]);
+      this.artifacts = json.artifacts.map((id) => this.items[id]);
+      this.minerals = json.minerals.map((id) => this.items[id]);
+      this.cooking = json.cooking.map((name) => this.recipes[name]);
+      this.crafting = json.crafting.map((name) => this.recipes[name]);
       this.bundles = json.bundles;
-      this.villagers = json.villagers.map(villager => ({
-        name: villager.name,
-        datable: villager.datable,
-        birthday: `${seasonNames.get(villager.birthSeason)} ${villager.birthDay}`,
-        birthDate: villager.birthSeason * 28 + villager.birthDay,
-        loves: villager.loves.map(id => this.items.get(id)!),
-        likes: villager.likes.map(id => this.items.get(id)!),
-        neutral: villager.neutral.map(id => this.items.get(id)!),
-        dislikes: villager.dislikes.map(id => this.items.get(id)!),
-        hates: villager.hates.map(id => this.items.get(id)!)
-      } as Villager));
+      this.villagers = Object.fromEntries(
+        Object.entries(json.villagers)
+          .map(([name, villager]) => [name, {
+            ...villager,
+            bestGifts: villager.bestGifts.map((id) => this.items[id]),
+          }]),
+      );
     }
 
     return {
@@ -150,20 +136,20 @@ export const gameInfo: GameInfoModule = {
       cooking: this.cooking,
       crafting: this.crafting,
       bundles: this.bundles,
-      villagers: this.villagers
+      villagers: this.villagers,
     };
   },
   ready() {
-    return typeof this.items !== 'undefined'
-      && typeof this.recipes !== 'undefined'
-      && typeof this.shipping !== 'undefined'
-      && typeof this.fish !== 'undefined'
-      && typeof this.artifacts !== 'undefined'
-      && typeof this.minerals !== 'undefined'
-      && typeof this.cooking !== 'undefined'
-      && typeof this.crafting !== 'undefined'
-      && typeof this.bundles !== 'undefined'
-      && typeof this.villagers !== 'undefined';
-  }
+    return typeof this.items !== "undefined" &&
+      typeof this.recipes !== "undefined" &&
+      typeof this.shipping !== "undefined" &&
+      typeof this.fish !== "undefined" &&
+      typeof this.artifacts !== "undefined" &&
+      typeof this.minerals !== "undefined" &&
+      typeof this.cooking !== "undefined" &&
+      typeof this.crafting !== "undefined" &&
+      typeof this.bundles !== "undefined" &&
+      typeof this.villagers !== "undefined";
+  },
 };
 export default gameInfo;

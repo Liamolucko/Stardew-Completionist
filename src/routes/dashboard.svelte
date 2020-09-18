@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import gameInfo from '../game-info';
+  import gameInfo from "../game-info";
 
   export async function preload() {
     return {
@@ -9,13 +9,13 @@
 </script>
 
 <script lang="ts">
-  import DataTable, { Body, Cell, Head, Row } from '@smui/data-table';
-  import { derived } from 'svelte/store';
-  import ItemButton from '../components/ItemButton.svelte';
-  import type { GameInfo, Item } from '../game-info';
-  import { seasonNames } from '../names';
-  import save from '../save-info';
-  import type { SaveInfo } from '../save-info';
+  import DataTable, { Body, Cell, Head, Row } from "@smui/data-table";
+  import { derived } from "svelte/store";
+  import ItemButton from "../components/ItemButton.svelte";
+  import type { GameInfo, Item } from "../game-info";
+  import { seasonNames } from "../names";
+  import save from "../save-info";
+  import type { SaveInfo } from "../save-info";
 
   export let gameInfo: GameInfo;
 
@@ -32,7 +32,7 @@
     ($save: SaveInfo | null, set: (value: Birthday[]) => void) => {
       if ($save !== null) {
         set(
-          gameInfo.villagers
+          Object.values(gameInfo.villagers)
             .sort(
               (a, b) =>
                 ((a.birthDate - $save.currentDate + 112) % 112) -
@@ -45,7 +45,7 @@
               maxHearts:
                 $save.relationships.get(villager.name)?.maxHearts ??
                 (villager.datable ? 8 : 10),
-              bestGifts: villager.loves,
+              bestGifts: villager.bestGifts,
             }))
         );
       }
@@ -59,15 +59,8 @@
         set(
           [...gameInfo.shipping, ...gameInfo.fish].filter(
             (item) =>
-              typeof item.seasons !== 'undefined' &&
-              item.seasons[
-                new Map([
-                  [0, 'spring'],
-                  [1, 'summer'],
-                  [2, 'fall'],
-                  [3, 'winter'],
-                ]).get($save.currentSeason)!
-              ] &&
+              typeof item.seasons !== "undefined" &&
+              item.seasons.includes(["spring", "summer", "fall", "winter"][$save.currentSeason]) &&
               !$save.collectedItems.includes(item.id) &&
               Object.values(item.seasons).filter((value) => value).length < 3
           )
@@ -108,22 +101,22 @@
   }
 
   h1 {
-    @include typography.mdc-typography('headline4');
+    @include typography.mdc-typography("headline4");
   }
 
   h2 {
-    @include typography.mdc-typography('headline6');
+    @include typography.mdc-typography("headline6");
   }
 
   .container {
     display: grid;
     gap: 24px;
     grid-template-areas:
-      'b'
-      's';
+      "b"
+      "s";
 
     @media only screen and (min-width: 1250px) {
-      grid-template-areas: 'b s';
+      grid-template-areas: "b s";
       grid-template-columns: minmax(0, 1fr) auto;
       grid-template-rows: min-content;
     }

@@ -24,6 +24,9 @@
   } from '../save-info';
   import type { SaveInfo } from '../save-info';
 
+  // unused
+  export let segment;
+
   const platformName =
     typeof navigator === 'undefined'
       ? null

@@ -216,14 +216,14 @@ export async function processSaveFile(
                 item.querySelector("value")?.textContent?.trim() ?? "-1",
                 10,
               ) > 0 &&
-            gameInfo.recipes.has(
-              assertQuerySelector(item, "key", errorMessage).textContent!,
-            )
+            assertQuerySelector(item, "key", errorMessage).textContent! in
+              gameInfo.recipes
           )
           .map((item) =>
-            gameInfo.recipes.get(
-              assertQuerySelector(item, "key", errorMessage).textContent!,
-            )!.result.id
+            gameInfo
+              .recipes[
+              assertQuerySelector(item, "key", errorMessage).textContent!
+            ].result.id
           ),
       ),
     knownRecipes: [
@@ -245,9 +245,7 @@ export async function processSaveFile(
           const name = assertQuerySelector(relationship, "key", errorMessage)
             .textContent!.trim();
 
-          const villager = gameInfo.villagers.find((value) =>
-            value.name === name
-          );
+          const villager = gameInfo.villagers[name]
 
           if (typeof villager !== "undefined") {
             return [name, {

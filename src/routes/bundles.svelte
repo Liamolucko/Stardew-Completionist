@@ -1,8 +1,8 @@
 <script context="module" lang="ts">
-  import _gameInfo from '../game-info';
-  import type { Bundle, Item } from '../game-info';
-  import { derived } from 'svelte/store';
-  import save from '../save-info';
+  import _gameInfo from "../game-info";
+  import type { Bundle, Item } from "../game-info";
+  import { derived } from "svelte/store";
+  import save from "../save-info";
 
   export async function preload() {
     const gameInfo = await _gameInfo.fetch(this.fetch);
@@ -14,9 +14,9 @@
 </script>
 
 <script lang="ts">
-  import type { GameInfo } from '../game-info';
-  import ItemButton from '../components/ItemButton.svelte';
-  import type { Readable } from 'svelte/store';
+  import type { GameInfo } from "../game-info";
+  import ItemButton from "../components/ItemButton.svelte";
+  import type { Readable } from "svelte/store";
 
   export let gameInfo: GameInfo;
   const sections: Readable<Record<
@@ -38,23 +38,22 @@
           {
             ...bundle,
             items: bundle.items
-              .filter((item) => gameInfo.items.has(item.id))
+              .filter((item) => item.id in gameInfo.items)
               .map((item, i) => ({
                 ...item,
-                ...gameInfo.items.get(item.id),
+                ...gameInfo.items[item.id],
                 completed:
                   $save !== null &&
-                  $save.bundleCompletion.has(bundle.sectionId) &&
-                  $save.bundleCompletion.get(bundle.sectionId)![i],
+                  $save.bundleCompletion.has(bundle.id) &&
+                  $save.bundleCompletion.get(bundle.id)?.[i],
               })),
             completedItems: bundle.items
               .filter(
                 ({ id }, i) =>
-                  ($save?.bundleCompletion.get(bundle.sectionId)?.[i] ??
-                    true) &&
-                  gameInfo.items.has(id)
+                  ($save?.bundleCompletion.get(bundle.id)?.[i] ?? true) &&
+                  gameInfo.items[id]
               )
-              .map(({ id }) => gameInfo.items.get(id)),
+              .map(({ id }) => gameInfo.items[id]),
           },
         ],
       }),
@@ -81,7 +80,7 @@
         display: inline-block;
         width: max-content;
 
-        @include typography.mdc-typography('headline6');
+        @include typography.mdc-typography("headline6");
       }
     }
 
@@ -177,7 +176,7 @@
           <h5>{bundle.name}</h5>
           {#if bundle.gold > 0}
             {#if $save !== null && $save.bundleCompletion
-                .get(bundle.sectionId)
+                .get(bundle.id)
                 .some((e) => e)}
               <div class="completed material-icons">check</div>
             {:else}

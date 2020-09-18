@@ -12,7 +12,6 @@
         | "artifacts"
         | "minerals"
         | "cooking"
-        | "bundles"
         | "crafting";
     };
     query: Record<string, string | boolean>;
@@ -24,7 +23,6 @@
         "artifacts",
         "minerals",
         "cooking",
-        "bundles",
         "crafting",
       ].includes(page.params.collection)
     ) {
@@ -46,6 +44,7 @@
       return {
         title: categoryNames.get(page.params.collection),
         items: gameInfo[page.params.collection],
+        recipes: undefined,
       };
     }
   }
@@ -115,6 +114,12 @@
         }
       }
     }
+
+    .source-list {
+      margin: 0;
+      padding: 0;
+      list-style-position: inside;
+    }
   }
 </style>
 
@@ -153,12 +158,12 @@
               <ItemButton
                 item={recipe.result}
                 scale={recipe.result.isCraftable ? 1 : 2} />
-              {recipe.name}
+              <span style="padding-left: 8px">{recipe.name}</span>
             </Cell>
             <Cell>
-              {#if typeof recipe.recipeSources !== 'undefined'}
-                <ul>
-                  {#each recipe.recipeSources as source}
+              {#if typeof recipe.sources !== 'undefined'}
+                <ul class="source-list">
+                  {#each recipe.sources as source}
                     <li>{source}</li>
                   {/each}
                 </ul>

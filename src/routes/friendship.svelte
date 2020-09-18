@@ -1,5 +1,5 @@
 <script context="module">
-  import gameInfo from '../game-info';
+  import gameInfo from "../game-info";
 
   export async function preload() {
     return {
@@ -9,35 +9,30 @@
 </script>
 
 <script lang="ts">
-  import DataTable, { Body, Cell, Head, Row } from '@smui/data-table';
-  import { derived } from 'svelte/store';
-  import ItemButton from '../components/ItemButton.svelte';
-  import type { GameInfo, Villager } from '../game-info';
-  import save from '../save-info';
-  import type { Relationship } from '../save-info';
+  import DataTable, { Body, Cell, Head, Row } from "@smui/data-table";
+  import { derived } from "svelte/store";
+  import ItemButton from "../components/ItemButton.svelte";
+  import type { GameInfo, Villager } from "../game-info";
+  import save from "../save-info";
+  import type { Relationship } from "../save-info";
 
   export let gameInfo: GameInfo;
 
-  let villagers = derived<typeof save, (Villager & Partial<Relationship>)[]>(
+  let villagers = derived<typeof save, (Villager & Relationship)[]>(
     save,
-    ($save) => {
-      if ($save === null) {
-        return gameInfo.villagers;
-      } else {
-        return gameInfo.villagers
-          .map((villager) => ({
-            ...villager,
+    ($save) =>
+      Object.values(gameInfo.villagers)
+        .map((villager) => ({
+          ...villager,
 
-            // These will be overriden by relationship, but will serve as backup if they haven't yet been met
-            hearts: 0,
-            maxHearts: villager.datable ? 8 : 10,
-            giftsThisWeek: 0,
+          // These will be overriden by relationship, but will serve as backup if they haven't yet been met
+          hearts: 0,
+          maxHearts: villager.datable ? 8 : 10,
+          giftsThisWeek: 0,
 
-            ...$save.relationships.get(villager.name),
-          }))
-          .sort((a, b) => a.hearts - b.hearts);
-      }
-    }
+          ...$save?.relationships.get(villager.name),
+        }))
+        .sort((a, b) => a.hearts - b.hearts)
   );
 </script>
 
@@ -45,7 +40,7 @@
   @use '@material/typography/mixins' as typography;
 
   h1 {
-    @include typography.mdc-typography('headline4');
+    @include typography.mdc-typography("headline4");
 
     margin: 20px 20px 0.5em;
   }
@@ -111,7 +106,7 @@
         <Cell>{villager.birthday}</Cell>
         <Cell>
           <div class="best-gifts">
-            {#each villager.loves as item}
+            {#each villager.bestGifts as item}
               <ItemButton {item} scale={item.isCraftable ? 1 : 2} />
             {/each}
           </div>

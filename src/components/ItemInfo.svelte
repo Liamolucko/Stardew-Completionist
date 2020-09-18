@@ -9,13 +9,6 @@
   function calcProbability(probability: number): number {
     return Math.round((probability + Number.EPSILON) * 10000000) / 100000;
   }
-
-  function formatTime(time: number) {
-    const hour = ((time % 1200) + (time % 1200 === 0 ? 1200 : 0)).toString();
-    const half = Math.floor(time / 1200) % 2 === 0 ? 'AM' : 'PM';
-
-    return `${hour.slice(0, -2)}:${hour.slice(-2)}${half}`;
-  }
 </script>
 
 <style lang="scss">
@@ -113,7 +106,7 @@
     <div class="header">
       <img
         class="dialog-icon"
-        src={item.imgData}
+        src="data:image/png;base64,{item.sprite}"
         alt={item.name}
         height={item.isCraftable ? 64 : 48} />
       {item.name}
@@ -127,25 +120,25 @@
       <div class="mdc-card section section seasons">
         <h2>Seasons</h2>
         <ul>
-          {#if item.seasons.spring}
+          {#if item.seasons.includes('spring')}
             <li>
               <img src="spring.png" alt="Spring" />
               Spring
             </li>
           {/if}
-          {#if item.seasons.summer}
+          {#if item.seasons.includes('summer')}
             <li>
               <img src="summer.png" alt="Summer" />
               Summer
             </li>
           {/if}
-          {#if item.seasons.fall}
+          {#if item.seasons.includes('fall')}
             <li>
               <img src="fall.png" alt="Fall" />
               Fall
             </li>
           {/if}
-          {#if item.seasons.winter}
+          {#if item.seasons.includes('winter')}
             <li>
               <img src="winter.png" alt="Winter" />
               Winter
@@ -192,7 +185,7 @@
         <ul>
           {#each Object.entries(item.ingredients) as [id, quantity]}
             <li>
-              {categories.get(id) || gameInfo.items.get(id).name}
+              {categories.get(id) || gameInfo.items[id].name}
               {#if quantity > 1}× {quantity}{/if}
             </li>
           {/each}
@@ -217,8 +210,8 @@
             <li>{location}</li>
           {/each}
         </ul>
-        {#if typeof item.time !== 'undefined' && !(item.time[0] === 600 && item.time[1] === 2600)}
-          <p>{formatTime(item.time[0])} – {formatTime(item.time[1])}</p>
+        {#if typeof item.time !== 'undefined' && item.time !== '6AM – 2AM'}
+          <p>{item.time}</p>
         {/if}
         {#if typeof item.weather !== 'undefined' && item.weather !== 'both'}
           <p>
