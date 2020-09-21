@@ -12828,7 +12828,6 @@ function isDirectory(handle) {
 }
 async function getSaveFiles(dir) {
     var e_1, _a;
-    const parser = new DOMParser();
     if (typeof backend !== "undefined" &&
         (typeof dir === "string" || typeof dir === "undefined")) {
         if (typeof dir !== "undefined")
@@ -22350,29 +22349,29 @@ var App = /*#__PURE__*/function (_SvelteComponentDev) {
 var ignore = [];
 var components = [{
   js: function js() {
-    return import('./index.1edde0dc.js');
+    return import('./index.e5721826.js');
   },
-  css: ["legacy/client.571d1962.css"]
+  css: ["legacy/client.b16d389e.css"]
 }, {
   js: function js() {
-    return import('./friendship.4d869849.js');
+    return import('./friendship.fff2c17d.js');
   },
-  css: ["legacy/friendship.4d869849.css","legacy/client.571d1962.css","legacy/ItemButton.08f1891e.css"]
+  css: ["legacy/friendship.fff2c17d.css","legacy/client.b16d389e.css","legacy/ItemButton.fb6b8f7c.css"]
 }, {
   js: function js() {
-    return import('./dashboard.ce8a099b.js');
+    return import('./dashboard.949e5fa5.js');
   },
-  css: ["legacy/dashboard.ce8a099b.css","legacy/client.571d1962.css","legacy/ItemButton.08f1891e.css"]
+  css: ["legacy/dashboard.949e5fa5.css","legacy/client.b16d389e.css","legacy/ItemButton.fb6b8f7c.css"]
 }, {
   js: function js() {
-    return import('./bundles.869c7829.js');
+    return import('./bundles.482dc33a.js');
   },
-  css: ["legacy/bundles.869c7829.css","legacy/client.571d1962.css","legacy/ItemButton.08f1891e.css"]
+  css: ["legacy/bundles.482dc33a.css","legacy/client.b16d389e.css","legacy/ItemButton.fb6b8f7c.css"]
 }, {
   js: function js() {
-    return import('./[collection].9b0fd1af.js');
+    return import('./[collection].e2fec8c4.js');
   },
-  css: ["legacy/[collection].9b0fd1af.css","legacy/client.571d1962.css","legacy/ItemButton.08f1891e.css"]
+  css: ["legacy/[collection].e2fec8c4.css","legacy/client.b16d389e.css","legacy/ItemButton.fb6b8f7c.css"]
 }];
 var routes = function (d) {
   return [{
