@@ -1,6 +1,6 @@
-import { r as regenerator, at as categoryNames, g as gameInfo, _ as _inherits, a as _getPrototypeOf, b as _possibleConstructorReturn, c as _classCallCheck, i as init, s as safe_not_equal, d as _assertThisInitialized, e as dispatch_dev, h as _createClass, S as SvelteComponentDev, M as validate_each_argument, j as validate_store, k as component_subscribe, v as validate_slots, L as save, q as create_component, B as claim_component, G as mount_component, I as transition_in, J as transition_out, K as destroy_component, o as space, p as element, t as text, u as query_selector_all, w as detach_dev, x as claim_space, y as claim_element, z as children, A as claim_text, C as attr_dev, D as add_location, aq as toggle_class, E as insert_dev, F as append_dev, H as _slicedToArray, T as set_data_dev, O as group_outros, P as check_outros, Q as destroy_each, N as empty, ar as set_style } from './client.b7b62724.js';
-import { D as DataTable, B as Body, C as Cell, H as Head, R as Row } from './Cell.ac80353a.js';
-import { I as ItemButton } from './ItemButton.9bc3d38a.js';
+import { r as regenerator, as as categoryNames, g as gameInfo, _ as _inherits, a as _getPrototypeOf, b as _possibleConstructorReturn, c as _classCallCheck, i as init, d as _assertThisInitialized, e as dispatch_dev, h as _createClass, S as SvelteComponentDev, L as validate_each_argument, s as safe_not_equal, l as create_component, x as claim_component, C as mount_component, E as transition_in, F as transition_out, G as destroy_component, j as space, k as element, t as text, q as query_selector_all, m as detach_dev, o as claim_space, p as claim_element, u as children, w as claim_text, y as attr_dev, z as add_location, ap as toggle_class, A as insert_dev, B as append_dev, D as _slicedToArray, T as set_data_dev, P as check_outros, Q as destroy_each, H as validate_store, I as component_subscribe, v as validate_slots, M as save, O as group_outros, N as empty, aq as set_style } from './client.0d706e59.js';
+import { D as DataTable, H as Head, B as Body, C as Cell, R as Row } from './Cell.991fd8b3.js';
+import { I as ItemButton } from './ItemButton.edb2494c.js';
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
@@ -23,7 +23,7 @@ function get_each_context_2(ctx, list, i) {
   var child_ctx = ctx.slice();
   child_ctx[11] = list[i];
   return child_ctx;
-} // (404:6) {#each items as item}
+} // (405:6) {#each items as item}
 
 
 function create_each_block_2(ctx) {
@@ -99,11 +99,11 @@ function create_each_block_2(ctx) {
     block: block,
     id: create_each_block_2.name,
     type: "each",
-    source: "(404:6) {#each items as item}",
+    source: "(405:6) {#each items as item}",
     ctx: ctx
   });
   return block;
-} // (414:2) {#if typeof recipes !== 'undefined' && $save !== null}
+} // (415:2) {#if typeof recipes !== 'undefined' && $save !== null}
 
 
 function create_if_block(ctx) {
@@ -162,11 +162,11 @@ function create_if_block(ctx) {
     block: block,
     id: create_if_block.name,
     type: "if",
-    source: "(414:2) {#if typeof recipes !== 'undefined' && $save !== null}",
+    source: "(415:2) {#if typeof recipes !== 'undefined' && $save !== null}",
     ctx: ctx
   });
   return block;
-} // (418:10) <Cell>
+} // (419:10) <Cell>
 
 
 function create_default_slot_8(ctx) {
@@ -189,11 +189,11 @@ function create_default_slot_8(ctx) {
     block: block,
     id: create_default_slot_8.name,
     type: "slot",
-    source: "(418:10) <Cell>",
+    source: "(419:10) <Cell>",
     ctx: ctx
   });
   return block;
-} // (419:10) <Cell>
+} // (420:10) <Cell>
 
 
 function create_default_slot_7(ctx) {
@@ -216,11 +216,11 @@ function create_default_slot_7(ctx) {
     block: block,
     id: create_default_slot_7.name,
     type: "slot",
-    source: "(419:10) <Cell>",
+    source: "(420:10) <Cell>",
     ctx: ctx
   });
   return block;
-} // (417:8) <Row>
+} // (418:8) <Row>
 
 
 function create_default_slot_6(ctx) {
@@ -314,11 +314,11 @@ function create_default_slot_6(ctx) {
     block: block,
     id: create_default_slot_6.name,
     type: "slot",
-    source: "(417:8) <Row>",
+    source: "(418:8) <Row>",
     ctx: ctx
   });
   return block;
-} // (416:6) <Head>
+} // (417:6) <Head>
 
 
 function create_default_slot_5(ctx) {
@@ -377,11 +377,11 @@ function create_default_slot_5(ctx) {
     block: block,
     id: create_default_slot_5.name,
     type: "slot",
-    source: "(416:6) <Head>",
+    source: "(417:6) <Head>",
     ctx: ctx
   });
   return block;
-} // (425:12) <Cell>
+} // (426:12) <Cell>
 
 
 function create_default_slot_4(ctx) {
@@ -425,7 +425,7 @@ function create_default_slot_4(ctx) {
     },
     h: function hydrate() {
       set_style(span, "padding-left", "8px");
-      add_location(span, file, 428, 14, 11079);
+      add_location(span, file, 429, 14, 11133);
     },
     m: function mount(target, anchor) {
       mount_component(itembutton, target, anchor);
@@ -472,11 +472,11 @@ function create_default_slot_4(ctx) {
     block: block,
     id: create_default_slot_4.name,
     type: "slot",
-    source: "(425:12) <Cell>",
+    source: "(426:12) <Cell>",
     ctx: ctx
   });
   return block;
-} // (432:14) {#if typeof recipe.sources !== 'undefined'}
+} // (433:14) {#if typeof recipe.sources !== 'undefined'}
 
 
 function create_if_block_1(ctx) {
@@ -515,8 +515,8 @@ function create_if_block_1(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(ul, "class", "source-list svelte-2mjhej");
-      add_location(ul, file, 432, 16, 11245);
+      attr_dev(ul, "class", "source-list svelte-s6iv62");
+      add_location(ul, file, 433, 16, 11299);
     },
     m: function mount(target, anchor) {
       insert_dev(target, ul, anchor);
@@ -566,11 +566,11 @@ function create_if_block_1(ctx) {
     block: block,
     id: create_if_block_1.name,
     type: "if",
-    source: "(432:14) {#if typeof recipe.sources !== 'undefined'}",
+    source: "(433:14) {#if typeof recipe.sources !== 'undefined'}",
     ctx: ctx
   });
   return block;
-} // (434:18) {#each recipe.sources as source}
+} // (435:18) {#each recipe.sources as source}
 
 
 function create_each_block_1(ctx) {
@@ -593,7 +593,7 @@ function create_each_block_1(ctx) {
       this.h();
     },
     h: function hydrate() {
-      add_location(li, file, 434, 20, 11341);
+      add_location(li, file, 435, 20, 11395);
     },
     m: function mount(target, anchor) {
       insert_dev(target, li, anchor);
@@ -614,11 +614,11 @@ function create_each_block_1(ctx) {
     block: block,
     id: create_each_block_1.name,
     type: "each",
-    source: "(434:18) {#each recipe.sources as source}",
+    source: "(435:18) {#each recipe.sources as source}",
     ctx: ctx
   });
   return block;
-} // (431:12) <Cell>
+} // (432:12) <Cell>
 
 
 function create_default_slot_3(ctx) {
@@ -664,11 +664,11 @@ function create_default_slot_3(ctx) {
     block: block,
     id: create_default_slot_3.name,
     type: "slot",
-    source: "(431:12) <Cell>",
+    source: "(432:12) <Cell>",
     ctx: ctx
   });
   return block;
-} // (424:10) <Row>
+} // (425:10) <Row>
 
 
 function create_default_slot_2(ctx) {
@@ -767,11 +767,11 @@ function create_default_slot_2(ctx) {
     block: block,
     id: create_default_slot_2.name,
     type: "slot",
-    source: "(424:10) <Row>",
+    source: "(425:10) <Row>",
     ctx: ctx
   });
   return block;
-} // (423:8) {#each recipes.filter((recipe) => !$save.knownRecipes.includes(recipe.name)) as recipe}
+} // (424:8) {#each recipes.filter((recipe) => !$save.knownRecipes.includes(recipe.name)) as recipe}
 
 
 function create_each_block(ctx) {
@@ -830,11 +830,11 @@ function create_each_block(ctx) {
     block: block,
     id: create_each_block.name,
     type: "each",
-    source: "(423:8) {#each recipes.filter((recipe) => !$save.knownRecipes.includes(recipe.name)) as recipe}",
+    source: "(424:8) {#each recipes.filter((recipe) => !$save.knownRecipes.includes(recipe.name)) as recipe}",
     ctx: ctx
   });
   return block;
-} // (422:6) <Body>
+} // (423:6) <Body>
 
 
 function create_default_slot_1(ctx) {
@@ -948,11 +948,11 @@ function create_default_slot_1(ctx) {
     block: block,
     id: create_default_slot_1.name,
     type: "slot",
-    source: "(422:6) <Body>",
+    source: "(423:6) <Body>",
     ctx: ctx
   });
   return block;
-} // (415:4) <DataTable>
+} // (416:4) <DataTable>
 
 
 function create_default_slot(ctx) {
@@ -1046,7 +1046,7 @@ function create_default_slot(ctx) {
     block: block,
     id: create_default_slot.name,
     type: "slot",
-    source: "(415:4) <DataTable>",
+    source: "(416:4) <DataTable>",
     ctx: ctx
   });
   return block;
@@ -1145,19 +1145,19 @@ function create_fragment(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(h2, "class", "svelte-2mjhej");
-      add_location(h2, file, 401, 4, 10317);
-      attr_dev(div0, "class", "item-grid svelte-2mjhej");
-      add_location(div0, file, 402, 4, 10338);
-      attr_dev(div1, "class", "mdc-card mdc-card--outlined grid-card svelte-2mjhej");
-      add_location(div1, file, 400, 2, 10261);
-      attr_dev(div2, "class", "container svelte-2mjhej");
+      attr_dev(h2, "class", "svelte-s6iv62");
+      add_location(h2, file, 402, 4, 10371);
+      attr_dev(div0, "class", "item-grid svelte-s6iv62");
+      add_location(div0, file, 403, 4, 10392);
+      attr_dev(div1, "class", "mdc-card mdc-card--outlined grid-card svelte-s6iv62");
+      add_location(div1, file, 401, 2, 10315);
+      attr_dev(div2, "class", "container svelte-s6iv62");
       toggle_class(div2, "has-unknown-recipes", typeof
       /*recipes*/
       ctx[2] !== "undefined" &&
       /*$save*/
       ctx[3] !== null);
-      add_location(div2, file, 397, 0, 10154);
+      add_location(div2, file, 398, 0, 10208);
     },
     m: function mount(target, anchor) {
       insert_dev(target, t0, anchor);
@@ -1393,6 +1393,10 @@ function instance($$self, $$props, $$invalidate) {
   component_subscribe($$self, save, function ($$value) {
     return $$invalidate(3, $save = $$value);
   });
+  var _$$props$$$slots = $$props.$$slots,
+      slots = _$$props$$$slots === void 0 ? {} : _$$props$$$slots,
+      $$scope = $$props.$$scope;
+  validate_slots("U5Bcollectionu5D", slots, []);
   var title = $$props.title;
   var items = $$props.items;
   var recipes = $$props.recipes;
@@ -1400,10 +1404,6 @@ function instance($$self, $$props, $$invalidate) {
   Object.keys($$props).forEach(function (key) {
     if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn("<U5Bcollectionu5D> was created with unknown prop '".concat(key, "'"));
   });
-  var _$$props$$$slots = $$props.$$slots,
-      $$slots = _$$props$$$slots === void 0 ? {} : _$$props$$$slots,
-      $$scope = $$props.$$scope;
-  validate_slots("U5Bcollectionu5D", $$slots, []);
 
   var func = function func(recipe) {
     return !$save.knownRecipes.includes(recipe.name);

@@ -1,4 +1,4 @@
-import { _ as _inherits, a as _getPrototypeOf, b as _possibleConstructorReturn, c as _classCallCheck, i as init, s as safe_not_equal, d as _assertThisInitialized, e as dispatch_dev, h as _createClass, S as SvelteComponentDev, ab as getContext, v as validate_slots, ap as qualityNames, M as validate_each_argument, p as element, y as claim_element, z as children, w as detach_dev, C as attr_dev, D as add_location, E as insert_dev, Q as destroy_each, o as space, x as claim_space, aq as toggle_class, ar as set_style, F as append_dev, aj as listen_dev, H as _slicedToArray, n as noop } from './client.b7b62724.js';
+import { _ as _inherits, a as _getPrototypeOf, b as _possibleConstructorReturn, c as _classCallCheck, i as init, s as safe_not_equal, d as _assertThisInitialized, e as dispatch_dev, h as _createClass, S as SvelteComponentDev, v as validate_slots, aa as getContext, ao as qualityNames, L as validate_each_argument, k as element, p as claim_element, u as children, m as detach_dev, y as attr_dev, z as add_location, A as insert_dev, Q as destroy_each, j as space, o as claim_space, ap as toggle_class, aq as set_style, B as append_dev, ai as listen_dev, D as _slicedToArray, n as noop } from './client.0d706e59.js';
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
@@ -9,7 +9,7 @@ function get_each_context(ctx, list, i) {
   var child_ctx = ctx.slice();
   child_ctx[9] = list[i];
   return child_ctx;
-} // (85:2) {#if quantity > 1}
+} // (87:2) {#if quantity > 1}
 
 
 function create_if_block(ctx) {
@@ -48,8 +48,8 @@ function create_if_block(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(div, "class", "quantity svelte-1pvmnbw");
-      add_location(div, file, 85, 4, 2104);
+      attr_dev(div, "class", "quantity svelte-9u963z");
+      add_location(div, file, 87, 4, 2138);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div, anchor);
@@ -99,11 +99,11 @@ function create_if_block(ctx) {
     block: block,
     id: create_if_block.name,
     type: "if",
-    source: "(85:2) {#if quantity > 1}",
+    source: "(87:2) {#if quantity > 1}",
     ctx: ctx
   });
   return block;
-} // (87:6) {#each quantity.toString() as char}
+} // (89:6) {#each quantity.toString() as char}
 
 
 function create_each_block(ctx) {
@@ -130,8 +130,8 @@ function create_each_block(ctx) {
       attr_dev(img, "alt", img_alt_value =
       /*char*/
       ctx[9]);
-      attr_dev(img, "class", "svelte-1pvmnbw");
-      add_location(img, file, 87, 8, 2177);
+      attr_dev(img, "class", "svelte-9u963z");
+      add_location(img, file, 89, 8, 2211);
     },
     m: function mount(target, anchor) {
       insert_dev(target, img, anchor);
@@ -161,7 +161,7 @@ function create_each_block(ctx) {
     block: block,
     id: create_each_block.name,
     type: "each",
-    source: "(87:6) {#each quantity.toString() as char}",
+    source: "(89:6) {#each quantity.toString() as char}",
     ctx: ctx
   });
   return block;
@@ -172,6 +172,7 @@ function create_fragment(ctx) {
   var img0;
   var img0_src_value;
   var img0_alt_value;
+  var img0_width_value;
   var t0;
   var img1;
   var img1_src_value;
@@ -195,13 +196,17 @@ function create_fragment(ctx) {
     l: function claim(nodes) {
       button = claim_element(nodes, "BUTTON", {
         style: true,
+        width: true,
+        height: true,
         class: true
       });
       var button_nodes = children(button);
       img0 = claim_element(button_nodes, "IMG", {
         class: true,
         src: true,
-        alt: true
+        alt: true,
+        width: true,
+        height: true
       });
       t0 = claim_space(button_nodes);
       img1 = claim_element(button_nodes, "IMG", {
@@ -215,36 +220,45 @@ function create_fragment(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(img0, "class", "sprite svelte-1pvmnbw");
+      attr_dev(img0, "class", "sprite svelte-9u963z");
       if (img0.src !== (img0_src_value = "data:image/png;base64," +
       /*item*/
       ctx[0].sprite)) attr_dev(img0, "src", img0_src_value);
       attr_dev(img0, "alt", img0_alt_value =
       /*item*/
       ctx[0].name);
+      attr_dev(img0, "width", img0_width_value = 16 *
+      /*scale*/
+      ctx[1]);
+      attr_dev(img0, "height",
+      /*size*/
+      ctx[6]);
       toggle_class(img0, "grey",
       /*grey*/
       ctx[3]);
       toggle_class(img0, "shadow",
       /*shadow*/
       ctx[2]);
-      add_location(img0, file, 74, 2, 1846);
-      attr_dev(img1, "class", "quality svelte-1pvmnbw");
+      add_location(img0, file, 74, 2, 1839);
+      attr_dev(img1, "class", "quality svelte-9u963z");
       if (img1.src !== (img1_src_value = "quality-" +
       /*quality*/
       ctx[4] + ".png")) attr_dev(img1, "src", img1_src_value);
       attr_dev(img1, "alt", img1_alt_value = "" + (qualityNames.get(
       /*quality*/
       ctx[4]) + " quality"));
-      add_location(img1, file, 80, 2, 1973);
-      set_style(button, "--size",
-      /*size*/
-      ctx[6] + "px");
+      add_location(img1, file, 82, 2, 2007);
       set_style(button, "--scale",
       /*scale*/
       ctx[1]);
-      attr_dev(button, "class", "svelte-1pvmnbw");
-      add_location(button, file, 69, 0, 1742);
+      attr_dev(button, "width",
+      /*size*/
+      ctx[6]);
+      attr_dev(button, "height",
+      /*size*/
+      ctx[6]);
+      attr_dev(button, "class", "svelte-9u963z");
+      add_location(button, file, 67, 0, 1722);
     },
     m: function mount(target, anchor) {
       insert_dev(target, button, anchor);
@@ -279,6 +293,22 @@ function create_fragment(ctx) {
       /*item*/
       ctx[0].name)) {
         attr_dev(img0, "alt", img0_alt_value);
+      }
+
+      if (dirty &
+      /*scale*/
+      2 && img0_width_value !== (img0_width_value = 16 *
+      /*scale*/
+      ctx[1])) {
+        attr_dev(img0, "width", img0_width_value);
+      }
+
+      if (dirty &
+      /*size*/
+      64) {
+        attr_dev(img0, "height",
+        /*size*/
+        ctx[6]);
       }
 
       if (dirty &
@@ -329,19 +359,27 @@ function create_fragment(ctx) {
       }
 
       if (dirty &
-      /*size*/
-      64) {
-        set_style(button, "--size",
-        /*size*/
-        ctx[6] + "px");
-      }
-
-      if (dirty &
       /*scale*/
       2) {
         set_style(button, "--scale",
         /*scale*/
         ctx[1]);
+      }
+
+      if (dirty &
+      /*size*/
+      64) {
+        attr_dev(button, "width",
+        /*size*/
+        ctx[6]);
+      }
+
+      if (dirty &
+      /*size*/
+      64) {
+        attr_dev(button, "height",
+        /*size*/
+        ctx[6]);
       }
     },
     i: noop,
@@ -364,6 +402,10 @@ function create_fragment(ctx) {
 }
 
 function instance($$self, $$props, $$invalidate) {
+  var _$$props$$$slots = $$props.$$slots,
+      slots = _$$props$$$slots === void 0 ? {} : _$$props$$$slots,
+      $$scope = $$props.$$scope;
+  validate_slots("ItemButton", slots, []);
   var item = $$props.item;
   var _$$props$scale = $$props.scale,
       scale = _$$props$scale === void 0 ? 2 : _$$props$scale;
@@ -380,10 +422,6 @@ function instance($$self, $$props, $$invalidate) {
   Object.keys($$props).forEach(function (key) {
     if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn("<ItemButton> was created with unknown prop '".concat(key, "'"));
   });
-  var _$$props$$$slots = $$props.$$slots,
-      $$slots = _$$props$$$slots === void 0 ? {} : _$$props$$$slots,
-      $$scope = $$props.$$scope;
-  validate_slots("ItemButton", $$slots, []);
 
   var click_handler = function click_handler() {
     dialog.open(item);

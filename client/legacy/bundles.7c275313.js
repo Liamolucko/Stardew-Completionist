@@ -1,6 +1,6 @@
-import { r as regenerator, g as gameInfo, _ as _inherits, a as _getPrototypeOf, b as _possibleConstructorReturn, c as _classCallCheck, i as init, s as safe_not_equal, d as _assertThisInitialized, e as dispatch_dev, h as _createClass, S as SvelteComponentDev, M as validate_each_argument, j as validate_store, k as component_subscribe, l as derived, v as validate_slots, L as save, m as globals, p as element, t as text, o as space, y as claim_element, z as children, A as claim_text, w as detach_dev, x as claim_space, C as attr_dev, D as add_location, E as insert_dev, F as append_dev, T as set_data_dev, I as transition_in, O as group_outros, J as transition_out, P as check_outros, Q as destroy_each, u as query_selector_all, H as _slicedToArray, R as _toConsumableArray, N as empty, ar as set_style, n as noop, q as create_component, B as claim_component, G as mount_component, K as destroy_component } from './client.b7b62724.js';
+import { r as regenerator, g as gameInfo, _ as _inherits, a as _getPrototypeOf, b as _possibleConstructorReturn, c as _classCallCheck, i as init, d as _assertThisInitialized, e as dispatch_dev, h as _createClass, S as SvelteComponentDev, L as validate_each_argument, s as safe_not_equal, k as element, t as text, j as space, p as claim_element, u as children, w as claim_text, m as detach_dev, o as claim_space, y as attr_dev, z as add_location, A as insert_dev, B as append_dev, T as set_data_dev, E as transition_in, F as transition_out, P as check_outros, Q as destroy_each, q as query_selector_all, D as _slicedToArray, H as validate_store, I as component_subscribe, v as validate_slots, J as derived, M as save, K as globals, O as group_outros, R as _toConsumableArray, N as empty, aq as set_style, n as noop, l as create_component, x as claim_component, C as mount_component, G as destroy_component } from './client.0d706e59.js';
 import { _ as _defineProperty } from './defineProperty.b786bad4.js';
-import { I as ItemButton } from './ItemButton.9bc3d38a.js';
+import { I as ItemButton } from './ItemButton.edb2494c.js';
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
@@ -31,7 +31,7 @@ function get_each_context(ctx, list, i) {
   child_ctx[4] = list[i][0];
   child_ctx[5] = list[i][1];
   return child_ctx;
-} // (443:10) {:else}
+} // (444:10) {:else}
 
 
 function create_else_block_1(ctx) {
@@ -108,11 +108,11 @@ function create_else_block_1(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(div, "class", "slots svelte-o2ajxv");
+      attr_dev(div, "class", "slots svelte-kcimv1");
       set_style(div, "--slots",
       /*bundle*/
       ctx[8].slots);
-      add_location(div, file, 443, 12, 11801);
+      add_location(div, file, 444, 12, 11850);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div, anchor);
@@ -226,11 +226,11 @@ function create_else_block_1(ctx) {
     block: block,
     id: create_else_block_1.name,
     type: "else",
-    source: "(443:10) {:else}",
+    source: "(444:10) {:else}",
     ctx: ctx
   });
   return block;
-} // (435:10) {#if bundle.gold > 0}
+} // (436:10) {#if bundle.gold > 0}
 
 
 function create_if_block(ctx) {
@@ -288,11 +288,11 @@ function create_if_block(ctx) {
     block: block,
     id: create_if_block.name,
     type: "if",
-    source: "(435:10) {#if bundle.gold > 0}",
+    source: "(436:10) {#if bundle.gold > 0}",
     ctx: ctx
   });
   return block;
-} // (447:18) {#if $save !== null && bundle.completedItems.length > i}
+} // (448:18) {#if $save !== null && bundle.completedItems.length > i}
 
 
 function create_if_block_3(ctx) {
@@ -348,11 +348,11 @@ function create_if_block_3(ctx) {
     block: block,
     id: create_if_block_3.name,
     type: "if",
-    source: "(447:18) {#if $save !== null && bundle.completedItems.length > i}",
+    source: "(448:18) {#if $save !== null && bundle.completedItems.length > i}",
     ctx: ctx
   });
   return block;
-} // (445:14) {#each [...Array(bundle.slots).keys()] as i}
+} // (446:14) {#each [...Array(bundle.slots).keys()] as i}
 
 
 function create_each_block_3(ctx) {
@@ -384,8 +384,8 @@ function create_each_block_3(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(span, "class", "slot svelte-o2ajxv");
-      add_location(span, file, 445, 16, 11928);
+      attr_dev(span, "class", "slot svelte-kcimv1");
+      add_location(span, file, 446, 16, 11977);
     },
     m: function mount(target, anchor) {
       insert_dev(target, span, anchor);
@@ -441,11 +441,11 @@ function create_each_block_3(ctx) {
     block: block,
     id: create_each_block_3.name,
     type: "each",
-    source: "(445:14) {#each [...Array(bundle.slots).keys()] as i}",
+    source: "(446:14) {#each [...Array(bundle.slots).keys()] as i}",
     ctx: ctx
   });
   return block;
-} // (455:12) {:else}
+} // (456:12) {:else}
 
 
 function create_else_block_2(ctx) {
@@ -491,8 +491,8 @@ function create_else_block_2(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(div, "class", "options svelte-o2ajxv");
-      add_location(div, file, 455, 14, 12368);
+      attr_dev(div, "class", "options svelte-kcimv1");
+      add_location(div, file, 456, 14, 12417);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div, anchor);
@@ -568,11 +568,11 @@ function create_else_block_2(ctx) {
     block: block,
     id: create_else_block_2.name,
     type: "else",
-    source: "(455:12) {:else}",
+    source: "(456:12) {:else}",
     ctx: ctx
   });
   return block;
-} // (453:12) {#if $save !== null && bundle.items.every((item) => item.completed)}
+} // (454:12) {#if $save !== null && bundle.items.every((item) => item.completed)}
 
 
 function create_if_block_2(ctx) {
@@ -594,8 +594,8 @@ function create_if_block_2(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(div, "class", "completed material-icons svelte-o2ajxv");
-      add_location(div, file, 453, 14, 12284);
+      attr_dev(div, "class", "completed material-icons svelte-kcimv1");
+      add_location(div, file, 454, 14, 12333);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div, anchor);
@@ -612,11 +612,11 @@ function create_if_block_2(ctx) {
     block: block,
     id: create_if_block_2.name,
     type: "if",
-    source: "(453:12) {#if $save !== null && bundle.items.every((item) => item.completed)}",
+    source: "(454:12) {#if $save !== null && bundle.items.every((item) => item.completed)}",
     ctx: ctx
   });
   return block;
-} // (457:16) {#each bundle.items.filter((item) => !item.completed) as item}
+} // (458:16) {#each bundle.items.filter((item) => !item.completed) as item}
 
 
 function create_each_block_2(ctx) {
@@ -684,11 +684,11 @@ function create_each_block_2(ctx) {
     block: block,
     id: create_each_block_2.name,
     type: "each",
-    source: "(457:16) {#each bundle.items.filter((item) => !item.completed) as item}",
+    source: "(458:16) {#each bundle.items.filter((item) => !item.completed) as item}",
     ctx: ctx
   });
   return block;
-} // (440:12) {:else}
+} // (441:12) {:else}
 
 
 function create_else_block(ctx) {
@@ -710,8 +710,8 @@ function create_else_block(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(div, "class", "not-completed material-icons svelte-o2ajxv");
-      add_location(div, file, 440, 14, 11699);
+      attr_dev(div, "class", "not-completed material-icons svelte-kcimv1");
+      add_location(div, file, 441, 14, 11748);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div, anchor);
@@ -725,11 +725,11 @@ function create_else_block(ctx) {
     block: block,
     id: create_else_block.name,
     type: "else",
-    source: "(440:12) {:else}",
+    source: "(441:12) {:else}",
     ctx: ctx
   });
   return block;
-} // (436:12) {#if $save !== null && $save.bundleCompletion                 .get(bundle.id)                 .some((e) => e)}
+} // (437:12) {#if $save !== null && $save.bundleCompletion                 .get(bundle.id)                 .some((e) => e)}
 
 
 function create_if_block_1(ctx) {
@@ -751,8 +751,8 @@ function create_if_block_1(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(div, "class", "completed material-icons svelte-o2ajxv");
-      add_location(div, file, 438, 14, 11615);
+      attr_dev(div, "class", "completed material-icons svelte-kcimv1");
+      add_location(div, file, 439, 14, 11664);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div, anchor);
@@ -766,11 +766,11 @@ function create_if_block_1(ctx) {
     block: block,
     id: create_if_block_1.name,
     type: "if",
-    source: "(436:12) {#if $save !== null && $save.bundleCompletion                 .get(bundle.id)                 .some((e) => e)}",
+    source: "(437:12) {#if $save !== null && $save.bundleCompletion                 .get(bundle.id)                 .some((e) => e)}",
     ctx: ctx
   });
   return block;
-} // (432:6) {#each bundles as bundle}
+} // (433:6) {#each bundles as bundle}
 
 
 function create_each_block_1(ctx) {
@@ -822,10 +822,10 @@ function create_each_block_1(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(h5, "class", "svelte-o2ajxv");
-      add_location(h5, file, 433, 10, 11423);
-      attr_dev(div, "class", "bundle mdc-card mdc-card--outlined svelte-o2ajxv");
-      add_location(div, file, 432, 8, 11364);
+      attr_dev(h5, "class", "svelte-kcimv1");
+      add_location(h5, file, 434, 10, 11472);
+      attr_dev(div, "class", "bundle mdc-card mdc-card--outlined svelte-kcimv1");
+      add_location(div, file, 433, 8, 11413);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div, anchor);
@@ -881,11 +881,11 @@ function create_each_block_1(ctx) {
     block: block,
     id: create_each_block_1.name,
     type: "each",
-    source: "(432:6) {#each bundles as bundle}",
+    source: "(433:6) {#each bundles as bundle}",
     ctx: ctx
   });
   return block;
-} // (429:2) {#each Object.entries($sections) as [name, bundles]}
+} // (430:2) {#each Object.entries($sections) as [name, bundles]}
 
 
 function create_each_block(ctx) {
@@ -950,10 +950,10 @@ function create_each_block(ctx) {
       this.h();
     },
     h: function hydrate() {
-      attr_dev(h1, "class", "svelte-o2ajxv");
-      add_location(h1, file, 429, 4, 11282);
-      attr_dev(div, "class", "section svelte-o2ajxv");
-      add_location(div, file, 430, 4, 11302);
+      attr_dev(h1, "class", "svelte-kcimv1");
+      add_location(h1, file, 430, 4, 11331);
+      attr_dev(div, "class", "section svelte-kcimv1");
+      add_location(div, file, 431, 4, 11351);
     },
     m: function mount(target, anchor) {
       insert_dev(target, h1, anchor);
@@ -1041,7 +1041,7 @@ function create_each_block(ctx) {
     block: block,
     id: create_each_block.name,
     type: "each",
-    source: "(429:2) {#each Object.entries($sections) as [name, bundles]}",
+    source: "(430:2) {#each Object.entries($sections) as [name, bundles]}",
     ctx: ctx
   });
   return block;
@@ -1096,8 +1096,8 @@ function create_fragment(ctx) {
     },
     h: function hydrate() {
       document.title = "Bundles | Stardew Completionist";
-      attr_dev(div, "class", "container svelte-o2ajxv");
-      add_location(div, file, 427, 0, 11199);
+      attr_dev(div, "class", "container svelte-kcimv1");
+      add_location(div, file, 428, 0, 11248);
     },
     m: function mount(target, anchor) {
       insert_dev(target, t, anchor);
@@ -1260,6 +1260,10 @@ function instance($$self, $$props, $$invalidate) {
   component_subscribe($$self, save, function ($$value) {
     return $$invalidate(1, $save = $$value);
   });
+  var _$$props$$$slots = $$props.$$slots,
+      slots = _$$props$$$slots === void 0 ? {} : _$$props$$$slots,
+      $$scope = $$props.$$scope;
+  validate_slots("Bundles", slots, []);
   var gameInfo$1 = $$props.gameInfo;
   var sections = derived(save, function ($save) {
     return gameInfo$1.bundles.reduce(function (acc, bundle) {
@@ -1296,10 +1300,6 @@ function instance($$self, $$props, $$invalidate) {
   Object_1.keys($$props).forEach(function (key) {
     if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn("<Bundles> was created with unknown prop '".concat(key, "'"));
   });
-  var _$$props$$$slots = $$props.$$slots,
-      $$slots = _$$props$$$slots === void 0 ? {} : _$$props$$$slots,
-      $$scope = $$props.$$scope;
-  validate_slots("Bundles", $$slots, []);
 
   $$self.$$set = function ($$props) {
     if ("gameInfo" in $$props) $$invalidate(3, gameInfo$1 = $$props.gameInfo);
