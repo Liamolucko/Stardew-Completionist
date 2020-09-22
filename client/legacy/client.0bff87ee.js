@@ -22643,23 +22643,23 @@ var App = /*#__PURE__*/function (_SvelteComponentDev) {
 var ignore = [];
 var components = [{
   js: function js() {
-    return Promise.all([import('./index.67e05008.js'), __inject_styles(["client-86beaaa9.css"])]).then(function(x) { return x[0]; });
+    return Promise.all([import('./index.bb925aca.js'), __inject_styles(["client-86beaaa9.css"])]).then(function(x) { return x[0]; });
   }
 }, {
   js: function js() {
-    return Promise.all([import('./friendship.6d51aed1.js'), __inject_styles(["client-86beaaa9.css","ItemButton-cb104a32.css","friendship-3e2e68dc.css"])]).then(function(x) { return x[0]; });
+    return Promise.all([import('./friendship.8d1b08f3.js'), __inject_styles(["client-86beaaa9.css","ItemButton-cb104a32.css","friendship-3e2e68dc.css"])]).then(function(x) { return x[0]; });
   }
 }, {
   js: function js() {
-    return Promise.all([import('./dashboard.736685e1.js'), __inject_styles(["client-86beaaa9.css","ItemButton-cb104a32.css","dashboard-f5ec6bc4.css"])]).then(function(x) { return x[0]; });
+    return Promise.all([import('./dashboard.14bdf6f5.js'), __inject_styles(["client-86beaaa9.css","ItemButton-cb104a32.css","dashboard-f5ec6bc4.css"])]).then(function(x) { return x[0]; });
   }
 }, {
   js: function js() {
-    return Promise.all([import('./bundles.7c275313.js'), __inject_styles(["client-86beaaa9.css","ItemButton-cb104a32.css","bundles-79c3cfce.css"])]).then(function(x) { return x[0]; });
+    return Promise.all([import('./bundles.1693c30a.js'), __inject_styles(["client-86beaaa9.css","ItemButton-cb104a32.css","bundles-79c3cfce.css"])]).then(function(x) { return x[0]; });
   }
 }, {
   js: function js() {
-    return Promise.all([import('./[collection].6fb98bad.js'), __inject_styles(["client-86beaaa9.css","ItemButton-cb104a32.css","[collection]-35c7d02a.css"])]).then(function(x) { return x[0]; });
+    return Promise.all([import('./[collection].913c7db3.js'), __inject_styles(["client-86beaaa9.css","ItemButton-cb104a32.css","[collection]-35c7d02a.css"])]).then(function(x) { return x[0]; });
   }
 }];
 var routes = function (d) {
