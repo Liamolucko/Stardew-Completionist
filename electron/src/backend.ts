@@ -19,40 +19,29 @@ switch (process.platform) {
     break;
 }
 
-async function getSaveIDs(url = savesDir): Promise<string[] | null> {
-  if (url === null) return null;
-
-  return await readdir(url)
-    .catch(() => {
-      throw new Error(`'${url}' is not a directory`);
-    });
-}
-
-async function getSaveFile(id: string) {
-  return readFile(path.join(savesDir, id, id), { encoding: "utf-8" });
-}
-
 contextBridge.exposeInMainWorld("backend", {
-  async chooseFolder(defaultPath?: string) {
-    return await dialog.showOpenDialog(
-      { properties: ["openDirectory"], defaultPath },
-    ).then((value) => value.filePaths[0] ?? null);
+  chooseFolder(defaultPath?: string) {
+    return dialog.showOpenDialog({
+      properties: ["openDirectory"],
+      defaultPath,
+    }).then((value) => value.filePaths[0] ?? null);
   },
 
-  getSaveFile,
+  getSaveInfo(id: string) {
+    return readFile(path.join(savesDir, id, "SaveGameInfo"), {
+      encoding: "utf-8",
+    });
+  },
 
-  async getSaveFiles() {
-    const ids = await getSaveIDs(savesDir);
-    if (ids === null) throw Error("No saves directory found");
+  getSaveFile(id: string) {
+    return readFile(path.join(savesDir, id, id), { encoding: "utf-8" });
+  },
 
-    return await Promise.all(ids.map(async (id) => ({
-      id: path.parse(id).name,
-      data: await getSaveFile(id).catch(() => null),
-    }))).then((saves) =>
-      saves.filter((save): save is { id: string; data: string } =>
-        save.data !== null
-      )
-    );
+  listSaveFiles(url = savesDir): Promise<string[]> {
+    return readdir(url)
+      .catch(() => {
+        throw new Error(`'${url}' is not a directory`);
+      });
   },
 
   async watchSaveFile(id: string) {

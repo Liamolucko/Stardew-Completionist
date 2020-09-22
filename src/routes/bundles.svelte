@@ -2,7 +2,7 @@
   import _gameInfo from "../game-info";
   import type { Bundle, Item } from "../game-info";
   import { derived } from "svelte/store";
-  import save from "../save-info";
+  import save from "../save";
 
   export async function preload() {
     const gameInfo = await _gameInfo.fetch(this.fetch);

@@ -13,8 +13,8 @@
   import { derived } from "svelte/store";
   import ItemButton from "../components/ItemButton.svelte";
   import type { GameInfo, Villager } from "../game-info";
-  import save from "../save-info";
-  import type { Relationship } from "../save-info";
+  import save from "../save";
+  import type { Relationship } from "../save";
 
   export let gameInfo: GameInfo;
 

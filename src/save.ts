@@ -5,8 +5,19 @@ import backend from "./backend";
 import _gameInfo from "./game-info";
 import { assert } from "./util";
 
+/** Metadata about a save file */
 export interface SaveInfo {
-  id: string | null;
+  /** With the Electron backend, the save file ID. With the Native Filesystem API, the handle to the save file's directory.  */
+  handle: string | FileSystemDirectoryHandle;
+
+  name: string;
+  lastSaved: number;
+
+  valid: boolean;
+}
+
+export interface SaveGame {
+  handle: string | FileSystemDirectoryHandle | null;
 
   name: string;
   lastSaved: number;
@@ -30,24 +41,26 @@ export interface Relationship {
   giftsThisWeek: number;
 }
 
-const _save = writable<SaveInfo | null>(null);
+export type Handle = string | FileSystemDirectoryHandle;
+
+const _save = writable<SaveGame | null>(null);
 let unsubscribeFromLast: () => void;
 export const save = {
   subscribe: _save.subscribe,
-  set(save: SaveInfo | string): void {
-    if (typeof save === "string") {
-      if (typeof unsubscribeFromLast !== "undefined") unsubscribeFromLast();
-      if (typeof backend === "undefined") {
-        throw Error("Cannot use save ID in web version");
-      }
+  set(save: SaveGame): void {
+    if (typeof save.handle === "string" && typeof backend !== "undefined") {
+      unsubscribeFromLast?.();
 
-      backend.watchSaveFile(save).then((store) =>
-        store.subscribe(async (data) => {
+      backend.watchSaveFile(save.handle).then((store) =>
+        store.subscribe(async (file) => {
+          const data = new DOMParser().parseFromString(file.trim(), "text/xml");
           if (isValidSaveFile(data)) {
-            this.set(await processSaveFile({ id: save, data }));
+            const newSave = await processSaveFile({ handle: save.handle!, data });
+            localForage.setItem("lastSaveFile", newSave);
+            _save.set(newSave);
           }
         })
-      );
+      ).then((unsubscriber) => unsubscribeFromLast = unsubscriber);
     } else {
       localForage.setItem("lastSaveFile", save);
       _save.set(save);
@@ -56,37 +69,30 @@ export const save = {
 };
 
 export function isValidSaveFile(
-  file: string | { id: string; data: string } | XMLDocument,
+  file: XMLDocument,
 ): boolean {
-  const save =
-    (file instanceof XMLDocument ? file : new DOMParser().parseFromString(
-      (typeof file === "string" ? file : file.data).trim(),
-      "text/xml",
-    )).querySelector("SaveGame");
+  const farmer = file.querySelector("Farmer") ??
+    file.querySelector("SaveGame > player");
 
-  if (save === null) return false;
+  if (farmer === null) return false;
 
-  return save.querySelector("player > name") !== null &&
-    save.querySelector("player > cookingRecipes") !== null &&
-    save.querySelector("player > craftingRecipes") !== null &&
-    save.querySelector("player > basicShipped") !== null &&
-    save.querySelector("player > mineralsFound") !== null &&
-    save.querySelector("player > recipesCooked") !== null &&
-    save.querySelector("player > archaeologyFound") !== null &&
-    save.querySelector("player > fishCaught") !== null &&
-    save.querySelector("player > friendshipData") !== null &&
-    save.querySelector("dayOfMonth") !== null &&
-    save.querySelector("player > seasonForSaveGame") !== null &&
-    save.querySelector("year") !== null &&
-    save.querySelector("player > saveTime") !== null &&
-    Array.from(save.querySelectorAll("locations > GameLocation")).find((el) =>
-        el.getAttribute("xsi:type") == "CommunityCenter"
-      ) !== null;
+  return farmer.querySelector("name") !== null &&
+    farmer.querySelector("cookingRecipes") !== null &&
+    farmer.querySelector("craftingRecipes") !== null &&
+    farmer.querySelector("basicShipped") !== null &&
+    farmer.querySelector("mineralsFound") !== null &&
+    farmer.querySelector("recipesCooked") !== null &&
+    farmer.querySelector("archaeologyFound") !== null &&
+    farmer.querySelector("fishCaught") !== null &&
+    farmer.querySelector("friendshipData") !== null &&
+    farmer.querySelector("dayOfMonthForSaveGame") !== null &&
+    farmer.querySelector("seasonForSaveGame") !== null &&
+    farmer.querySelector("yearForSaveGame") !== null &&
+    farmer.querySelector("saveTime") !== null;
 }
 
-// TODO: switch to other element of save file (so i can get community center data)
 function getSaveFileData(
-  file: string | { id: string; data: string } | XMLDocument,
+  file: { handle: Handle; data: XMLDocument } | XMLDocument,
 ): {
   name: Element;
   cookingRecipes: Element;
@@ -103,11 +109,8 @@ function getSaveFileData(
   lastSaved: Element;
   bundles: Element[];
 } {
-  const save =
-    (file instanceof XMLDocument ? file : new DOMParser().parseFromString(
-      (typeof file === "string" ? file : file.data).trim(),
-      "text/xml",
-    )).querySelector("SaveGame");
+  const save = (file instanceof XMLDocument ? file : file.data)
+    .querySelector("SaveGame");
   if (save === null) throw Error("Invalid save file");
 
   const data = {
@@ -134,9 +137,11 @@ function getSaveFileData(
   if (Object.values(data).some((item) => item === null)) {
     throw Error(
       `Invalid save file ${
-        typeof file !== "string" && !(file instanceof XMLDocument)
-          ? file.id
-          : save.querySelector("name")?.textContent?.trim()
+        file instanceof XMLDocument
+          ? save.querySelector("name")?.textContent?.trim()
+          : typeof file.handle === "string"
+          ? file.handle
+          : file.handle.name
       }`,
     );
   }
@@ -173,8 +178,8 @@ function assertQuerySelector(
 }
 
 export async function processSaveFile(
-  file: string | { id: string; data: string } | XMLDocument,
-): Promise<SaveInfo> {
+  file: XMLDocument | { handle: Handle; data: XMLDocument },
+): Promise<SaveGame> {
   const data = getSaveFileData(file);
 
   const currentDay = parseInt(data.currentDay.textContent!, 10);
@@ -183,15 +188,15 @@ export async function processSaveFile(
   const gameInfo = await _gameInfo.fetch();
 
   const errorMessage = `Invalid save file ${
-    typeof file !== "string" && !(file instanceof XMLDocument)
-      ? file.id
-      : data.name.textContent!.trim()
+    file instanceof XMLDocument
+      ? data.name.textContent?.trim()
+      : typeof file.handle === "string"
+      ? file.handle
+      : file.handle.name
   }`;
 
   return {
-    id: typeof file !== "string" && !(file instanceof XMLDocument)
-      ? file.id
-      : null,
+    handle: file instanceof XMLDocument ? null : file.handle,
     name: data.name.textContent!.trim(),
     lastSaved: parseInt(data.lastSaved.textContent!, 10),
 
@@ -245,7 +250,7 @@ export async function processSaveFile(
           const name = assertQuerySelector(relationship, "key", errorMessage)
             .textContent!.trim();
 
-          const villager = gameInfo.villagers[name]
+          const villager = gameInfo.villagers[name];
 
           if (typeof villager !== "undefined") {
             return [name, {
@@ -284,24 +289,87 @@ export async function processSaveFile(
   };
 }
 
-export async function getSaveFiles(savesDir?: string): Promise<SaveInfo[]> {
-  assert(typeof backend !== "undefined", "Electron backend not available");
-  if (typeof savesDir !== "undefined") backend.setSavesDir(savesDir);
-  return await backend.getSaveFiles().then((saves) =>
-    Promise.all(
-      saves.map(async (save) =>
-        isValidSaveFile(save) ? await processSaveFile(save) : null
-      ),
-    )
-      .then((saves) => saves.filter((save) => save !== null) as SaveInfo[])
+export async function getSaveInfo(handle: Handle): Promise<SaveInfo> {
+  const file = new DOMParser().parseFromString(
+    await (typeof handle === "string"
+      ? backend.getSaveInfo(handle)
+      : handle.getFileHandle("SaveGameInfo")
+        .then((handle) => handle.getFile())
+        .then((file) => file.text()))
+      .then((doc) => doc.trim()),
+    "text/xml",
   );
+
+  return {
+    handle,
+
+    name: file.querySelector("Farmer > name")!.textContent!.trim(),
+    lastSaved: parseInt(
+      file.querySelector("Farmer > saveTime")!.textContent!.trim(),
+    ),
+
+    valid: isValidSaveFile(file),
+  };
+}
+
+export async function getSaveFile(handle: Handle): Promise<SaveGame> {
+  return processSaveFile({
+    handle,
+    data: new DOMParser().parseFromString(
+      await (typeof handle === "string"
+        ? backend.getSaveFile(handle)
+        : handle.getFileHandle(handle.name)
+          .then((handle) => handle.getFile())
+          .then((file) => file.text()))
+        .then((doc) => doc.trim()),
+      "text/xml",
+    ),
+  });
+}
+
+function isDirectory(
+  handle: FileSystemHandle,
+): handle is FileSystemDirectoryHandle {
+  return handle.kind === "directory";
+}
+
+export async function getSaveFiles(
+  dir?: string | FileSystemDirectoryHandle,
+): Promise<SaveInfo[]> {
+  let saves: SaveInfo[] = [];
+  if (
+    typeof backend !== "undefined" &&
+    (typeof dir === "string" || typeof dir === "undefined")
+  ) {
+    if (typeof dir !== "undefined") backend.setSavesDir(dir);
+    saves = await backend.listSaveFiles().then((saves) =>
+      Promise.all(saves.map(getSaveInfo))
+    );
+  } else if (
+    typeof globalThis.showDirectoryPicker !== "undefined" &&
+    typeof dir !== "string" && typeof dir !== "undefined"
+  ) {
+    for await (const save of dir.values()) {
+      if (isDirectory(save)) {
+        try {
+          saves.push(await getSaveInfo(save));
+        } catch {}
+      }
+    }
+  } else {
+    throw new Error(
+      "Neither Electron backend nor Native Filesystem API available",
+    );
+  }
+
+  return saves.filter((save) => save.valid);
 }
 
 // This doesn't technically exist, but Sapper replaces every occurence of process.browser with true or false depending if it's in the browser.
-declare const process: { browser: boolean };
+declare var process: { browser: boolean };
 if (process.browser) {
-  localForage.getItem<SaveInfo>("lastSaveFile").then((saveInfo) => {
-    if (saveInfo !== null) save.set(saveInfo.id ?? saveInfo);
+  localForage.getItem<SaveGame>("lastSaveFile").then((saveGame) => {
+    if (saveGame !== null) save.set(saveGame);
   });
 }
 

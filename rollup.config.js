@@ -4,7 +4,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import typescript from '@rollup/plugin-typescript';
-import url from '@rollup/plugin-url';
 import path from 'path';
 import postcss from 'rollup-plugin-postcss';
 import svelte from 'rollup-plugin-svelte';
@@ -21,7 +20,7 @@ const onwarn = (warning, onwarn) => (warning.code === 'CIRCULAR_DEPENDENCY' && /
 
 export default {
 	client: {
-		input: config.client.input(),
+		input: config.client.input().replace(/\.js$/, ".ts"),
 		output: config.client.output(),
 		plugins: [
 			alias({
@@ -47,10 +46,6 @@ export default {
 			replace({
 				'process.browser': true,
 				'process.env.NODE_ENV': JSON.stringify(mode)
-			}),
-			url({
-				sourceDir: path.resolve(__dirname, 'static'),
-				publicPath: '/client/'
 			}),
 			svelte({
 				preprocess: autoPreprocess(),
@@ -109,7 +104,7 @@ export default {
 	},
 
 	server: {
-		input: config.server.input(),
+		input: { server: config.server.input().server.replace(/\.js$/, ".ts") },
 		output: config.server.output(),
 		plugins: [
 			alias({
@@ -140,11 +135,6 @@ export default {
 				preprocess: autoPreprocess(),
 				generate: 'ssr',
 				dev
-			}),
-			url({
-				sourceDir: path.resolve(__dirname, 'static'),
-				publicPath: '/client/',
-				emitFiles: false // already emitted by client build
 			}),
 			resolve({
 				dedupe: ['svelte']
@@ -178,7 +168,7 @@ export default {
 	},
 
 	serviceworker: {
-		input: config.serviceworker.input(),
+		input: config.serviceworker.input().replace(/\.js$/, ".ts"),
 		output: config.serviceworker.output(),
 		plugins: [
 			resolve(),
@@ -187,6 +177,7 @@ export default {
 				'process.env.NODE_ENV': JSON.stringify(mode)
 			}),
 			commonjs(),
+			typescript(),
 			!dev && terser()
 		],
 

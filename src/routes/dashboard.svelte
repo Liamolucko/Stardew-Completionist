@@ -14,8 +14,8 @@
   import ItemButton from "../components/ItemButton.svelte";
   import type { GameInfo, Item } from "../game-info";
   import { seasonNames } from "../names";
-  import save from "../save-info";
-  import type { SaveInfo } from "../save-info";
+  import save from "../save";
+  import type { SaveGame } from "../save";
 
   export let gameInfo: GameInfo;
 
@@ -29,7 +29,7 @@
 
   let birthdays = derived<typeof save, Birthday[]>(
     save,
-    ($save: SaveInfo | null, set: (value: Birthday[]) => void) => {
+    ($save: SaveGame | null, set: (value: Birthday[]) => void) => {
       if ($save !== null) {
         set(
           Object.values(gameInfo.villagers)
@@ -54,7 +54,7 @@
 
   let seasonalItems = derived<typeof save, Item[]>(
     save,
-    ($save: SaveInfo | null, set: (value: Item[]) => void) => {
+    ($save: SaveGame | null, set: (value: Item[]) => void) => {
       if ($save !== null) {
         set(
           [...gameInfo.shipping, ...gameInfo.fish].filter(

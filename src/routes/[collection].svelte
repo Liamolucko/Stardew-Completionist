@@ -54,7 +54,7 @@
   import DataTable, { Body, Cell, Head, Row } from "@smui/data-table";
   import ItemButton from "../components/ItemButton.svelte";
   import type { Item, Recipe } from "../game-info";
-  import save from "../save-info";
+  import save from "../save";
 
   export let title: string;
   export let items: Item[];

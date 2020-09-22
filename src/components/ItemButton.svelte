@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { getContext } from 'svelte';
-  import type { Item } from '../game-info';
-  import { qualityNames } from '../names';
+  import { getContext } from "svelte";
+  import type { Item } from "../game-info";
+  import { qualityNames } from "../names";
 
   export let item: Item;
   export let scale = 2;
@@ -10,7 +10,7 @@
   export let quality = 0;
   export let quantity = 1;
 
-  let dialog = getContext<{ open(item: Item): void }>('item-info-dialog');
+  let dialog = getContext<{ open(item: Item): void }>("item-info-dialog");
 
   $: size = (item.isCraftable ? 32 : 16) * scale;
 </script>
@@ -27,9 +27,6 @@
     text-align: center;
     vertical-align: middle;
 
-    width: var(--size);
-    height: var(--size);
-
     transition: transform 0.1s ease, filter 0.1s ease;
 
     img {
@@ -44,7 +41,6 @@
         transition: inherit;
 
         margin: auto;
-        width: calc(16px * var(--scale));
 
         vertical-align: middle;
 
@@ -99,7 +95,9 @@
 </style>
 
 <button
-  style="--size: {size}px; --scale: {scale}"
+  style="--scale: {scale}"
+  width={size}
+  height={size}
   on:click={() => {
     dialog.open(item);
   }}>
@@ -107,6 +105,8 @@
     class="sprite"
     src="data:image/png;base64,{item.sprite}"
     alt={item.name}
+    width={16 * scale}
+    height={size}
     class:grey
     class:shadow />
   <img

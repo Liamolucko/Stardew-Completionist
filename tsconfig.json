@@ -4,9 +4,11 @@
   "include": ["src/**/*"],
   "exclude": ["node_modules/*", "__sapper__/*", "public/*", "electron/*"],
   "compilerOptions": {
+    "typeRoots": ["node_modules/@types", "src/node_modules"],
+    "types": ["svelte", "@sapper"],
+
     "allowSyntheticDefaultImports": true,
-    "lib": ["ESNext", "DOM"],
     "strictNullChecks": true,
-    "types": ["node"]
+    "lib": ["ESNext", "DOM", "WebWorker"]
   }
 }

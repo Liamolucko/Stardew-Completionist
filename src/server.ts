@@ -4,7 +4,7 @@ import polka from 'polka';
 import sirv from 'sirv';
 
 const dev = process.env.NODE_ENV === 'development';
-process.env.PORT = process.env.PORT || 9619;
+process.env.PORT = process.env.PORT || "9619";
 
 polka() // You can also use Express
 	.use(
