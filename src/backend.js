@@ -1,1 +1,1 @@
-export default globalThis.backend
+export default globalThis.backend;

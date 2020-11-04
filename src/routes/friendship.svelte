@@ -37,11 +37,9 @@
 </script>
 
 <style lang="scss">
-  @use '@material/typography/mixins' as typography;
+  @use "@material/typography/mdc-typography";
 
   h1 {
-    @include typography.mdc-typography("headline4");
-
     margin: 20px 20px 0.5em;
   }
 
@@ -76,7 +74,7 @@
   <title>Friendship | Stardew Completionist</title>
 </svelte:head>
 
-<h1>Friendship</h1>
+<h1 class="mdc-typography--headline4">Friendship</h1>
 <DataTable class="friendship-table">
   <Head>
     <Row>

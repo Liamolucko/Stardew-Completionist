@@ -62,8 +62,10 @@
 </script>
 
 <style lang="scss">
-  @use '@material/card/mdc-card';
-  @use '@material/typography/mixins' as typography;
+  @use "@material/card";
+  @use "@material/typography/mdc-typography";
+
+  @include card.core-styles;
 
   .container {
     display: grid;
@@ -94,10 +96,6 @@
       height: max-content;
 
       padding: 16px;
-
-      h2 {
-        @include typography.mdc-typography("headline6");
-      }
 
       .item-grid {
         display: grid;
@@ -131,7 +129,7 @@
   class="container"
   class:has-unknown-recipes={typeof recipes !== 'undefined' && $save !== null}>
   <div class="mdc-card mdc-card--outlined grid-card">
-    <h2>{title}</h2>
+    <h2 class="mdc-typography--headline6">{title}</h2>
     <div class="item-grid">
       {#each items as item}
         <ItemButton

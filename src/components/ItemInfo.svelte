@@ -12,8 +12,10 @@
 </script>
 
 <style lang="scss">
-  @use '@material/typography/mixins' as typography;
-  @use '@material/card/mdc-card';
+  @use "@material/card";
+  @use "@material/typography/mixins" as *;
+
+  @include card.core-styles;
 
   .mdc-dialog__title {
     padding-right: 0;
@@ -68,7 +70,7 @@
       h2 {
         margin: 0;
 
-        @include typography.mdc-typography('subtitle2');
+        @include typography("subtitle2");
 
         &:not(:first-of-type) {
           margin-top: 8px;
@@ -76,7 +78,7 @@
       }
 
       ul {
-        @include typography.mdc-typography('body2');
+        @include typography("body2");
         color: black;
 
         margin: 0;
@@ -85,7 +87,7 @@
       }
 
       p {
-        @include typography.mdc-typography('body2');
+        @include typography("body2");
         color: black;
 
         margin: 0;

@@ -60,7 +60,9 @@
           [...gameInfo.shipping, ...gameInfo.fish].filter(
             (item) =>
               typeof item.seasons !== "undefined" &&
-              item.seasons.includes(["spring", "summer", "fall", "winter"][$save.currentSeason]) &&
+              item.seasons.includes(
+                ["spring", "summer", "fall", "winter"][$save.currentSeason]
+              ) &&
               !$save.collectedItems.includes(item.id) &&
               Object.values(item.seasons).filter((value) => value).length < 3
           )
@@ -71,8 +73,10 @@
 </script>
 
 <style lang="scss">
-  @use '@material/typography/mixins' as typography;
-  @use '@material/card/mdc-card';
+  @use "@material/card";
+  @use "@material/typography/mdc-typography";
+
+  @include card.core-styles;
 
   .best-gifts {
     display: flex;
@@ -98,14 +102,6 @@
 
   .title {
     margin: 20px 20px 0.5em;
-  }
-
-  h1 {
-    @include typography.mdc-typography("headline4");
-  }
-
-  h2 {
-    @include typography.mdc-typography("headline6");
   }
 
   .container {
@@ -152,7 +148,7 @@
   <title>Dashboard | Stardew Completionist</title>
 </svelte:head>
 
-<h1 class="title">Dashboard</h1>
+<h1 class="title mdc-typography--headline4">Dashboard</h1>
 {#if $save !== null}
   <div class="container">
     <DataTable>
@@ -190,7 +186,7 @@
       </Body>
     </DataTable>
     <div class="mdc-card mdc-card--outlined seasonal">
-      <h2>{seasonNames.get($save.currentSeason)}</h2>
+      <h2 class="mdc-typography--headline6">{seasonNames.get($save.currentSeason)}</h2>
       <div class="seasonal-items">
         {#each $seasonalItems as item}
           <ItemButton {item} scale={item.isCraftable ? 2 : 3} />

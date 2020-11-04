@@ -55,7 +55,10 @@ export const save = {
         store.subscribe(async (file) => {
           const data = new DOMParser().parseFromString(file.trim(), "text/xml");
           if (isValidSaveFile(data)) {
-            const newSave = await processSaveFile({ handle: save.handle!, data });
+            const newSave = await processSaveFile({
+              handle: save.handle!,
+              data,
+            });
             localForage.setItem("lastSaveFile", newSave);
             _save.set(newSave);
           }

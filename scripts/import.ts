@@ -517,6 +517,9 @@ await Deno.writeTextFile(
 
 console.log(
   `Successfully created ${
-    path.resolve(path.dirname(path.fromFileUrl(import.meta.url)), "../static/game-info.json")
+    path.resolve(
+      path.dirname(path.fromFileUrl(import.meta.url)),
+      "../static/game-info.json",
+    )
   }.`,
 );

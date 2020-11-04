@@ -14,6 +14,7 @@
   import ItemInfo from "../components/ItemInfo.svelte";
   import SaveSelect from "../components/SaveSelect.svelte";
   import type { Item } from "../game-info";
+  import save, { getSaveFile } from "../save";
 
   // unused
   export let segment;
@@ -87,15 +88,6 @@
       }
     }
   }
-
-  .path-select {
-    width: 100%;
-
-    display: flex;
-    flex-flow: row nowrap;
-
-    align-items: center;
-  }
 </style>
 
 <div class="container">
@@ -111,6 +103,20 @@
       {/each}
     </div>
     <div class="nav-section bottom-section">
+      {#if $save !== null && $save.handle !== null}
+        <IconButton
+          class="material-icons rail-button"
+          on:click={async () => {
+            if (typeof $save.handle !== 'string') {
+              if ((await $save.handle.requestPermission({
+                  mode: 'read',
+                })) === 'denied') return;
+            }
+            save.set(await getSaveFile($save.handle));
+          }}>
+          refresh
+        </IconButton>
+      {/if}
       <IconButton
         class="material-icons rail-button"
         on:click={() => saveSelect.open()}>

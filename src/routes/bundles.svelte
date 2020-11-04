@@ -63,8 +63,10 @@
 </script>
 
 <style lang="scss">
-  @use '@material/card/mdc-card';
-  @use '@material/typography/mixins' as typography;
+  @use "@material/card";
+  @use "@material/typography/mdc-typography";
+
+  @include card.core-styles;
 
   .container {
     padding: 20px;
@@ -79,8 +81,6 @@
       h5 {
         display: inline-block;
         width: max-content;
-
-        @include typography.mdc-typography("headline6");
       }
     }
 
@@ -173,7 +173,7 @@
     <div class="section">
       {#each bundles as bundle}
         <div class="bundle mdc-card mdc-card--outlined">
-          <h5>{bundle.name}</h5>
+          <h5 class="mdc-typography--headline6">{bundle.name}</h5>
           {#if bundle.gold > 0}
             {#if $save !== null && $save.bundleCompletion
                 .get(bundle.id)

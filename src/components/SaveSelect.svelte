@@ -4,7 +4,6 @@
   import List, { Item as ListItem, Text } from "@smui/list";
   import "blob-polyfill";
   import localForage from "localforage";
-  import Spinner from "svelte-spinner";
   import backend from "../backend";
   import type { Handle, SaveInfo } from "../save";
   import save, {
@@ -13,6 +12,10 @@
     isValidSaveFile,
     processSaveFile,
   } from "../save";
+
+  if ((process as NodeJS.Process & { browser: boolean }).browser) {
+    import("@material/mwc-circular-progress");
+  }
 
   let dialog: Dialog;
 
@@ -89,12 +92,12 @@
 </style>
 
 <input
-  on:change={async (event) => {
-    if (event.target.files === null) return;
-    const contents = new DOMParser().parseFromString(await event.target.files[0].text(), 'text/xml');
+  on:change={async () => {
+    if (fileInput.files === null) return;
+    const contents = new DOMParser().parseFromString(await fileInput.files[0].text(), 'text/xml');
     if (!isValidSaveFile(contents)) return;
     save.set(await processSaveFile(contents));
-    event.target.value = '';
+    fileInput.value = '';
     dialog.close();
   }}
   bind:this={fileInput}
@@ -107,7 +110,8 @@
     <div
       style="outline: none; margin: auto; width: 100px; height: 100px; overflow: hidden"
       tabindex="0">
-      <Spinner size={100} />
+      <!-- Just writing `indeterminate` makes Svelte interpret it as "". -->
+      <mwc-circular-progress indeterminate={true} />
     </div>
   {:then options}
     {#if options === null}
@@ -116,29 +120,48 @@
           {#if hasBackend}
             {#if savesDir === null}
               <p>
-                Please select your saves directory. On {platformName}, this is
-                typically located at <code>{savesDirPath}</code> .
+                Please select your saves directory. On
+                {platformName}, this is typically located at
+                <code>{savesDirPath}</code>
+                .
               </p>
             {:else}
-              {savesDir} is an invalid save file path. Please choose another.
+              {savesDir}
+              is an invalid save file path. Please choose another.
             {/if}
           {:else}
             <p>
-              Please select your save file. On {platformName}, this is typically
-              located at <code>{savePath}</code> .
+              Please select your save file. On
+              {platformName}, this is typically located at
+              <code>{savePath}</code>
+              .
             </p>
           {/if}
           {#if platformName === 'Windows'}
             <p>
-              Paste <code>{savesDirPath}</code> into the address bar at the top of
-              Explorer and press <kbd>Enter</kbd> to navigate to <code>Saves</code>
+              Paste
+              <code>{savesDirPath}</code>
+              into the address bar at the top of Explorer and press
+              <kbd>Enter</kbd>
+              to navigate to
+              <code>Saves</code>
               .
             </p>
           {:else if platformName === 'macOS'}
             <p>
-              Press <kbd>⇧</kbd> + <kbd>⌘</kbd> + <kbd>G</kbd> to open Go To Folder
-              and paste <code>{savesDirPath}</code> into it, then press <kbd>Enter</kbd>
-              to navigate to <code>Saves</code> .
+              Press
+              <kbd>⇧</kbd>
+              +
+              <kbd>⌘</kbd>
+              +
+              <kbd>G</kbd>
+              to open Go To Folder and paste
+              <code>{savesDirPath}</code>
+              into it, then press
+              <kbd>Enter</kbd>
+              to navigate to
+              <code>Saves</code>
+              .
             </p>
           {/if}
           {#if !hasBackend && (platformName === 'Windows' || platformName === 'macOS')}
@@ -171,7 +194,8 @@
               }
             }}>
             <Label>
-              Choose {#if hasBackend}directory{:else}file{/if}
+              Choose
+              {#if hasBackend}directory{:else}file{/if}
             </Label>
           </Button>
         {/if}
@@ -180,14 +204,16 @@
       <Content>
         <List>
           {#each options as option}
-            <ListItem
-              selected={$save !== null && option.handle === $save.handle}
-              on:click={async () => {
-                save.set(await getSaveFile(option.handle));
-                close();
-              }}>
-              <Text>{option.name}</Text>
-            </ListItem>
+            {#await $save !== null && (typeof option.handle === 'string' ? option.handle === $save.handle : option.handle.isSameEntry($save.handle)) then selected}
+              <ListItem
+                {selected}
+                on:click={async () => {
+                  save.set(await getSaveFile(option.handle));
+                  close();
+                }}>
+                <Text>{option.name}</Text>
+              </ListItem>
+            {/await}
           {/each}
         </List>
       </Content>
