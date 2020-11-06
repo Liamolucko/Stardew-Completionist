@@ -1,3 +1,4 @@
+/// <reference lib="webworker" />
 declare var self: ServiceWorkerGlobalScope;
 
 import { files, shell, timestamp } from "@sapper/service-worker";

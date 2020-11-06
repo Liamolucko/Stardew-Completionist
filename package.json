@@ -19,7 +19,8 @@
     "package": "tsc -p electron && electron-forge package",
     "make": "tsc -p electron && electron-forge make",
     "publish": "tsc -p electron && electron-forge publish",
-    "lint": "eslint --ext .ts ."
+    "lint": "eslint --ext .ts .",
+    "postinstall": "node ./scripts/fix-broken-symlinks.js"
   },
   "author": {
     "name": "Liamolucko",
@@ -27,41 +28,7 @@
   },
   "license": "MIT",
   "config": {
-    "forge": {
-      "packagerConfig": {
-        "executableName": "stardew-completionist",
-        "icon": "static/favicon"
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "stardew_completionist",
-            "exe": "stardew-completionist.exe",
-            "iconUrl": "https://raw.githubusercontent.com/Liamolucko/Stardew-Completionist/master/static/favicon.ico",
-            "setupIcon": "static/favicon.ico"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {
-            "options": {
-              "maintainer": "Liamolucko <liampm32@gmail.com>"
-            }
-          }
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
-    }
+    "forge": "./forge.config.js"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
@@ -103,12 +70,12 @@
     "@types/compression": "^1.7.0",
     "@types/gh-pages": "^3.0.0",
     "@types/node": "^14.14.6",
-    "@types/polka": "^0.5.1",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
     "blob-polyfill": "^4.0.20200601",
     "cypress": "^5.5.0",
-    "electron": "10.1.5",
+    "del": "^6.0.0",
+    "electron": "^10.1.5",
     "eslint": "^7.12.1",
     "eslint-plugin-import": "^2.22.1",
     "gh-pages": "^3.1.0",
@@ -120,7 +87,7 @@
     "rollup-plugin-svelte": "^6.1.0",
     "rollup-plugin-terser": "^7.0.2",
     "sapper": "^0.28.10",
-    "sass": "^1.28.0",
+    "sass": "^1.29.0",
     "svelte": "^3.29.4",
     "svelte-preprocess": "^4.5.2",
     "tslib": "^2.0.3",

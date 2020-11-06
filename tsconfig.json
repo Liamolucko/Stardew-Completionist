@@ -9,6 +9,6 @@
 
     "allowSyntheticDefaultImports": true,
     "strictNullChecks": true,
-    "lib": ["ESNext", "DOM", "WebWorker"]
+    "lib": ["ESNext", "DOM"]
   }
 }

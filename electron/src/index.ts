@@ -1,10 +1,10 @@
 import { app, BrowserWindow, shell } from "electron";
 import { existsSync as exists } from "fs";
 import * as path from "path";
-import serve = require("electron-serve");
+import serve from "electron-serve";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require("electron-squirrel-startup") || !app.requestSingleInstanceLock()) { // eslint-disable-line global-require
+if (require("electron-squirrel-startup")) {
   app.quit();
 } else {
   // Fix CWD in Squirrel
@@ -33,10 +33,10 @@ function createWindow(): void {
       : "static/logo-192.png",
   });
 
-  win.once("ready-to-show", win.show);
-
   // and load the index.html of the app.
   win.loadURL("app://-");
+
+  win.once("ready-to-show", win.show);
 }
 
 // This method will be called when Electron has finished
@@ -63,14 +63,9 @@ app.on("activate", () => {
 
 app.on("web-contents-created", (_event, contents) => {
   contents.on("new-window", (event, url) => {
-    if (!url.startsWith(`http://localhost:${process.env.PORT}`)) {
+    if (!url.startsWith(`app://`)) {
       event.preventDefault();
       shell.openExternal(url);
     }
   });
-});
-
-// Use same server for additional windows
-app.on("second-instance", () => {
-  createWindow();
 });

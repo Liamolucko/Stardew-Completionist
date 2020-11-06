@@ -144,5 +144,25 @@ export default {
 
     preserveEntrySignatures: "strict",
     onwarn,
+	},
+	
+  ...!process.env.ELECTRON_BUILD && {
+    serviceworker: {
+      input: config.serviceworker.input().replace(/\.js$/, ".ts"),
+      output: config.serviceworker.output(),
+      plugins: [
+        resolve(),
+        replace({
+          "process.browser": true,
+          "process.env.NODE_ENV": JSON.stringify(mode),
+        }),
+        commonjs(),
+        typescript(),
+        !dev && terser(),
+      ],
+
+      preserveEntrySignatures: false,
+      onwarn,
+    },
   },
 };
