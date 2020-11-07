@@ -1,13 +1,16 @@
 {
   "name": "stardew-completionist",
-  "productName": "Stardew Completionist",
   "version": "0.7.1",
+  "description": "An app designed to help people 100% Stardew Valley.",
+  "license": "MIT",
+  "author": {
+    "name": "Liamolucko",
+    "email": "liampm32@gmail.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Liamolucko/Stardew-Completionist.git"
   },
-  "description": "An app designed to help people 100% Stardew Valley.",
-  "main": "electron/dist/index.js",
   "scripts": {
     "dev": "sapper dev -p 4000",
     "export": "sapper export --legacy",
@@ -15,20 +18,12 @@
     "cy:run": "cypress run",
     "cy:open": "cypress open",
     "test": "run-p --race dev cy:run",
-    "electron": "tsc -p electron && electron-forge start",
-    "package": "tsc -p electron && electron-forge package",
-    "make": "tsc -p electron && electron-forge make",
-    "publish": "tsc -p electron && electron-forge publish",
-    "lint": "eslint --ext .ts .",
-    "postinstall": "node ./scripts/fix-broken-symlinks.js"
+    "lint": "eslint --ext .ts ."
   },
-  "author": {
-    "name": "Liamolucko",
-    "email": "liampm32@gmail.com"
-  },
-  "license": "MIT",
-  "config": {
-    "forge": "./forge.config.js"
+  "dependencies": {
+    "compression": "^1.7.4",
+    "polka": "^0.5.2",
+    "sirv": "^1.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
@@ -36,11 +31,6 @@
     "@babel/plugin-transform-runtime": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "@babel/runtime": "^7.12.5",
-    "@electron-forge/cli": "^6.0.0-beta.54",
-    "@electron-forge/maker-deb": "^6.0.0-beta.54",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
-    "@electron-forge/maker-zip": "^6.0.0-beta.54",
     "@material/animation": "^8.0.0",
     "@material/base": "^8.0.0",
     "@material/card": "^8.0.0",
@@ -74,14 +64,10 @@
     "@typescript-eslint/parser": "^4.6.1",
     "blob-polyfill": "^4.0.20200601",
     "cypress": "^5.5.0",
-    "del": "^6.0.0",
-    "electron": "^10.1.5",
     "eslint": "^7.12.1",
     "eslint-plugin-import": "^2.22.1",
     "gh-pages": "^3.1.0",
     "localforage": "^1.9.0",
-    "node-sass": "^5.0.0",
-    "npm-run-all": "^4.1.5",
     "rollup": "^2.33.1",
     "rollup-plugin-postcss": "^3.1.8",
     "rollup-plugin-svelte": "^6.1.0",
@@ -92,12 +78,5 @@
     "svelte-preprocess": "^4.5.2",
     "tslib": "^2.0.3",
     "typescript": "^4.0.5"
-  },
-  "dependencies": {
-    "compression": "^1.7.4",
-    "electron-serve": "^1.0.0",
-    "electron-squirrel-startup": "^1.0.0",
-    "polka": "^0.5.2",
-    "sirv": "^1.0.7"
   }
 }

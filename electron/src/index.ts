@@ -1,20 +1,20 @@
 import { app, BrowserWindow, shell } from "electron";
+import serve from "electron-serve";
 import { existsSync as exists } from "fs";
 import * as path from "path";
-import serve from "electron-serve";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
   app.quit();
 } else {
   // Fix CWD in Squirrel
-  if (!exists("__sapper__")) {
+  if (!exists("www")) {
     process.chdir(path.join(process.cwd(), "resources", "app"));
   }
-
-  // Run 'server'
-  serve({ directory: "__sapper__/export" });
 }
+
+// Run 'server'
+serve({ directory: "www" });
 
 function createWindow(): void {
   // Create the browser window.
@@ -29,8 +29,8 @@ function createWindow(): void {
     autoHideMenuBar: true,
     show: false,
     icon: process.platform === "win32"
-      ? "static\\favicon.ico"
-      : "static/logo-192.png",
+      ? "www\\favicon.ico"
+      : "www/logo-192.png",
   });
 
   // and load the index.html of the app.
