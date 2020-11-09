@@ -60,6 +60,9 @@
           position: relative;
           top: 3px;
           margin-right: 8px;
+          
+          image-rendering: crisp-edges;
+          image-rendering: pixelated;
         }
       }
     }
@@ -97,6 +100,9 @@
           position: relative;
           top: 3px;
           margin-right: 4px;
+          
+          image-rendering: crisp-edges;
+          image-rendering: pixelated;
         }
       }
     }
