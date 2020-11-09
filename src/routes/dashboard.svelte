@@ -142,6 +142,10 @@
       }
     }
   }
+
+  .no-save {
+    margin: 0px 20px;
+  }
 </style>
 
 <svelte:head>
@@ -186,7 +190,9 @@
       </Body>
     </DataTable>
     <div class="mdc-card mdc-card--outlined seasonal">
-      <h2 class="mdc-typography--headline6">{seasonNames.get($save.currentSeason)}</h2>
+      <h2 class="mdc-typography--headline6">
+        {seasonNames.get($save.currentSeason)}
+      </h2>
       <div class="seasonal-items">
         {#each $seasonalItems as item}
           <ItemButton {item} scale={item.isCraftable ? 2 : 3} />
@@ -194,4 +200,9 @@
       </div>
     </div>
   </div>
+{:else}
+  <p class="no-save">
+    When you select a save file, this section shows information about
+    what you should do next.
+  </p>
 {/if}

@@ -103,7 +103,7 @@
       {/each}
     </div>
     <div class="nav-section bottom-section">
-      {#if $save !== null && $save.handle !== null}
+      {#if $save && $save.handle}
         <IconButton
           class="material-icons rail-button"
           on:click={async () => {
