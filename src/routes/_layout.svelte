@@ -7,9 +7,10 @@
 </script>
 
 <script lang="ts">
-  import Dialog from "@smui/dialog";
+  import Button, { Label } from "@smui/button";
+  import Dialog, { Actions, Content, Title } from "@smui/dialog";
   import IconButton from "@smui/icon-button";
-  import { setContext } from "svelte";
+  import { onMount, setContext } from "svelte";
   import backend from "../backend";
   import ItemInfo from "../components/ItemInfo.svelte";
   import SaveSelect from "../components/SaveSelect.svelte";
@@ -28,6 +29,14 @@
       selectedItem = item;
       itemInfoDialog.open();
     },
+  });
+
+  let introDialog: Dialog;
+  onMount(() => {
+    if (!localStorage.getItem("hasSeenIntro")) {
+      introDialog.open();
+      localStorage.setItem("hasSeenIntro", "true");
+    }
   });
 </script>
 
@@ -136,3 +145,22 @@
 </Dialog>
 
 <SaveSelect bind:this={saveSelect} />
+
+<Dialog bind:this={introDialog}>
+  <Title>Welcome</Title>
+  <Content>
+    <p>
+      Welcome to Stardew Completionist! This is an app which analyzes your
+      Stardew Valley save file and tells you what you've yet to do. It can also
+      act as somewhat of a streamlined wiki.
+    </p>
+    <p>
+      You can select your save file using the folder icon in the bottom left.
+    </p>
+  </Content>
+  <Actions>
+    <Button>
+      <Label>Close</Label>
+    </Button>
+  </Actions>
+</Dialog>
