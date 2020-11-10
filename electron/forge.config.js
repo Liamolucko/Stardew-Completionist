@@ -1,9 +1,9 @@
 const fs = require("fs-extra");
-const path = require("path");
 const { pathToFileURL } = require("url");
 
 module.exports = {
   packagerConfig: {
+    executableName: "stardew-completionist",
     icon: "www/favicon",
 
     ignore: [
@@ -19,6 +19,7 @@ module.exports = {
     {
       name: "@electron-forge/maker-squirrel",
       config: {
+        exe: "stardew-completionist.exe",
         iconUrl: pathToFileURL("www/favicon.ico").toString(),
         setupIcon: "www/favicon.ico",
       },
@@ -34,6 +35,7 @@ module.exports = {
       config: {
         options: {
           maintainer: "Liamolucko <liampm32@gmail.com>",
+          icon: "./www/logo-512.png",
         },
       },
     },
@@ -52,6 +54,7 @@ module.exports = {
       pkg.name = rootPkg.name;
       pkg.version = rootPkg.version;
       pkg.description = rootPkg.description;
+      pkg.homepage = rootPkg.homepage;
       pkg.license = rootPkg.license;
       pkg.repository = rootPkg.repository;
       pkg.author = rootPkg.author;

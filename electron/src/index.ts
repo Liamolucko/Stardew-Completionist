@@ -1,20 +1,14 @@
 import { app, BrowserWindow, shell } from "electron";
 import serve from "electron-serve";
-import { existsSync as exists } from "fs";
 import * as path from "path";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
   app.quit();
-} else {
-  // Fix CWD in Squirrel
-  if (!exists("www")) {
-    process.chdir(path.join(process.cwd(), "resources", "app"));
-  }
 }
 
 // Run 'server'
-serve({ directory: "www" });
+serve({ directory: path.join(__dirname, "../www") });
 
 function createWindow(): void {
   // Create the browser window.
