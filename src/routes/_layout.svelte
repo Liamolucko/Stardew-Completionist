@@ -17,8 +17,10 @@
   import type { Item } from "../game-info";
   import save, { getSaveFile } from "../save";
 
-  // unused
+  // A warning is thrown in the browser console if I don't declare this, so it's here even if I don't use it.
   export let segment;
+  // Stop Svelte complaining it's unused.
+  segment;
 
   let saveSelect: SaveSelect;
 
