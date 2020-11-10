@@ -1,4 +1,4 @@
-import { r as regenerator, _ as _inherits, a as _getPrototypeOf, b as _possibleConstructorReturn, c as _classCallCheck, i as init, d as _assertThisInitialized, e as dispatch_dev, S as SvelteComponentDev, s as safe_not_equal, n as noop, v as validate_slots } from './client.9bec2125.js';
+import { _ as _asyncToGenerator, r as regenerator, a as _inherits, b as _getPrototypeOf, c as _possibleConstructorReturn, d as _classCallCheck, i as init, e as _assertThisInitialized, f as dispatch_dev, S as SvelteComponentDev, s as safe_not_equal, n as noop, v as validate_slots } from './client.5bd7d1cd.js';
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
@@ -24,40 +24,12 @@ function create_fragment(ctx) {
   return block;
 }
 
-var __awaiter = undefined && undefined.__awaiter || function (thisArg, _arguments, P, generator) {
-  function adopt(value) {
-    return value instanceof P ? value : new P(function (resolve) {
-      resolve(value);
-    });
-  }
-
-  return new (P || (P = Promise))(function (resolve, reject) {
-    function fulfilled(value) {
-      try {
-        step(generator.next(value));
-      } catch (e) {
-        reject(e);
-      }
-    }
-
-    function rejected(value) {
-      try {
-        step(generator["throw"](value));
-      } catch (e) {
-        reject(e);
-      }
-    }
-
-    function step(result) {
-      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-    }
-
-    step((generator = generator.apply(thisArg, _arguments || [])).next());
-  });
-};
-
 function preload() {
-  return __awaiter(this, void 0, void 0, /*#__PURE__*/regenerator.mark(function _callee() {
+  return _preload.apply(this, arguments);
+}
+
+function _preload() {
+  _preload = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
     return regenerator.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -71,6 +43,7 @@ function preload() {
       }
     }, _callee, this);
   }));
+  return _preload.apply(this, arguments);
 }
 
 function instance($$self, $$props, $$invalidate) {
@@ -85,7 +58,6 @@ function instance($$self, $$props, $$invalidate) {
 
   $$self.$capture_state = function () {
     return {
-      __awaiter: __awaiter,
       preload: preload
     };
   };

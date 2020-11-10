@@ -2,7 +2,14 @@ function inject_styles (files) {
   return Promise.all(files.map(function (file) {
     return new Promise(function (fulfil, reject) {
       var href = new URL(file, import.meta.url);
-      var relative = ('' + href).substring(document.baseURI.length);
+      var baseURI = document.baseURI;
+
+      if (!baseURI) {
+        var baseTags = document.getElementsByTagName('base');
+        baseURI = baseTags.length ? baseTags[0].href : document.URL;
+      }
+
+      var relative = ('' + href).substring(baseURI.length);
       var link = document.querySelector('link[rel=stylesheet][href="' + relative + '"]') || document.querySelector('link[rel=stylesheet][href="' + href + '"]');
 
       if (!link) {
