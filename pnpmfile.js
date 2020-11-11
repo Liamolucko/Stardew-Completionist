@@ -1,6 +1,5 @@
-const fs = require("fs/promises");
+const fs = require("fs").promises;
 const path = require("path");
-const yaml = require("js-yaml");
 
 /**
  * Checks if a package is contained within some dependencies.
@@ -14,6 +13,9 @@ function includesDep(deps, pkg) {
 
 // Don't actually run this as a hook, because those aren't called when nothing is changed, but the broken symlinks are still created.
 process.once("beforeExit", async () => {
+  // Don't require js-yaml until PNPM has actually installed it.
+  const yaml = require("js-yaml");
+
   const lockfile = yaml.safeLoad(await fs.readFile("./pnpm-lock.yaml", "utf-8"))
 
   const packages = Object.entries(lockfile.packages).map(([path, pkg]) => {
