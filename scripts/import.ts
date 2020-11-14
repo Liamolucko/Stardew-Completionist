@@ -1,6 +1,6 @@
 /** 
  * Creates game-info.json
- * Run as `deno run --allow-read --allow-net import.ts <path to stardew valley installation>/Content`
+ * Run as `deno run --allow-read --allow-net --allow-write import.ts <path to stardew valley installation>/Content`
  */
 
 // @deno-types="https://gist.github.com/Liamolucko/b318e25e2cafff7c5eb22ea415ac1d11/raw/939a2732ac2df832e576847590ff03352633ca7b/fast-png.d.ts"
@@ -8,25 +8,21 @@ import * as png from "https://cdn.skypack.dev/fast-png@5.0.2";
 import * as base64 from "https://deno.land/std@0.69.0/encoding/base64.ts";
 import { exists } from "https://deno.land/std@0.69.0/fs/exists.ts";
 import * as path from "https://deno.land/std@0.69.0/path/mod.ts";
-import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.2-alpha4/deno-dom-wasm.ts";
-import Wiki from "../../deno-mediawiki/wiki.ts";
-import * as xnb from "https://denopkg.com/Liamolucko/deno-xnb@v2.0.0/mod.ts";
+import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.3-alpha2/deno-dom-wasm.ts";
+import Wiki from "https://denopkg.com/Liamolucko/deno-mediawiki/wiki.ts";
+import * as xnb from "https://denopkg.com/Liamolucko/deno-xnb/mod.ts";
 import {
   DictionaryReader,
   Int32Reader,
   StringReader,
   Texture2DReader,
-} from "https://denopkg.com/Liamolucko/deno-xnb@v2.0.0/readers.ts";
+} from "https://denopkg.com/Liamolucko/deno-xnb/readers.ts";
 import type {
   Bundle,
   Item,
   RawRecipe as Recipe,
   RawVillager as Villager,
 } from "../src/game-info.ts";
-
-if (!import.meta.main) {
-  throw new Error("This file is only meant to be run as a script");
-}
 
 //#region Constants
 const useTitleItems = [
@@ -159,7 +155,7 @@ const idMap = <Record<string, string>> {
   ),
 };
 
-const wiki = new Wiki("https://stardewvalleywiki.com/mediawiki/api.php");
+const wiki = new Wiki("https://stardewvalleywiki.com/mediawiki/api.php/");
 
 //#region Sprites
 interface Rect {
@@ -323,6 +319,7 @@ async function parseList(wikitext: string) {
 
 async function getItemInfo(id: string): Promise<Item> {
   const craftable = id.startsWith("c");
+  const baseId = craftable ? id.slice(1) : id;
   const row = craftable ? data.craftables[id.slice(1)] : data.objects[id];
 
   const item: Item = {
@@ -352,64 +349,75 @@ async function getItemInfo(id: string): Promise<Item> {
   if (id in cookingRecipes) {
     item.ingredients = parseDictText(cookingRecipes[id][1]);
   } else if (
-    id in craftingRecipes &&
-    (craftingRecipes[id][4] === "true") === item.isCraftable
+    baseId in craftingRecipes &&
+    (craftingRecipes[baseId][4] === "true") === item.isCraftable
   ) {
-    item.ingredients = parseDictText(craftingRecipes[id][1]);
+    item.ingredients = parseDictText(craftingRecipes[baseId][1]);
   }
 
   if (id in monsterDrops && !item.isCraftable) {
     item.monsterDrops = monsterDrops[id];
   }
 
-  try {
-    const title = specialCaseTitles[item.id] ?? item.name;
-    const page = await wiki.page(title);
+  async function fetchFromWiki() {
+    try {
+      const title = specialCaseTitles[item.id] ?? item.name;
+      const page = await wiki.page(title);
 
-    item.url = `https://stardewvalleywiki.com/${page.key}`;
+      item.url = `https://stardewvalleywiki.com/${page.key}`;
 
-    const infobox = parseInfobox(page.source);
+      const infobox = parseInfobox(page.source);
 
-    if (infobox !== null) {
-      item.sources = [];
-      if ("source" in infobox || "os" in infobox) {
-        item.sources = (await parseList(infobox.source ?? infobox.os))
-          .filter((source) =>
-            source !== "Artisan Goods" &&
-            !Object.keys(item.monsterDrops ?? {})
-              .some((monster) => source.includes(monster))
-          );
-      }
+      if (infobox !== null) {
+        item.sources = [];
+        if ("source" in infobox || "os" in infobox) {
+          item.sources = (await parseList(infobox.source ?? infobox.os))
+            .filter((source) =>
+              source !== "Artisan Goods" &&
+              !Object.keys(item.monsterDrops ?? {})
+                .some((monster) => source.includes(monster))
+            );
+        }
 
-      if ("craftingstation" in infobox) {
-        item.sources.push(await getRawText(infobox.craftingstation));
-      }
+        if ("craftingstation" in infobox) {
+          item.sources.push(await getRawText(infobox.craftingstation));
+        }
 
-      if (item.sources.length === 0) delete item.sources;
+        if (item.sources.length === 0) delete item.sources;
 
-      if ("location" in infobox) {
-        item.locations = await parseList(infobox.location);
-      }
+        if ("location" in infobox) {
+          item.locations = await parseList(infobox.location);
+        }
 
-      if ("season" in infobox) {
-        const seasons = infobox.season.toLowerCase();
-        item.seasons = ["spring", "summer", "fall", "winter"]
-          .filter((season) => seasons.includes(season));
+        if ("season" in infobox) {
+          const seasons = infobox.season.toLowerCase();
+          item.seasons = ["spring", "summer", "fall", "winter"]
+            .filter((season) => seasons.includes(season));
 
-        if (item.seasons.length === 0) {
-          item.seasons = ["spring", "summer", "fall", "winter"];
+          if (item.seasons.length === 0) {
+            item.seasons = ["spring", "summer", "fall", "winter"];
+          }
+        }
+
+        if ("recipe" in infobox) {
+          item.recipeSources = (await parseList(
+            infobox.recipe
+              .replace("[[File:HeartIconLarge.png|16px|link=]]", "❤"),
+          )).filter((source) => source !== "Starter");
+          if (item.recipeSources.length === 0) delete item.recipeSources;
         }
       }
-
-      if ("recipe" in infobox) {
-        item.recipeSources = (await parseList(
-          infobox.recipe
-            .replace("[[File:HeartIconLarge.png|16px|link=]]", "❤"),
-        )).filter((source) => source !== "Starter");
-        if (item.recipeSources.length === 0) delete item.recipeSources;
+    } catch (e) {
+      if (e.name === "Http") {
+        // retry
+        await fetchFromWiki();
+      } else {
+        console.warn(`Failed to fetch wiki page for ${item.name}`);
       }
     }
-  } catch {}
+  }
+
+  await fetchFromWiki();
 
   return item;
 }

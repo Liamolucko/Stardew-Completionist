@@ -33,6 +33,7 @@ export interface SaveGame {
   relationships: Map<string, Relationship>;
 
   bundleCompletion: Map<number, boolean[]>;
+  items: Record<string, number>;
 }
 
 export interface Relationship {
@@ -111,6 +112,7 @@ function getSaveFileData(
   currentYear: Element;
   lastSaved: Element;
   bundles: Element[];
+  items: Element[];
 } {
   const save = (file instanceof XMLDocument ? file : file.data)
     .querySelector("SaveGame");
@@ -135,6 +137,14 @@ function getSaveFileData(
         .find((el) => el.getAttribute("xsi:type") == "CommunityCenter")
         ?.querySelectorAll("bundles > item") ?? [],
     ),
+    items: Array.from(
+      save.querySelectorAll(
+        "locations > GameLocation > objects > item > value > Object",
+      ),
+    )
+      .filter((el) => el.querySelector("items"))
+      .flatMap((el) => Array.from(el.querySelectorAll("items > Item")))
+      .filter((el) => el.getAttribute("xsi:type") == "Object"),
   };
 
   if (Object.values(data).some((item) => item === null)) {
@@ -164,6 +174,7 @@ function getSaveFileData(
     currentYear: Element;
     lastSaved: Element;
     bundles: Element[];
+    items: Element[];
   };
 }
 
@@ -289,6 +300,20 @@ export async function processSaveFile(
           (el) => el.textContent == "true",
         ),
       ])),
+
+    items: data.items.reduce((acc, el) => {
+      const isCraftable =
+        el.querySelector("bigCraftable")?.textContent === "true";
+      const id = (isCraftable ? "c" : "") +
+        assertQuerySelector(el, "parentSheetIndex", errorMessage).textContent;
+
+      acc[id] ??= 0;
+      acc[id] += parseInt(
+        assertQuerySelector(el, "stack", errorMessage).textContent!,
+      );
+
+      return acc;
+    }, {}),
   };
 }
 

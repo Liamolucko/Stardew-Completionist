@@ -11,8 +11,9 @@
 <script lang="ts">
   import DataTable, { Body, Cell, Head, Row } from "@smui/data-table";
   import { derived } from "svelte/store";
+  import type { Readable } from "svelte/store";
   import ItemButton from "../components/ItemButton.svelte";
-  import type { GameInfo, Item } from "../game-info";
+  import type { GameInfo, Item, Recipe } from "../game-info";
   import { seasonNames } from "../names";
   import save from "../save";
   import type { SaveGame } from "../save";
@@ -27,7 +28,7 @@
     bestGifts: Item[];
   }
 
-  let birthdays = derived<typeof save, Birthday[]>(
+  const birthdays = derived<typeof save, Birthday[]>(
     save,
     ($save: SaveGame | null, set: (value: Birthday[]) => void) => {
       if ($save !== null) {
@@ -52,19 +53,75 @@
     }
   );
 
-  let seasonalItems = derived<typeof save, Item[]>(
-    save,
-    ($save: SaveGame | null, set: (value: Item[]) => void) => {
-      if ($save !== null) {
+  const requiredItems = derived(save, ($save) => {
+    if ($save === null) {
+      return null;
+    } else {
+      const output: Record<string, number> = {};
+
+      const processRecipe = (recipe: Recipe) => {
+        if (!$save.collectedItems.includes(recipe.result.id)) {
+          for (const [ingredient, amount] of Object.entries(
+            recipe.ingredients
+          )) {
+            if (ingredient in gameInfo.recipes) {
+              processRecipe(gameInfo.recipes[ingredient]);
+            } else {
+              output[ingredient] ??= 0;
+              output[ingredient] += amount;
+            }
+          }
+        }
+      };
+
+      for (const recipe of Object.values(gameInfo.recipes)) {
+        processRecipe(recipe);
+      }
+
+      for (const { id } of [...gameInfo.shipping, ...gameInfo.fish]) {
+        if (!$save.collectedItems.includes(id)) {
+          output[id] ??= 0;
+          output[id] += 1;
+        }
+      }
+
+      for (const bundle of Object.values(gameInfo.bundles)) {
+        for (const [index, item] of Object.entries(bundle.items)) {
+          if (!$save.bundleCompletion.get(bundle.id)![index]) {
+            output[item.id] ??= 0;
+            output[item.id] += item.amount;
+          }
+        }
+      }
+
+      for (const id in output) {
+        output[id] -= $save.items[id] ?? 0;
+        if (output[id] <= 0) delete output[id];
+      }
+
+      return output;
+    }
+  });
+
+  $: console.log($requiredItems);
+
+  const seasonalItems: Readable<Record<string, number>> = derived(
+    requiredItems,
+    ($requiredItems, set) => {
+      if ($requiredItems !== null) {
         set(
-          [...gameInfo.shipping, ...gameInfo.fish].filter(
-            (item) =>
-              typeof item.seasons !== "undefined" &&
-              item.seasons.includes(
-                ["spring", "summer", "fall", "winter"][$save.currentSeason]
-              ) &&
-              !$save.collectedItems.includes(item.id) &&
-              Object.values(item.seasons).filter((value) => value).length < 3
+          Object.fromEntries(
+            Object.entries($requiredItems).filter(([id, _]) => {
+              const item = gameInfo.items[id];
+              return (
+                item &&
+                typeof item.seasons !== "undefined" &&
+                item.seasons.includes(
+                  ["spring", "summer", "fall", "winter"][$save!.currentSeason]
+                ) &&
+                Object.values(item.seasons).filter((value) => value).length < 3
+              );
+            })
           )
         );
       }
@@ -194,15 +251,18 @@
         {seasonNames.get($save.currentSeason)}
       </h2>
       <div class="seasonal-items">
-        {#each $seasonalItems as item}
-          <ItemButton {item} scale={item.isCraftable ? 2 : 3} />
+        {#each Object.entries($seasonalItems) as [id, quantity]}
+          <ItemButton
+            item={gameInfo.items[id]}
+            scale={gameInfo.items[id].isCraftable ? 2 : 3}
+            {quantity} />
         {/each}
       </div>
     </div>
   </div>
 {:else}
   <p class="no-save">
-    When you select a save file, this section shows information about
-    what you should do next.
+    When you select a save file, this section shows information about what you
+    should do next.
   </p>
 {/if}

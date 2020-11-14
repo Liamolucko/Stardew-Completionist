@@ -41,8 +41,8 @@
     typeof navigator === "undefined"
       ? null
       : navigator.platform.startsWith("Win")
-      ? "%APPDATA%\\StardewValley\\Saves\\<save>\\SaveGameInfo"
-      : "~/.config/StardewValley/Saves/<save>/SaveGameInfo";
+      ? "%APPDATA%\\StardewValley\\Saves\\<save>\\<save>"
+      : "~/.config/StardewValley/Saves/<save>/<save>";
 
   const hasBackend =
     (typeof globalThis.showDirectoryPicker !== "undefined" &&

@@ -1,8 +1,8 @@
 export const categories = new Map<string, string>([
-  ["-4", "Any Fish"],
-  ["-5", "Egg"],
-  ["-6", "Milk"],
-  ["-777", "Wild Seeds"],
+  ["-4", "Fish (Any)"],
+  ["-5", "Egg (Any)"],
+  ["-6", "Milk (Any)"],
+  ["-777", "Wild Seeds (Any)"],
 ]);
 
 export const locationNames = new Map([

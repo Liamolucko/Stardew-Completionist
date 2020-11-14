@@ -36,12 +36,14 @@
       page.params.collection === "crafting"
     ) {
       return {
+        gameInfo,
         title: categoryNames.get(page.params.collection),
         recipes: gameInfo[page.params.collection],
         items: gameInfo[page.params.collection].map((recipe) => recipe.result),
       };
     } else {
       return {
+        gameInfo,
         title: categoryNames.get(page.params.collection),
         items: gameInfo[page.params.collection],
         recipes: undefined,
@@ -53,12 +55,42 @@
 <script lang="ts">
   import DataTable, { Body, Cell, Head, Row } from "@smui/data-table";
   import ItemButton from "../components/ItemButton.svelte";
-  import type { Item, Recipe } from "../game-info";
+  import type { Item, Recipe, GameInfo } from "../game-info";
   import save from "../save";
+  import { derived } from "svelte/store";
+  import { categories } from "../names";
 
+  export let gameInfo: GameInfo;
   export let title: string;
   export let items: Item[];
   export let recipes: Recipe[] | undefined;
+
+  const requiredIngredients = derived(save, ($save) => {
+    if (!recipes || $save === null) {
+      return null;
+    } else {
+      const processRecipe = (acc: Record<string, number>, recipe: Recipe) => {
+        if (!$save.collectedItems.includes(recipe.result.id)) {
+          for (const [ingredient, amount] of Object.entries(
+            recipe.ingredients
+          )) {
+            if (ingredient in gameInfo.recipes) {
+              acc = processRecipe(acc, gameInfo.recipes[ingredient]);
+            } else {
+              acc[ingredient] ??= 0;
+              acc[ingredient] += amount;
+            }
+          }
+        }
+
+        return acc;
+      };
+
+      return recipes.reduce(processRecipe, {});
+    }
+  });
+
+  $: console.log($requiredIngredients);
 </script>
 
 <style lang="scss">
@@ -73,17 +105,20 @@
     padding: 20px;
 
     gap: 24px;
-    grid-auto-flow: row;
     grid-template-areas:
       "g"
-      "r";
+      "r"
+      "i";
 
     overflow: auto;
 
     @media only screen and (min-width: 1425px) {
       &.has-unknown-recipes {
-        grid-template-areas: "g r";
+        grid-template-areas:
+          "g r"
+          "i r";
         grid-template-columns: auto 1fr;
+        grid-template-rows: auto 1fr;
       }
     }
 
@@ -91,11 +126,15 @@
 
     justify-content: center;
 
+    .mdc-card {
+      padding: 16px;
+    }
+
     .grid-card {
       width: max-content;
       height: max-content;
 
-      padding: 16px;
+      grid-area: g;
 
       .item-grid {
         display: grid;
@@ -113,10 +152,14 @@
       }
     }
 
-    .source-list {
+    ul {
       margin: 0;
       padding: 0;
       list-style-position: inside;
+    }
+
+    .ingredients {
+      height: max-content;
     }
   }
 </style>
@@ -142,7 +185,7 @@
   </div>
 
   {#if typeof recipes !== 'undefined' && $save !== null}
-    <DataTable>
+    <DataTable style="grid-area: r">
       <Head>
         <Row>
           <Cell>Recipe</Cell>
@@ -171,5 +214,13 @@
         {/each}
       </Body>
     </DataTable>
+    <div class="mdc-card mdc-card--outlined ingredients">
+      <h2 class="mdc-typography--headline6">Required Ingredients</h2>
+      <ul>
+        {#each Object.entries($requiredIngredients) as [id, amount]}
+          <li>{categories.get(id) || gameInfo.items[id].name}: {$save.items[id] ?? 0}/{amount}</li>
+        {/each}
+      </ul>
+    </div>
   {/if}
 </div>
