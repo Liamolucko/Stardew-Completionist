@@ -89,8 +89,6 @@
       return recipes.reduce(processRecipe, {});
     }
   });
-
-  $: console.log($requiredIngredients);
 </script>
 
 <style lang="scss">
