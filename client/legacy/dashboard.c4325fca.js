@@ -1,37 +1,44 @@
-import { _ as _asyncToGenerator, r as regenerator, g as gameInfo, a as _inherits, b as _getPrototypeOf, c as _possibleConstructorReturn, d as _classCallCheck, i as init, e as _assertThisInitialized, f as dispatch_dev, h as _createClass, S as SvelteComponentDev, s as safe_not_equal, j as space, k as element, t as text, N as empty, q as query_selector_all, m as detach_dev, o as claim_space, p as claim_element, u as children, w as claim_text, y as attr_dev, z as add_location, A as insert_dev, B as append_dev, D as _slicedToArray, F as transition_out, P as check_outros, E as transition_in, H as validate_store, I as component_subscribe, v as validate_slots, J as derived, K as globals, ar as seasonNames, L as validate_each_argument, l as create_component, x as claim_component, C as mount_component, G as destroy_component, O as group_outros, M as save, R as _toConsumableArray, n as noop, T as set_data_dev, Q as destroy_each } from './client.5bd7d1cd.js';
+import { _ as _asyncToGenerator, r as regenerator, g as gameInfo, a as _inherits, b as _getPrototypeOf, c as _possibleConstructorReturn, d as _classCallCheck, i as init, e as _assertThisInitialized, f as dispatch_dev, h as _createClass, S as SvelteComponentDev, s as safe_not_equal, j as space, k as element, t as text, N as empty, q as query_selector_all, m as detach_dev, o as claim_space, p as claim_element, u as children, w as claim_text, y as attr_dev, z as add_location, A as insert_dev, B as append_dev, D as _slicedToArray, F as transition_out, P as check_outros, E as transition_in, H as validate_store, I as component_subscribe, v as validate_slots, J as derived, K as globals, ar as seasonNames, L as validate_each_argument, l as create_component, x as claim_component, C as mount_component, G as destroy_component, O as group_outros, M as save, n as noop, T as set_data_dev, Q as destroy_each, R as _toConsumableArray } from './client.740179a6.js';
 import { _ as _defineProperty } from './defineProperty.ea367071.js';
-import { D as DataTable, H as Head, B as Body, C as Cell, R as Row } from './Cell.949ca3ec.js';
-import { I as ItemButton } from './ItemButton.97a5595d.js';
+import { D as DataTable, H as Head, B as Body, C as Cell, R as Row } from './Cell.8d1c1d28.js';
+import { I as ItemButton } from './ItemButton.27200f84.js';
 
 function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
 
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 var Object_1 = globals.Object;
 var file = "src/routes/dashboard.svelte";
 
 function get_each_context(ctx, list, i) {
   var child_ctx = ctx.slice();
-  child_ctx[6] = list[i];
+  child_ctx[7] = list[i][0];
+  child_ctx[8] = list[i][1];
   return child_ctx;
 }
 
 function get_each_context_2(ctx, list, i) {
   var child_ctx = ctx.slice();
-  child_ctx[6] = list[i];
+  child_ctx[14] = list[i];
   return child_ctx;
 }
 
 function get_each_context_3(ctx, list, i) {
   var child_ctx = ctx.slice();
-  child_ctx[14] = list[i];
+  child_ctx[17] = list[i];
   return child_ctx;
 }
 
 function get_each_context_1(ctx, list, i) {
   var child_ctx = ctx.slice();
-  child_ctx[9] = list[i];
+  child_ctx[11] = list[i];
   return child_ctx;
-} // (837:0) {:else}
+} // (916:0) {:else}
 
 
 function create_else_block(ctx) {
@@ -40,7 +47,7 @@ function create_else_block(ctx) {
   var block = {
     c: function create() {
       p = element("p");
-      t = text("When you select a save file, this section shows information about\n    what you should do next.");
+      t = text("When you select a save file, this section shows information about what you\n    should do next.");
       this.h();
     },
     l: function claim(nodes) {
@@ -48,13 +55,13 @@ function create_else_block(ctx) {
         class: true
       });
       var p_nodes = children(p);
-      t = claim_text(p_nodes, "When you select a save file, this section shows information about\n    what you should do next.");
+      t = claim_text(p_nodes, "When you select a save file, this section shows information about what you\n    should do next.");
       p_nodes.forEach(detach_dev);
       this.h();
     },
     h: function hydrate() {
       attr_dev(p, "class", "no-save svelte-13t98ij");
-      add_location(p, file, 837, 2, 24918);
+      add_location(p, file, 916, 2, 28348);
     },
     m: function mount(target, anchor) {
       insert_dev(target, p, anchor);
@@ -71,11 +78,11 @@ function create_else_block(ctx) {
     block: block,
     id: create_else_block.name,
     type: "else",
-    source: "(837:0) {:else}",
+    source: "(916:0) {:else}",
     ctx: ctx
   });
   return block;
-} // (790:0) {#if $save !== null}
+} // (866:0) {#if $save !== null}
 
 
 function create_if_block(ctx) {
@@ -86,7 +93,7 @@ function create_if_block(ctx) {
   var h2;
   var t1_value = seasonNames.get(
   /*$save*/
-  ctx[0].currentSeason) + "";
+  ctx[1].currentSeason) + "";
   var t1;
   var t2;
   var div0;
@@ -102,9 +109,9 @@ function create_if_block(ctx) {
     },
     $$inline: true
   });
-  var each_value =
+  var each_value = Object.entries(
   /*$seasonalItems*/
-  ctx[2];
+  ctx[3]);
   validate_each_argument(each_value);
   var each_blocks = [];
 
@@ -169,13 +176,13 @@ function create_if_block(ctx) {
     },
     h: function hydrate() {
       attr_dev(h2, "class", "mdc-typography--headline6 svelte-13t98ij");
-      add_location(h2, file, 826, 6, 24622);
+      add_location(h2, file, 902, 6, 27946);
       attr_dev(div0, "class", "seasonal-items svelte-13t98ij");
-      add_location(div0, file, 829, 6, 24726);
+      add_location(div0, file, 905, 6, 28050);
       attr_dev(div1, "class", "mdc-card mdc-card--outlined seasonal svelte-13t98ij");
-      add_location(div1, file, 825, 4, 24565);
+      add_location(div1, file, 901, 4, 27889);
       attr_dev(div2, "class", "container svelte-13t98ij");
-      add_location(div2, file, 790, 2, 23542);
+      add_location(div2, file, 866, 2, 26866);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div2, anchor);
@@ -198,7 +205,7 @@ function create_if_block(ctx) {
 
       if (dirty &
       /*$$scope, $birthdays*/
-      131074) {
+      1048580) {
         datatable_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -208,16 +215,16 @@ function create_if_block(ctx) {
       datatable.$set(datatable_changes);
       if ((!current || dirty &
       /*$save*/
-      1) && t1_value !== (t1_value = seasonNames.get(
+      2) && t1_value !== (t1_value = seasonNames.get(
       /*$save*/
-      ctx[0].currentSeason) + "")) set_data_dev(t1, t1_value);
+      ctx[1].currentSeason) + "")) set_data_dev(t1, t1_value);
 
       if (dirty &
-      /*$seasonalItems*/
-      4) {
-        each_value =
+      /*gameInfo, Object, $seasonalItems*/
+      9) {
+        each_value = Object.entries(
         /*$seasonalItems*/
-        ctx[2];
+        ctx[3]);
         validate_each_argument(each_value);
 
         var _i4;
@@ -279,11 +286,11 @@ function create_if_block(ctx) {
     block: block,
     id: create_if_block.name,
     type: "if",
-    source: "(790:0) {#if $save !== null}",
+    source: "(866:0) {#if $save !== null}",
     ctx: ctx
   });
   return block;
-} // (795:10) <Cell>
+} // (871:10) <Cell>
 
 
 function create_default_slot_12(ctx) {
@@ -306,11 +313,11 @@ function create_default_slot_12(ctx) {
     block: block,
     id: create_default_slot_12.name,
     type: "slot",
-    source: "(795:10) <Cell>",
+    source: "(871:10) <Cell>",
     ctx: ctx
   });
   return block;
-} // (796:10) <Cell>
+} // (872:10) <Cell>
 
 
 function create_default_slot_11(ctx) {
@@ -333,11 +340,11 @@ function create_default_slot_11(ctx) {
     block: block,
     id: create_default_slot_11.name,
     type: "slot",
-    source: "(796:10) <Cell>",
+    source: "(872:10) <Cell>",
     ctx: ctx
   });
   return block;
-} // (797:10) <Cell>
+} // (873:10) <Cell>
 
 
 function create_default_slot_10(ctx) {
@@ -360,11 +367,11 @@ function create_default_slot_10(ctx) {
     block: block,
     id: create_default_slot_10.name,
     type: "slot",
-    source: "(797:10) <Cell>",
+    source: "(873:10) <Cell>",
     ctx: ctx
   });
   return block;
-} // (798:10) <Cell>
+} // (874:10) <Cell>
 
 
 function create_default_slot_9(ctx) {
@@ -387,11 +394,11 @@ function create_default_slot_9(ctx) {
     block: block,
     id: create_default_slot_9.name,
     type: "slot",
-    source: "(798:10) <Cell>",
+    source: "(874:10) <Cell>",
     ctx: ctx
   });
   return block;
-} // (794:8) <Row>
+} // (870:8) <Row>
 
 
 function create_default_slot_8(ctx) {
@@ -481,7 +488,7 @@ function create_default_slot_8(ctx) {
 
       if (dirty &
       /*$$scope*/
-      131072) {
+      1048576) {
         cell0_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -493,7 +500,7 @@ function create_default_slot_8(ctx) {
 
       if (dirty &
       /*$$scope*/
-      131072) {
+      1048576) {
         cell1_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -505,7 +512,7 @@ function create_default_slot_8(ctx) {
 
       if (dirty &
       /*$$scope*/
-      131072) {
+      1048576) {
         cell2_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -517,7 +524,7 @@ function create_default_slot_8(ctx) {
 
       if (dirty &
       /*$$scope*/
-      131072) {
+      1048576) {
         cell3_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -555,11 +562,11 @@ function create_default_slot_8(ctx) {
     block: block,
     id: create_default_slot_8.name,
     type: "slot",
-    source: "(794:8) <Row>",
+    source: "(870:8) <Row>",
     ctx: ctx
   });
   return block;
-} // (793:6) <Head>
+} // (869:6) <Head>
 
 
 function create_default_slot_7(ctx) {
@@ -592,7 +599,7 @@ function create_default_slot_7(ctx) {
 
       if (dirty &
       /*$$scope*/
-      131072) {
+      1048576) {
         row_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -618,17 +625,17 @@ function create_default_slot_7(ctx) {
     block: block,
     id: create_default_slot_7.name,
     type: "slot",
-    source: "(793:6) <Head>",
+    source: "(869:6) <Head>",
     ctx: ctx
   });
   return block;
-} // (804:12) <Cell>
+} // (880:12) <Cell>
 
 
 function create_default_slot_6(ctx) {
   var t_value =
   /*birthday*/
-  ctx[9].villager + "";
+  ctx[11].villager + "";
   var t;
   var block = {
     c: function create() {
@@ -643,9 +650,9 @@ function create_default_slot_6(ctx) {
     p: function update(ctx, dirty) {
       if (dirty &
       /*$birthdays*/
-      2 && t_value !== (t_value =
+      4 && t_value !== (t_value =
       /*birthday*/
-      ctx[9].villager + "")) set_data_dev(t, t_value);
+      ctx[11].villager + "")) set_data_dev(t, t_value);
     },
     d: function destroy(detaching) {
       if (detaching) detach_dev(t);
@@ -655,11 +662,11 @@ function create_default_slot_6(ctx) {
     block: block,
     id: create_default_slot_6.name,
     type: "slot",
-    source: "(804:12) <Cell>",
+    source: "(880:12) <Cell>",
     ctx: ctx
   });
   return block;
-} // (807:16) {#each [...Array(birthday.maxHearts).keys()] as i}
+} // (883:16) {#each [...Array(birthday.maxHearts).keys()] as i}
 
 
 function create_each_block_3(ctx) {
@@ -682,11 +689,11 @@ function create_each_block_3(ctx) {
       attr_dev(img, "alt", "heart");
       if (img.src !== (img_src_value = "heart-" + (
       /*birthday*/
-      ctx[9].hearts >=
+      ctx[11].hearts >=
       /*i*/
-      ctx[14] + 1 ? "filled" : "outline") + ".png")) attr_dev(img, "src", img_src_value);
+      ctx[17] + 1 ? "filled" : "outline") + ".png")) attr_dev(img, "src", img_src_value);
       attr_dev(img, "class", "svelte-13t98ij");
-      add_location(img, file, 807, 18, 24018);
+      add_location(img, file, 883, 18, 27342);
     },
     m: function mount(target, anchor) {
       insert_dev(target, img, anchor);
@@ -694,11 +701,11 @@ function create_each_block_3(ctx) {
     p: function update(ctx, dirty) {
       if (dirty &
       /*$birthdays*/
-      2 && img.src !== (img_src_value = "heart-" + (
+      4 && img.src !== (img_src_value = "heart-" + (
       /*birthday*/
-      ctx[9].hearts >=
+      ctx[11].hearts >=
       /*i*/
-      ctx[14] + 1 ? "filled" : "outline") + ".png")) {
+      ctx[17] + 1 ? "filled" : "outline") + ".png")) {
         attr_dev(img, "src", img_src_value);
       }
     },
@@ -710,11 +717,11 @@ function create_each_block_3(ctx) {
     block: block,
     id: create_each_block_3.name,
     type: "each",
-    source: "(807:16) {#each [...Array(birthday.maxHearts).keys()] as i}",
+    source: "(883:16) {#each [...Array(birthday.maxHearts).keys()] as i}",
     ctx: ctx
   });
   return block;
-} // (805:12) <Cell>
+} // (881:12) <Cell>
 
 
 function create_default_slot_5(ctx) {
@@ -722,7 +729,7 @@ function create_default_slot_5(ctx) {
 
   var each_value_3 = _toConsumableArray(Array(
   /*birthday*/
-  ctx[9].maxHearts).keys());
+  ctx[11].maxHearts).keys());
 
   validate_each_argument(each_value_3);
   var each_blocks = [];
@@ -756,7 +763,7 @@ function create_default_slot_5(ctx) {
     },
     h: function hydrate() {
       attr_dev(div, "class", "hearts svelte-13t98ij");
-      add_location(div, file, 805, 14, 23912);
+      add_location(div, file, 881, 14, 27236);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div, anchor);
@@ -768,10 +775,10 @@ function create_default_slot_5(ctx) {
     p: function update(ctx, dirty) {
       if (dirty &
       /*$birthdays, Array*/
-      2) {
+      4) {
         each_value_3 = _toConsumableArray(Array(
         /*birthday*/
-        ctx[9].maxHearts).keys());
+        ctx[11].maxHearts).keys());
         validate_each_argument(each_value_3);
 
         var _i10;
@@ -806,17 +813,17 @@ function create_default_slot_5(ctx) {
     block: block,
     id: create_default_slot_5.name,
     type: "slot",
-    source: "(805:12) <Cell>",
+    source: "(881:12) <Cell>",
     ctx: ctx
   });
   return block;
-} // (814:12) <Cell>
+} // (890:12) <Cell>
 
 
 function create_default_slot_4(ctx) {
   var t_value =
   /*birthday*/
-  ctx[9].date + "";
+  ctx[11].date + "";
   var t;
   var block = {
     c: function create() {
@@ -831,9 +838,9 @@ function create_default_slot_4(ctx) {
     p: function update(ctx, dirty) {
       if (dirty &
       /*$birthdays*/
-      2 && t_value !== (t_value =
+      4 && t_value !== (t_value =
       /*birthday*/
-      ctx[9].date + "")) set_data_dev(t, t_value);
+      ctx[11].date + "")) set_data_dev(t, t_value);
     },
     d: function destroy(detaching) {
       if (detaching) detach_dev(t);
@@ -843,11 +850,11 @@ function create_default_slot_4(ctx) {
     block: block,
     id: create_default_slot_4.name,
     type: "slot",
-    source: "(814:12) <Cell>",
+    source: "(890:12) <Cell>",
     ctx: ctx
   });
   return block;
-} // (817:16) {#each birthday.bestGifts as item}
+} // (893:16) {#each birthday.bestGifts as item}
 
 
 function create_each_block_2(ctx) {
@@ -857,10 +864,10 @@ function create_each_block_2(ctx) {
     props: {
       item:
       /*item*/
-      ctx[6],
+      ctx[14],
       scale:
       /*item*/
-      ctx[6].isCraftable ? 1 : 2
+      ctx[14].isCraftable ? 1 : 2
     },
     $$inline: true
   });
@@ -879,14 +886,14 @@ function create_each_block_2(ctx) {
       var itembutton_changes = {};
       if (dirty &
       /*$birthdays*/
-      2) itembutton_changes.item =
+      4) itembutton_changes.item =
       /*item*/
-      ctx[6];
+      ctx[14];
       if (dirty &
       /*$birthdays*/
-      2) itembutton_changes.scale =
+      4) itembutton_changes.scale =
       /*item*/
-      ctx[6].isCraftable ? 1 : 2;
+      ctx[14].isCraftable ? 1 : 2;
       itembutton.$set(itembutton_changes);
     },
     i: function intro(local) {
@@ -906,11 +913,11 @@ function create_each_block_2(ctx) {
     block: block,
     id: create_each_block_2.name,
     type: "each",
-    source: "(817:16) {#each birthday.bestGifts as item}",
+    source: "(893:16) {#each birthday.bestGifts as item}",
     ctx: ctx
   });
   return block;
-} // (815:12) <Cell>
+} // (891:12) <Cell>
 
 
 function create_default_slot_3(ctx) {
@@ -918,7 +925,7 @@ function create_default_slot_3(ctx) {
   var current;
   var each_value_2 =
   /*birthday*/
-  ctx[9].bestGifts;
+  ctx[11].bestGifts;
   validate_each_argument(each_value_2);
   var each_blocks = [];
 
@@ -957,7 +964,7 @@ function create_default_slot_3(ctx) {
     },
     h: function hydrate() {
       attr_dev(div, "class", "best-gifts svelte-13t98ij");
-      add_location(div, file, 815, 14, 24283);
+      add_location(div, file, 891, 14, 27607);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div, anchor);
@@ -971,10 +978,10 @@ function create_default_slot_3(ctx) {
     p: function update(ctx, dirty) {
       if (dirty &
       /*$birthdays*/
-      2) {
+      4) {
         each_value_2 =
         /*birthday*/
-        ctx[9].bestGifts;
+        ctx[11].bestGifts;
         validate_each_argument(each_value_2);
 
         var _i14;
@@ -1033,11 +1040,11 @@ function create_default_slot_3(ctx) {
     block: block,
     id: create_default_slot_3.name,
     type: "slot",
-    source: "(815:12) <Cell>",
+    source: "(891:12) <Cell>",
     ctx: ctx
   });
   return block;
-} // (803:10) <Row>
+} // (879:10) <Row>
 
 
 function create_default_slot_2(ctx) {
@@ -1131,7 +1138,7 @@ function create_default_slot_2(ctx) {
 
       if (dirty &
       /*$$scope, $birthdays*/
-      131074) {
+      1048580) {
         cell0_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -1143,7 +1150,7 @@ function create_default_slot_2(ctx) {
 
       if (dirty &
       /*$$scope, $birthdays*/
-      131074) {
+      1048580) {
         cell1_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -1155,7 +1162,7 @@ function create_default_slot_2(ctx) {
 
       if (dirty &
       /*$$scope, $birthdays*/
-      131074) {
+      1048580) {
         cell2_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -1167,7 +1174,7 @@ function create_default_slot_2(ctx) {
 
       if (dirty &
       /*$$scope, $birthdays*/
-      131074) {
+      1048580) {
         cell3_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -1206,11 +1213,11 @@ function create_default_slot_2(ctx) {
     block: block,
     id: create_default_slot_2.name,
     type: "slot",
-    source: "(803:10) <Row>",
+    source: "(879:10) <Row>",
     ctx: ctx
   });
   return block;
-} // (802:8) {#each $birthdays as birthday}
+} // (878:8) {#each $birthdays as birthday}
 
 
 function create_each_block_1(ctx) {
@@ -1243,7 +1250,7 @@ function create_each_block_1(ctx) {
 
       if (dirty &
       /*$$scope, $birthdays*/
-      131074) {
+      1048580) {
         row_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -1269,11 +1276,11 @@ function create_each_block_1(ctx) {
     block: block,
     id: create_each_block_1.name,
     type: "each",
-    source: "(802:8) {#each $birthdays as birthday}",
+    source: "(878:8) {#each $birthdays as birthday}",
     ctx: ctx
   });
   return block;
-} // (801:6) <Body>
+} // (877:6) <Body>
 
 
 function create_default_slot_1(ctx) {
@@ -1281,7 +1288,7 @@ function create_default_slot_1(ctx) {
   var current;
   var each_value_1 =
   /*$birthdays*/
-  ctx[1];
+  ctx[2];
   validate_each_argument(each_value_1);
   var each_blocks = [];
 
@@ -1321,10 +1328,10 @@ function create_default_slot_1(ctx) {
     p: function update(ctx, dirty) {
       if (dirty &
       /*$birthdays, Array*/
-      2) {
+      4) {
         each_value_1 =
         /*$birthdays*/
-        ctx[1];
+        ctx[2];
         validate_each_argument(each_value_1);
 
         var _i20;
@@ -1383,11 +1390,11 @@ function create_default_slot_1(ctx) {
     block: block,
     id: create_default_slot_1.name,
     type: "slot",
-    source: "(801:6) <Body>",
+    source: "(877:6) <Body>",
     ctx: ctx
   });
   return block;
-} // (792:4) <DataTable>
+} // (868:4) <DataTable>
 
 
 function create_default_slot(ctx) {
@@ -1439,7 +1446,7 @@ function create_default_slot(ctx) {
 
       if (dirty &
       /*$$scope*/
-      131072) {
+      1048576) {
         head_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -1451,7 +1458,7 @@ function create_default_slot(ctx) {
 
       if (dirty &
       /*$$scope, $birthdays*/
-      131074) {
+      1048580) {
         body_changes.$$scope = {
           dirty: dirty,
           ctx: ctx
@@ -1481,11 +1488,11 @@ function create_default_slot(ctx) {
     block: block,
     id: create_default_slot.name,
     type: "slot",
-    source: "(792:4) <DataTable>",
+    source: "(868:4) <DataTable>",
     ctx: ctx
   });
   return block;
-} // (831:8) {#each $seasonalItems as item}
+} // (907:8) {#each Object.entries($seasonalItems) as [id, quantity]}
 
 
 function create_each_block(ctx) {
@@ -1493,12 +1500,15 @@ function create_each_block(ctx) {
   var current;
   itembutton = new ItemButton({
     props: {
-      item:
-      /*item*/
-      ctx[6],
-      scale:
-      /*item*/
-      ctx[6].isCraftable ? 2 : 3
+      item: gameInfo.items[
+      /*id*/
+      ctx[7]],
+      scale: gameInfo.items[
+      /*id*/
+      ctx[7]].isCraftable ? 2 : 3,
+      quantity:
+      /*quantity*/
+      ctx[8]
     },
     $$inline: true
   });
@@ -1516,15 +1526,20 @@ function create_each_block(ctx) {
     p: function update(ctx, dirty) {
       var itembutton_changes = {};
       if (dirty &
-      /*$seasonalItems*/
-      4) itembutton_changes.item =
-      /*item*/
-      ctx[6];
+      /*gameInfo, $seasonalItems*/
+      9) itembutton_changes.item = gameInfo.items[
+      /*id*/
+      ctx[7]];
+      if (dirty &
+      /*gameInfo, $seasonalItems*/
+      9) itembutton_changes.scale = gameInfo.items[
+      /*id*/
+      ctx[7]].isCraftable ? 2 : 3;
       if (dirty &
       /*$seasonalItems*/
-      4) itembutton_changes.scale =
-      /*item*/
-      ctx[6].isCraftable ? 2 : 3;
+      8) itembutton_changes.quantity =
+      /*quantity*/
+      ctx[8];
       itembutton.$set(itembutton_changes);
     },
     i: function intro(local) {
@@ -1544,7 +1559,7 @@ function create_each_block(ctx) {
     block: block,
     id: create_each_block.name,
     type: "each",
-    source: "(831:8) {#each $seasonalItems as item}",
+    source: "(907:8) {#each Object.entries($seasonalItems) as [id, quantity]}",
     ctx: ctx
   });
   return block;
@@ -1565,7 +1580,7 @@ function create_fragment(ctx) {
   function select_block_type(ctx, dirty) {
     if (
     /*$save*/
-    ctx[0] !== null) return 0;
+    ctx[1] !== null) return 0;
     return 1;
   }
 
@@ -1599,7 +1614,7 @@ function create_fragment(ctx) {
     h: function hydrate() {
       document.title = "Dashboard | Stardew Completionist";
       attr_dev(h1, "class", "title mdc-typography--headline4 svelte-13t98ij");
-      add_location(h1, file, 788, 0, 23460);
+      add_location(h1, file, 864, 0, 26784);
     },
     m: function mount(target, anchor) {
       insert_dev(target, t0, anchor);
@@ -1698,7 +1713,7 @@ function instance($$self, $$props, $$invalidate) {
   var $seasonalItems;
   validate_store(save, "save");
   component_subscribe($$self, save, function ($$value) {
-    return $$invalidate(0, $save = $$value);
+    return $$invalidate(1, $save = $$value);
   });
   var _$$props$$$slots = $$props.$$slots,
       slots = _$$props$$$slots === void 0 ? {} : _$$props$$$slots,
@@ -1724,20 +1739,188 @@ function instance($$self, $$props, $$invalidate) {
   });
   validate_store(birthdays, "birthdays");
   component_subscribe($$self, birthdays, function (value) {
-    return $$invalidate(1, $birthdays = value);
+    return $$invalidate(2, $birthdays = value);
   });
-  var seasonalItems = derived(save, function ($save, set) {
-    if ($save !== null) {
-      set([].concat(_toConsumableArray(gameInfo.shipping), _toConsumableArray(gameInfo.fish)).filter(function (item) {
-        return typeof item.seasons !== "undefined" && item.seasons.includes(["spring", "summer", "fall", "winter"][$save.currentSeason]) && !$save.collectedItems.includes(item.id) && Object.values(item.seasons).filter(function (value) {
+  var requiredItems = derived(save, function ($save) {
+    var _a, _b, _c, _d, _e, _f;
+
+    var _g, _h;
+
+    if ($save === null) {
+      return null;
+    } else {
+      var output = {};
+      var recipes = {};
+
+      var processRecipe = function processRecipe(recipe) {
+        var _a;
+
+        var _b;
+
+        var _loop = function _loop() {
+          var _Object$entries$_i = _slicedToArray(_Object$entries[_i23], 2),
+              ingredient = _Object$entries$_i[0],
+              amount = _Object$entries$_i[1];
+
+          var recipe = Object.values(gameInfo.recipes).find(function (recipe) {
+            return recipe.result.id === ingredient;
+          });
+
+          if (recipe) {
+            (_a = recipes[_b = recipe.name]) !== null && _a !== void 0 ? _a : recipes[_b] = 0; // If a recipe makes two of an item, you only need to craft it once to satisfy the need for two of the item.
+
+            recipes[recipe.name] += amount / recipe.amount;
+            processRecipe(recipe);
+          }
+        };
+
+        for (var _i23 = 0, _Object$entries = Object.entries(recipe.ingredients); _i23 < _Object$entries.length; _i23++) {
+          _loop();
+        }
+      };
+
+      var rootRecipes = Object.values(gameInfo.recipes).filter(function (recipe) {
+        return !$save.collectedItems.includes(recipe.result.id);
+      }); // Figure out all the recipes needed to craft other recipes
+
+      var _iterator = _createForOfIteratorHelper(rootRecipes),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var _recipe2 = _step.value;
+          processRecipe(_recipe2);
+        } // You can't make half a recipe
+
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+
+      for (var recipe in recipes) {
+        recipes[recipe] = Math.ceil(recipes[recipe]);
+      } // Only if you won't be making the recipe anyway should the root recipes be added
+
+
+      var _iterator2 = _createForOfIteratorHelper(rootRecipes),
+          _step2;
+
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var _recipe3 = _step2.value;
+          (_a = recipes[_g = _recipe3.name]) !== null && _a !== void 0 ? _a : recipes[_g] = 1;
+        }
+      } catch (err) {
+        _iterator2.e(err);
+      } finally {
+        _iterator2.f();
+      }
+
+      for (var _i24 = 0, _Object$entries2 = Object.entries(recipes); _i24 < _Object$entries2.length; _i24++) {
+        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i24], 2),
+            name = _Object$entries2$_i[0],
+            recipeAmount = _Object$entries2$_i[1];
+
+        var _recipe = gameInfo.recipes[name];
+
+        var _loop2 = function _loop2() {
+          var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i25], 2),
+              ingredient = _Object$entries3$_i[0],
+              amount = _Object$entries3$_i[1];
+
+          if (Object.values(gameInfo.recipes).some(function (recipe) {
+            return recipe.result.id === ingredient;
+          })) {
+            return "continue";
+          }
+
+          (_b = output[ingredient]) !== null && _b !== void 0 ? _b : output[ingredient] = 0;
+          output[ingredient] += amount * recipeAmount;
+        };
+
+        for (var _i25 = 0, _Object$entries3 = Object.entries(_recipe.ingredients); _i25 < _Object$entries3.length; _i25++) {
+          var _ret = _loop2();
+
+          if (_ret === "continue") continue;
+        }
+      }
+
+      var _iterator3 = _createForOfIteratorHelper(gameInfo.shipping),
+          _step3;
+
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var _id = _step3.value.id;
+
+          if (!$save.collectedItems.includes(_id)) {
+            (_c = output[_id]) !== null && _c !== void 0 ? _c : output[_id] = 0;
+            output[_id] += 1;
+          }
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+
+      var _iterator4 = _createForOfIteratorHelper(gameInfo.fish),
+          _step4;
+
+      try {
+        for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+          var _id2 = _step4.value.id;
+
+          if (!$save.collectedItems.includes(_id2)) {
+            (_d = output[_id2]) !== null && _d !== void 0 ? _d : output[_id2] = 1;
+          }
+        }
+      } catch (err) {
+        _iterator4.e(err);
+      } finally {
+        _iterator4.f();
+      }
+
+      for (var _i26 = 0, _Object$values = Object.values(gameInfo.bundles); _i26 < _Object$values.length; _i26++) {
+        var bundle = _Object$values[_i26];
+
+        for (var _i27 = 0, _Object$entries4 = Object.entries(bundle.items); _i27 < _Object$entries4.length; _i27++) {
+          var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i27], 2),
+              index = _Object$entries4$_i[0],
+              item = _Object$entries4$_i[1];
+
+          if (!$save.bundleCompletion.get(bundle.id)[index]) {
+            (_e = output[_h = item.id]) !== null && _e !== void 0 ? _e : output[_h] = 0;
+            output[item.id] += item.amount;
+          }
+        }
+      }
+
+      for (var id in output) {
+        output[id] -= (_f = $save.items[id]) !== null && _f !== void 0 ? _f : 0;
+        if (output[id] <= 0) delete output[id];
+      }
+
+      return output;
+    }
+  });
+  var seasonalItems = derived(requiredItems, function ($requiredItems, set) {
+    if ($requiredItems !== null) {
+      set(Object.fromEntries(Object.entries($requiredItems).filter(function (_ref3) {
+        var _ref4 = _slicedToArray(_ref3, 2),
+            id = _ref4[0],
+            _ = _ref4[1];
+
+        var item = gameInfo.items[id];
+        return item && typeof item.seasons !== "undefined" && item.seasons.includes(["spring", "summer", "fall", "winter"][$save.currentSeason]) && Object.values(item.seasons).filter(function (value) {
           return value;
         }).length < 3;
-      }));
+      })));
     }
   });
   validate_store(seasonalItems, "seasonalItems");
   component_subscribe($$self, seasonalItems, function (value) {
-    return $$invalidate(2, $seasonalItems = value);
+    return $$invalidate(3, $seasonalItems = value);
   });
   var writable_props = ["gameInfo"];
   Object_1.keys($$props).forEach(function (key) {
@@ -1745,13 +1928,13 @@ function instance($$self, $$props, $$invalidate) {
   });
 
   $$self.$$set = function ($$props) {
-    if ("gameInfo" in $$props) $$invalidate(5, gameInfo = $$props.gameInfo);
+    if ("gameInfo" in $$props) $$invalidate(0, gameInfo = $$props.gameInfo);
   };
 
   $$self.$capture_state = function () {
-    var _ref3;
+    var _ref5;
 
-    return _ref3 = {
+    return _ref5 = {
       gameInfo: gameInfo,
       preload: preload,
       DataTable: DataTable,
@@ -1763,20 +1946,18 @@ function instance($$self, $$props, $$invalidate) {
       ItemButton: ItemButton,
       seasonNames: seasonNames,
       save: save
-    }, _defineProperty(_ref3, "gameInfo", gameInfo), _defineProperty(_ref3, "birthdays", birthdays), _defineProperty(_ref3, "seasonalItems", seasonalItems), _defineProperty(_ref3, "$save", $save), _defineProperty(_ref3, "$birthdays", $birthdays), _defineProperty(_ref3, "$seasonalItems", $seasonalItems), _ref3;
+    }, _defineProperty(_ref5, "gameInfo", gameInfo), _defineProperty(_ref5, "birthdays", birthdays), _defineProperty(_ref5, "requiredItems", requiredItems), _defineProperty(_ref5, "seasonalItems", seasonalItems), _defineProperty(_ref5, "$save", $save), _defineProperty(_ref5, "$birthdays", $birthdays), _defineProperty(_ref5, "$seasonalItems", $seasonalItems), _ref5;
   };
 
   $$self.$inject_state = function ($$props) {
-    if ("gameInfo" in $$props) $$invalidate(5, gameInfo = $$props.gameInfo);
-    if ("birthdays" in $$props) $$invalidate(3, birthdays = $$props.birthdays);
-    if ("seasonalItems" in $$props) $$invalidate(4, seasonalItems = $$props.seasonalItems);
+    if ("gameInfo" in $$props) $$invalidate(0, gameInfo = $$props.gameInfo);
   };
 
   if ($$props && "$$inject" in $$props) {
     $$self.$inject_state($$props.$$inject);
   }
 
-  return [$save, $birthdays, $seasonalItems, birthdays, seasonalItems, gameInfo];
+  return [gameInfo, $save, $birthdays, $seasonalItems, birthdays, seasonalItems];
 }
 
 var Dashboard = /*#__PURE__*/function (_SvelteComponentDev) {
@@ -1791,7 +1972,7 @@ var Dashboard = /*#__PURE__*/function (_SvelteComponentDev) {
 
     _this = _super.call(this, options);
     init(_assertThisInitialized(_this), options, instance, create_fragment, safe_not_equal, {
-      gameInfo: 5
+      gameInfo: 0
     });
     dispatch_dev("SvelteRegisterComponent", {
       component: _assertThisInitialized(_this),
@@ -1804,7 +1985,7 @@ var Dashboard = /*#__PURE__*/function (_SvelteComponentDev) {
 
     if (
     /*gameInfo*/
-    ctx[5] === undefined && !("gameInfo" in props)) {
+    ctx[0] === undefined && !("gameInfo" in props)) {
       console.warn("<Dashboard> was created without expected prop 'gameInfo'");
     }
 

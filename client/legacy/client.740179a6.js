@@ -8566,10 +8566,10 @@ var IconButton = /*#__PURE__*/function (_SvelteComponentDev) {
 var backend = globalThis.backend;
 
 const categories = new Map([
-    ["-4", "Any Fish"],
-    ["-5", "Egg"],
-    ["-6", "Milk"],
-    ["-777", "Wild Seeds"],
+    ["-4", "Fish (Any)"],
+    ["-5", "Egg (Any)"],
+    ["-6", "Milk (Any)"],
+    ["-777", "Wild Seeds (Any)"],
 ]);
 const locationNames = new Map([
     ["Farm", "Farm"],
@@ -17922,6 +17922,10 @@ function getSaveFileData(file) {
         lastSaved: save.querySelector("player > saveTime"),
         bundles: Array.from((_b = (_a = Array.from(save.querySelectorAll("locations > GameLocation"))
             .find((el) => el.getAttribute("xsi:type") == "CommunityCenter")) === null || _a === void 0 ? void 0 : _a.querySelectorAll("bundles > item")) !== null && _b !== void 0 ? _b : []),
+        items: Array.from(save.querySelectorAll("locations > GameLocation > objects > item > value > Object"))
+            .filter((el) => el.querySelector("items"))
+            .flatMap((el) => Array.from(el.querySelectorAll("items > Item")))
+            .filter((el) => el.getAttribute("xsi:type") == "Object"),
     };
     if (Object.values(data).some((item) => item === null)) {
         throw Error(`Invalid save file ${file instanceof XMLDocument
@@ -17942,8 +17946,9 @@ function assertQuerySelector(element, selectors, message) {
 async function processSaveFile(file) {
     var _a;
     const data = getSaveFileData(file);
-    const currentDay = parseInt(data.currentDay.textContent, 10);
-    const currentSeason = parseInt(data.currentSeason.textContent, 10);
+    let currentDay = parseInt(data.currentDay.textContent, 10) + 1;
+    const currentSeason = parseInt(data.currentSeason.textContent, 10) + Math.floor(currentDay / 28);
+    currentDay %= 28;
     const gameInfo$1 = await gameInfo.fetch();
     const errorMessage = `Invalid save file ${file instanceof XMLDocument
         ? (_a = data.name.textContent) === null || _a === void 0 ? void 0 : _a.trim() : typeof file.handle === "string"
@@ -18006,6 +18011,15 @@ async function processSaveFile(file) {
                 Array.from(el.querySelectorAll("value > ArrayOfBoolean > boolean")).map((el) => el.textContent == "true"),
             ];
         })),
+        items: data.items.reduce((acc, el) => {
+            var _a, _b;
+            const isCraftable = ((_a = el.querySelector("bigCraftable")) === null || _a === void 0 ? void 0 : _a.textContent) === "true";
+            const id = (isCraftable ? "c" : "") +
+                assertQuerySelector(el, "parentSheetIndex", errorMessage).textContent;
+            (_b = acc[id]) !== null && _b !== void 0 ? _b : (acc[id] = 0);
+            acc[id] += parseInt(assertQuerySelector(el, "stack", errorMessage).textContent);
+            return acc;
+        }, {}),
     };
 }
 async function getSaveInfo(handle) {
@@ -19117,7 +19131,7 @@ function create_else_block_3(ctx) {
       this.h();
     },
     h: function hydrate() {
-      add_location(p, file$d, 150, 10, 5149);
+      add_location(p, file$d, 150, 10, 5137);
     },
     m: function mount(target, anchor) {
       insert_dev(target, p, anchor);
@@ -19267,8 +19281,8 @@ function create_else_block_2(ctx) {
       this.h();
     },
     h: function hydrate() {
-      add_location(code, file$d, 114, 14, 4046);
-      add_location(p, file$d, 111, 12, 3922);
+      add_location(code, file$d, 114, 14, 4034);
+      add_location(p, file$d, 111, 12, 3910);
     },
     m: function mount(target, anchor) {
       insert_dev(target, p, anchor);
@@ -19434,8 +19448,8 @@ function create_if_block_8$1(ctx) {
       this.h();
     },
     h: function hydrate() {
-      add_location(code, file$d, 103, 16, 3697);
-      add_location(p, file$d, 100, 14, 3561);
+      add_location(code, file$d, 103, 16, 3685);
+      add_location(p, file$d, 100, 14, 3549);
     },
     m: function mount(target, anchor) {
       insert_dev(target, p, anchor);
@@ -19549,13 +19563,13 @@ function create_if_block_6$1(ctx) {
       this.h();
     },
     h: function hydrate() {
-      add_location(kbd0, file$d, 131, 14, 4530);
-      add_location(kbd1, file$d, 133, 14, 4573);
-      add_location(kbd2, file$d, 135, 14, 4616);
-      add_location(code0, file$d, 137, 14, 4688);
-      add_location(kbd3, file$d, 139, 14, 4764);
-      add_location(code1, file$d, 141, 14, 4824);
-      add_location(p, file$d, 129, 12, 4492);
+      add_location(kbd0, file$d, 131, 14, 4518);
+      add_location(kbd1, file$d, 133, 14, 4561);
+      add_location(kbd2, file$d, 135, 14, 4604);
+      add_location(code0, file$d, 137, 14, 4676);
+      add_location(kbd3, file$d, 139, 14, 4752);
+      add_location(code1, file$d, 141, 14, 4812);
+      add_location(p, file$d, 129, 12, 4480);
     },
     m: function mount(target, anchor) {
       insert_dev(target, p, anchor);
@@ -19649,10 +19663,10 @@ function create_if_block_5$1(ctx) {
       this.h();
     },
     h: function hydrate() {
-      add_location(code0, file$d, 121, 14, 4212);
-      add_location(kbd, file$d, 123, 14, 4322);
-      add_location(code1, file$d, 125, 14, 4382);
-      add_location(p, file$d, 119, 12, 4174);
+      add_location(code0, file$d, 121, 14, 4200);
+      add_location(kbd, file$d, 123, 14, 4310);
+      add_location(code1, file$d, 125, 14, 4370);
+      add_location(p, file$d, 119, 12, 4162);
     },
     m: function mount(target, anchor) {
       insert_dev(target, p, anchor);
@@ -20314,14 +20328,14 @@ function create_pending_block(ctx) {
     },
     h: function hydrate() {
       set_custom_element_data(mwc_circular_progress, "indeterminate", mwc_circular_progress_indeterminate_value = true);
-      add_location(mwc_circular_progress, file$d, 92, 6, 3329);
+      add_location(mwc_circular_progress, file$d, 92, 6, 3317);
       set_style(div, "outline", "none");
       set_style(div, "margin", "auto");
       set_style(div, "width", "100px");
       set_style(div, "height", "100px");
       set_style(div, "overflow", "hidden");
       attr_dev(div, "tabindex", "0");
-      add_location(div, file$d, 88, 4, 3132);
+      add_location(div, file$d, 88, 4, 3120);
     },
     m: function mount(target, anchor) {
       insert_dev(target, div, anchor);
@@ -20506,7 +20520,7 @@ function create_fragment$f(ctx) {
       attr_dev(input, "type", "file");
       set_style(input, "display", "none");
       attr_dev(input, "class", "svelte-1breaf8");
-      add_location(input, file$d, 72, 0, 2664);
+      add_location(input, file$d, 72, 0, 2652);
     },
     m: function mount(target, anchor) {
       insert_dev(target, input, anchor);
@@ -20586,13 +20600,13 @@ function instance$f($$self, $$props, $$invalidate) {
   validate_slots("SaveSelect", slots, []);
 
   if (true) {
-    Promise.all([import('./mwc-circular-progress.c89cebb3.js'), __inject_styles(["client-52211574.css"])]).then(function(x) { return x[0]; });
+    Promise.all([import('./mwc-circular-progress.da1e4be2.js'), __inject_styles(["client-52211574.css"])]).then(function(x) { return x[0]; });
   }
 
   var dialog;
   var platformName = typeof navigator === "undefined" ? null : navigator.platform.startsWith("Win") ? "Windows" : navigator.platform.startsWith("Mac") ? "macOS" : navigator.platform.startsWith("Linux") ? "Linux" : null;
   var savesDirPath = typeof navigator === "undefined" ? null : navigator.platform.startsWith("Win") ? "%APPDATA%\\StardewValley\\Saves" : "~/.config/StardewValley/Saves";
-  var savePath = typeof navigator === "undefined" ? null : navigator.platform.startsWith("Win") ? "%APPDATA%\\StardewValley\\Saves\\<save>\\SaveGameInfo" : "~/.config/StardewValley/Saves/<save>/SaveGameInfo";
+  var savePath = typeof navigator === "undefined" ? null : navigator.platform.startsWith("Win") ? "%APPDATA%\\StardewValley\\Saves\\<save>\\<save>" : "~/.config/StardewValley/Saves/<save>/<save>";
   var hasBackend = typeof globalThis.showDirectoryPicker !== "undefined" && platformName !== "Windows" || typeof backend !== "undefined";
   var fileInput;
   var options = Promise.resolve(null);
@@ -23078,23 +23092,23 @@ var App = /*#__PURE__*/function (_SvelteComponentDev) {
 var ignore = [];
 var components = [{
   js: function js() {
-    return Promise.all([import('./index.29e33ee3.js'), __inject_styles(["client-52211574.css"])]).then(function(x) { return x[0]; });
+    return Promise.all([import('./index.96624904.js'), __inject_styles(["client-52211574.css"])]).then(function(x) { return x[0]; });
   }
 }, {
   js: function js() {
-    return Promise.all([import('./friendship.c7aa7068.js'), __inject_styles(["client-52211574.css","ItemButton-cb104a32.css","friendship-e2075633.css"])]).then(function(x) { return x[0]; });
+    return Promise.all([import('./friendship.7595f6ba.js'), __inject_styles(["client-52211574.css","ItemButton-cb104a32.css","friendship-e2075633.css"])]).then(function(x) { return x[0]; });
   }
 }, {
   js: function js() {
-    return Promise.all([import('./dashboard.3cf7e411.js'), __inject_styles(["client-52211574.css","ItemButton-cb104a32.css","dashboard-50a75237.css"])]).then(function(x) { return x[0]; });
+    return Promise.all([import('./dashboard.c4325fca.js'), __inject_styles(["client-52211574.css","ItemButton-cb104a32.css","dashboard-50a75237.css"])]).then(function(x) { return x[0]; });
   }
 }, {
   js: function js() {
-    return Promise.all([import('./bundles.8c090eb5.js'), __inject_styles(["client-52211574.css","ItemButton-cb104a32.css","bundles-fab58712.css"])]).then(function(x) { return x[0]; });
+    return Promise.all([import('./bundles.008e0eb2.js'), __inject_styles(["client-52211574.css","ItemButton-cb104a32.css","bundles-fab58712.css"])]).then(function(x) { return x[0]; });
   }
 }, {
   js: function js() {
-    return Promise.all([import('./[collection].66e5bec2.js'), __inject_styles(["client-52211574.css","ItemButton-cb104a32.css","[collection]-ef2c0655.css"])]).then(function(x) { return x[0]; });
+    return Promise.all([import('./[collection].f1b19951.js'), __inject_styles(["client-52211574.css","ItemButton-cb104a32.css","[collection]-1dda8031.css"])]).then(function(x) { return x[0]; });
   }
 }];
 var routes = function (d) {
@@ -24018,10 +24032,14 @@ function hydrate_target(dest) {
   }));
 }
 
+var stores$1 = function stores$1() {
+  return getContext(CONTEXT_KEY);
+};
+
 start$1({
     target: document.querySelector("#sapper"),
 });
 
-export { matches as $, insert_dev as A, append_dev as B, mount_component as C, _slicedToArray as D, transition_in as E, transition_out as F, destroy_component as G, validate_store as H, component_subscribe as I, derived as J, globals as K, validate_each_argument as L, save as M, empty as N, group_outros as O, check_outros as P, destroy_each as Q, _toConsumableArray as R, SvelteComponentDev as S, set_data_dev as T, styleInject as U, __extends as V, _assign as W, MDCFoundation as X, MDCRipple as Y, applyPassive as Z, _asyncToGenerator as _, _inherits as a, MDCRippleFoundation as a0, MDCComponent as a1, __awaiter as a2, __generator as a3, closest as a4, create_slot as a5, assign as a6, exclude as a7, forwardEventsBuilder as a8, get_current_component as a9, getContext as aa, setContext as ab, onMount as ac, onDestroy as ad, exclude_internal_props as ae, useActions as af, set_attributes as ag, action_destroyer as ah, listen_dev as ai, update_slot as aj, get_spread_update as ak, is_function as al, run_all as am, binding_callbacks as an, qualityNames as ao, toggle_class as ap, set_style as aq, seasonNames as ar, categoryNames as as, _construct as at, _setPrototypeOf as au, _typeof as av, _get as aw, __decorate as ax, _getPrototypeOf as b, _possibleConstructorReturn as c, _classCallCheck as d, _assertThisInitialized as e, dispatch_dev as f, gameInfo as g, _createClass as h, init as i, space as j, element as k, create_component as l, detach_dev as m, noop as n, claim_space as o, claim_element as p, query_selector_all as q, regenerator as r, safe_not_equal as s, text as t, children as u, validate_slots as v, claim_text as w, claim_component as x, attr_dev as y, add_location as z };
+export { matches as $, insert_dev as A, append_dev as B, mount_component as C, _slicedToArray as D, transition_in as E, transition_out as F, destroy_component as G, validate_store as H, component_subscribe as I, derived as J, globals as K, validate_each_argument as L, save as M, empty as N, group_outros as O, check_outros as P, destroy_each as Q, _toConsumableArray as R, SvelteComponentDev as S, set_data_dev as T, styleInject as U, __extends as V, _assign as W, MDCFoundation as X, MDCRipple as Y, applyPassive as Z, _asyncToGenerator as _, _inherits as a, MDCRippleFoundation as a0, MDCComponent as a1, __awaiter as a2, __generator as a3, closest as a4, create_slot as a5, assign as a6, exclude as a7, forwardEventsBuilder as a8, get_current_component as a9, getContext as aa, setContext as ab, onMount as ac, onDestroy as ad, exclude_internal_props as ae, useActions as af, set_attributes as ag, action_destroyer as ah, listen_dev as ai, update_slot as aj, get_spread_update as ak, is_function as al, run_all as am, binding_callbacks as an, qualityNames as ao, toggle_class as ap, set_style as aq, seasonNames as ar, categoryNames as as, categories as at, stores$1 as au, _construct as av, _setPrototypeOf as aw, _typeof as ax, _get as ay, __decorate as az, _getPrototypeOf as b, _possibleConstructorReturn as c, _classCallCheck as d, _assertThisInitialized as e, dispatch_dev as f, gameInfo as g, _createClass as h, init as i, space as j, element as k, create_component as l, detach_dev as m, noop as n, claim_space as o, claim_element as p, query_selector_all as q, regenerator as r, safe_not_equal as s, text as t, children as u, validate_slots as v, claim_text as w, claim_component as x, attr_dev as y, add_location as z };
 
 import __inject_styles from './inject_styles.fe622066.js';
