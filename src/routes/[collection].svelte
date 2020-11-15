@@ -59,13 +59,14 @@
   import save from "../save";
   import { derived } from "svelte/store";
   import { categories } from "../names";
+  import { stores } from "@sapper/app";
 
   export let gameInfo: GameInfo;
   export let title: string;
   export let items: Item[];
   export let recipes: Recipe[] | undefined;
 
-  const requiredIngredients = derived(save, ($save) => {
+  const requiredIngredients = derived([save, stores().page], ([$save]) => {
     if (!recipes || $save === null) {
       return null;
     } else {
