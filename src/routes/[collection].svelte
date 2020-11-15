@@ -216,7 +216,7 @@
     <div class="mdc-card mdc-card--outlined ingredients">
       <h2 class="mdc-typography--headline6">Required Ingredients</h2>
       <ul>
-        {#each Object.entries($requiredIngredients) as [id, amount]}
+        {#each Object.entries($requiredIngredients ?? {}) as [id, amount]}
           <li>{categories.get(id) || gameInfo.items[id].name}: {$save.items[id] ?? 0}/{amount}</li>
         {/each}
       </ul>
