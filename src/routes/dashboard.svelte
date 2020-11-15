@@ -103,8 +103,6 @@
     }
   });
 
-  $: console.log($requiredItems);
-
   const seasonalItems: Readable<Record<string, number>> = derived(
     requiredItems,
     ($requiredItems, set) => {
