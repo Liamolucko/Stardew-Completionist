@@ -3,6 +3,7 @@ import * as localForage from "localforage";
 import { writable } from "svelte/store";
 import backend from "./backend";
 import _gameInfo from "./game-info";
+import { seasonValues } from "./names";
 import { assert } from "./util";
 
 /** Metadata about a save file */
@@ -95,25 +96,31 @@ export function isValidSaveFile(
     farmer.querySelector("saveTime") !== null;
 }
 
-function getSaveFileData(
-  file: { handle: Handle; data: XMLDocument } | XMLDocument,
-): {
-  name: Element;
-  cookingRecipes: Element;
-  craftingRecipes: Element;
-  itemsShipped: Element;
-  mineralsFound: Element;
-  recipesCooked: Element;
-  artifactsFound: Element;
-  fishCaught: Element;
-  friendships: Element;
-  currentDay: Element;
-  currentSeason: Element;
-  currentYear: Element;
-  lastSaved: Element;
-  bundles: Element[];
-  items: Element[];
-} {
+/**
+ * Gets `element.querySelector(selectors)`, but throws error of your choice if it does not exist.
+ */
+function assertQuerySelector(
+  element: Element,
+  selectors: string,
+  message?: string,
+): Element {
+  const child = element.querySelector(selectors);
+  assert(child !== null, message);
+  return child;
+}
+
+function assertAllNonNull<T extends {}>(
+  obj: T,
+  message: string,
+): asserts obj is { [K in keyof T]: NonNullable<T[K]> } {
+  if (Object.values(obj).some((item) => item === null)) {
+    throw new Error(message);
+  }
+}
+
+export async function processSaveFile(
+  file: XMLDocument | { handle: Handle; data: XMLDocument },
+): Promise<SaveGame> {
   const save = (file instanceof XMLDocument ? file : file.data)
     .querySelector("SaveGame");
   if (save === null) throw Error("Invalid save file");
@@ -129,7 +136,7 @@ function getSaveFileData(
     fishCaught: save.querySelector("player > fishCaught"),
     friendships: save.querySelector("player > friendshipData"),
     currentDay: save.querySelector("dayOfMonth"),
-    currentSeason: save.querySelector("player > seasonForSaveGame"),
+    currentSeason: save.querySelector("currentSeason"),
     currentYear: save.querySelector("year"),
     lastSaved: save.querySelector("player > saveTime"),
     bundles: Array.from(
@@ -147,72 +154,25 @@ function getSaveFileData(
       .filter((el) => el.getAttribute("xsi:type") == "Object"),
   };
 
-  if (Object.values(data).some((item) => item === null)) {
-    throw Error(
-      `Invalid save file ${
-        file instanceof XMLDocument
-          ? save.querySelector("name")?.textContent?.trim()
-          : typeof file.handle === "string"
-          ? file.handle
-          : file.handle.name
-      }`,
-    );
-  }
-
-  return data as {
-    name: Element;
-    cookingRecipes: Element;
-    craftingRecipes: Element;
-    itemsShipped: Element;
-    mineralsFound: Element;
-    recipesCooked: Element;
-    artifactsFound: Element;
-    fishCaught: Element;
-    friendships: Element;
-    currentDay: Element;
-    currentSeason: Element;
-    currentYear: Element;
-    lastSaved: Element;
-    bundles: Element[];
-    items: Element[];
-  };
-}
-
-/**
- * Gets `element.querySelector(selectors)`, but throws error of your choice if it does not exist.
- */
-function assertQuerySelector(
-  element: Element,
-  selectors: string,
-  message?: string,
-): Element {
-  const child = element.querySelector(selectors);
-  assert(child !== null, message);
-  return child;
-}
-
-export async function processSaveFile(
-  file: XMLDocument | { handle: Handle; data: XMLDocument },
-): Promise<SaveGame> {
-  const data = getSaveFileData(file);
-
-  const currentDay = parseInt(data.currentDay.textContent!, 10);
-  const currentSeason = parseInt(data.currentSeason.textContent!, 10);
-
-  const gameInfo = await _gameInfo.fetch();
-
   const errorMessage = `Invalid save file ${
     file instanceof XMLDocument
-      ? data.name.textContent?.trim()
+      ? data.name?.textContent?.trim() ?? ""
       : typeof file.handle === "string"
       ? file.handle
       : file.handle.name
   }`;
 
+  assertAllNonNull(data, errorMessage);
+
+  const currentDay = parseInt(data.currentDay.textContent ?? "0", 10);
+  const currentSeason = seasonValues.get(data.currentSeason.textContent ?? "spring") ?? 0;
+
+  const gameInfo = await _gameInfo.fetch();
+
   return {
     handle: file instanceof XMLDocument ? null : file.handle,
-    name: data.name.textContent!.trim(),
-    lastSaved: parseInt(data.lastSaved.textContent!, 10),
+    name: data.name.textContent?.trim() ?? "",
+    lastSaved: parseInt(data.lastSaved.textContent ?? "", 10),
 
     currentDay,
     currentSeason,

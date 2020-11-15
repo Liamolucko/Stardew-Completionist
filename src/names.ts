@@ -25,6 +25,13 @@ export const locationNames = new Map([
   ["Temp", "???"],
 ]);
 
+export const seasonValues = new Map([
+  ["spring", 0],
+  ["summer", 1],
+  ["fall", 2],
+  ["winter", 3],
+])
+
 export const seasonNames = new Map([
   [0, "Spring"],
   [1, "Summer"],
