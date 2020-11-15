@@ -70,24 +70,59 @@
     if (!recipes || $save === null) {
       return null;
     } else {
-      const processRecipe = (acc: Record<string, number>, recipe: Recipe) => {
-        if (!$save.collectedItems.includes(recipe.result.id)) {
-          for (const [ingredient, amount] of Object.entries(
-            recipe.ingredients
-          )) {
-            if (ingredient in gameInfo.recipes) {
-              acc = processRecipe(acc, gameInfo.recipes[ingredient]);
-            } else {
-              acc[ingredient] ??= 0;
-              acc[ingredient] += amount;
-            }
+      const recipesNeeded: Record<string, number> = {};
+
+      const processRecipe = (recipe: Recipe) => {
+        for (const [ingredient, amount] of Object.entries(recipe.ingredients)) {
+          const recipe = Object.values(gameInfo.recipes).find(
+            (recipe) => recipe.result.id === ingredient
+          );
+          if (recipe) {
+            recipesNeeded[recipe.name] ??= 0;
+            // If a recipe makes two of an item, you only need to craft it once to satisfy the need for two of the item.
+            recipesNeeded[recipe.name] += amount / recipe.amount;
+            processRecipe(recipe);
           }
         }
-
-        return acc;
       };
 
-      return recipes.reduce(processRecipe, {});
+      const rootRecipes = recipes.filter(
+        (recipe) => !$save.collectedItems.includes(recipe.result.id)
+      );
+
+      // Figure out all the recipes needed to craft other recipes
+      for (const recipe of rootRecipes) {
+        processRecipe(recipe);
+      }
+
+      // You can't make half a recipe
+      for (const recipe in recipesNeeded) {
+        recipesNeeded[recipe] = Math.ceil(recipesNeeded[recipe]);
+      }
+
+      // Only if you won't be making the recipe anyway should the root recipes be added
+      for (const recipe of rootRecipes) {
+        recipesNeeded[recipe.name] ??= 1;
+      }
+
+      const output = {};
+
+      for (const [name, recipeAmount] of Object.entries(recipesNeeded)) {
+        const recipe = gameInfo.recipes[name];
+        for (const [ingredient, amount] of Object.entries(recipe.ingredients)) {
+          if (
+            Object.values(gameInfo.recipes).some(
+              (recipe) => recipe.result.id === ingredient
+            )
+          ) {
+            continue;
+          }
+          output[ingredient] ??= 0;
+          output[ingredient] += amount * recipeAmount;
+        }
+      }
+
+      return output;
     }
   });
 </script>
@@ -217,7 +252,10 @@
       <h2 class="mdc-typography--headline6">Required Ingredients</h2>
       <ul>
         {#each Object.entries($requiredIngredients ?? {}) as [id, amount]}
-          <li>{categories.get(id) || gameInfo.items[id].name}: {$save.items[id] ?? 0}/{amount}</li>
+          <li>
+            {categories.get(id) || gameInfo.items[id].name}:
+            {$save.items[id] ?? 0}/{amount}
+          </li>
         {/each}
       </ul>
     </div>
