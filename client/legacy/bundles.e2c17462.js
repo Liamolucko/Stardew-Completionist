@@ -1,0 +1,1304 @@
+import { _ as _inherits, a as _getPrototypeOf, b as _possibleConstructorReturn, c as _classCallCheck, i as init, d as _assertThisInitialized, e as dispatch_dev, S as SvelteComponentDev, K as validate_each_argument, s as safe_not_equal, g as element, t as text, f as space, l as claim_element, m as children, o as claim_text, j as detach_dev, k as claim_space, u as attr_dev, w as add_location, x as insert_dev, y as append_dev, Q as set_data_dev, B as transition_in, C as transition_out, N as check_outros, O as destroy_each, q as query_selector_all, A as _slicedToArray, E as validate_store, F as component_subscribe, v as validate_slots, G as derived, I as gameInfo, H as save, J as globals, M as group_outros, P as _toConsumableArray, L as empty, aq as set_style, n as noop, h as create_component, p as claim_component, z as mount_component, D as destroy_component } from './client.34ba2ad3.js';
+import '../../../../../jimp.min.js';
+import { I as ItemButton } from './ItemButton.0bdbbf48.js';
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+var Object_1 = globals.Object;
+var file = "src/routes/bundles.svelte";
+
+function get_each_context(ctx, list, i) {
+  var child_ctx = ctx.slice();
+  child_ctx[3] = list[i][0];
+  child_ctx[4] = list[i][1];
+  return child_ctx;
+}
+
+function get_each_context_1(ctx, list, i) {
+  var child_ctx = ctx.slice();
+  child_ctx[7] = list[i];
+  return child_ctx;
+}
+
+function get_each_context_2(ctx, list, i) {
+  var child_ctx = ctx.slice();
+  child_ctx[10] = list[i];
+  return child_ctx;
+}
+
+function get_each_context_3(ctx, list, i) {
+  var child_ctx = ctx.slice();
+  child_ctx[13] = list[i];
+  return child_ctx;
+} // (802:10) {:else}
+
+
+function create_else_block_1(ctx) {
+  var div;
+  var t;
+  var show_if;
+  var current_block_type_index;
+  var if_block;
+  var if_block_anchor;
+  var current;
+
+  var each_value_3 = _toConsumableArray(Array(
+  /*bundle*/
+  ctx[7].slots).keys());
+
+  validate_each_argument(each_value_3);
+  var each_blocks = [];
+
+  for (var i = 0; i < each_value_3.length; i += 1) {
+    each_blocks[i] = create_each_block_3(get_each_context_3(ctx, each_value_3, i));
+  }
+
+  var out = function out(i) {
+    return transition_out(each_blocks[i], 1, 1, function () {
+      each_blocks[i] = null;
+    });
+  };
+
+  var if_block_creators = [create_if_block_2, create_else_block_2];
+  var if_blocks = [];
+
+  function select_block_type_2(ctx, dirty) {
+    if (dirty &
+    /*$save, $sections*/
+    3) show_if = !!(
+    /*$save*/
+    ctx[1] !== null &&
+    /*bundle*/
+    ctx[7].items.every(func_1));
+    if (show_if) return 0;
+    return 1;
+  }
+
+  current_block_type_index = select_block_type_2(ctx, -1);
+  if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
+  var block = {
+    c: function create() {
+      div = element("div");
+
+      for (var _i = 0; _i < each_blocks.length; _i += 1) {
+        each_blocks[_i].c();
+      }
+
+      t = space();
+      if_block.c();
+      if_block_anchor = empty();
+      this.h();
+    },
+    l: function claim(nodes) {
+      div = claim_element(nodes, "DIV", {
+        class: true,
+        style: true
+      });
+      var div_nodes = children(div);
+
+      for (var _i2 = 0; _i2 < each_blocks.length; _i2 += 1) {
+        each_blocks[_i2].l(div_nodes);
+      }
+
+      div_nodes.forEach(detach_dev);
+      t = claim_space(nodes);
+      if_block.l(nodes);
+      if_block_anchor = empty();
+      this.h();
+    },
+    h: function hydrate() {
+      attr_dev(div, "class", "slots svelte-o09d7q");
+      set_style(div, "--slots",
+      /*bundle*/
+      ctx[7].slots);
+      add_location(div, file, 802, 12, 24240);
+    },
+    m: function mount(target, anchor) {
+      insert_dev(target, div, anchor);
+
+      for (var _i3 = 0; _i3 < each_blocks.length; _i3 += 1) {
+        each_blocks[_i3].m(div, null);
+      }
+
+      insert_dev(target, t, anchor);
+      if_blocks[current_block_type_index].m(target, anchor);
+      insert_dev(target, if_block_anchor, anchor);
+      current = true;
+    },
+    p: function update(ctx, dirty) {
+      if (dirty &
+      /*Object, $sections, Array, $save*/
+      3) {
+        each_value_3 = _toConsumableArray(Array(
+        /*bundle*/
+        ctx[7].slots).keys());
+        validate_each_argument(each_value_3);
+
+        var _i4;
+
+        for (_i4 = 0; _i4 < each_value_3.length; _i4 += 1) {
+          var child_ctx = get_each_context_3(ctx, each_value_3, _i4);
+
+          if (each_blocks[_i4]) {
+            each_blocks[_i4].p(child_ctx, dirty);
+
+            transition_in(each_blocks[_i4], 1);
+          } else {
+            each_blocks[_i4] = create_each_block_3(child_ctx);
+
+            each_blocks[_i4].c();
+
+            transition_in(each_blocks[_i4], 1);
+
+            each_blocks[_i4].m(div, null);
+          }
+        }
+
+        group_outros();
+
+        for (_i4 = each_value_3.length; _i4 < each_blocks.length; _i4 += 1) {
+          out(_i4);
+        }
+
+        check_outros();
+      }
+
+      if (!current || dirty &
+      /*$sections*/
+      1) {
+        set_style(div, "--slots",
+        /*bundle*/
+        ctx[7].slots);
+      }
+
+      var previous_block_index = current_block_type_index;
+      current_block_type_index = select_block_type_2(ctx, dirty);
+
+      if (current_block_type_index === previous_block_index) {
+        if_blocks[current_block_type_index].p(ctx, dirty);
+      } else {
+        group_outros();
+        transition_out(if_blocks[previous_block_index], 1, 1, function () {
+          if_blocks[previous_block_index] = null;
+        });
+        check_outros();
+        if_block = if_blocks[current_block_type_index];
+
+        if (!if_block) {
+          if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
+          if_block.c();
+        } else {
+          if_block.p(ctx, dirty);
+        }
+
+        transition_in(if_block, 1);
+        if_block.m(if_block_anchor.parentNode, if_block_anchor);
+      }
+    },
+    i: function intro(local) {
+      if (current) return;
+
+      for (var _i5 = 0; _i5 < each_value_3.length; _i5 += 1) {
+        transition_in(each_blocks[_i5]);
+      }
+
+      transition_in(if_block);
+      current = true;
+    },
+    o: function outro(local) {
+      each_blocks = each_blocks.filter(Boolean);
+
+      for (var _i6 = 0; _i6 < each_blocks.length; _i6 += 1) {
+        transition_out(each_blocks[_i6]);
+      }
+
+      transition_out(if_block);
+      current = false;
+    },
+    d: function destroy(detaching) {
+      if (detaching) detach_dev(div);
+      destroy_each(each_blocks, detaching);
+      if (detaching) detach_dev(t);
+      if_blocks[current_block_type_index].d(detaching);
+      if (detaching) detach_dev(if_block_anchor);
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_else_block_1.name,
+    type: "else",
+    source: "(802:10) {:else}",
+    ctx: ctx
+  });
+  return block;
+} // (794:10) {#if bundle.gold > 0}
+
+
+function create_if_block(ctx) {
+  var show_if;
+  var if_block_anchor;
+
+  function select_block_type_1(ctx, dirty) {
+    if (show_if == null || dirty &
+    /*$save, $sections*/
+    3) show_if = !!(
+    /*$save*/
+    ctx[1] !== null &&
+    /*$save*/
+    ctx[1].bundleCompletion.get(
+    /*bundle*/
+    ctx[7].id).some(func));
+    if (show_if) return create_if_block_1;
+    return create_else_block;
+  }
+
+  var current_block_type = select_block_type_1(ctx, -1);
+  var if_block = current_block_type(ctx);
+  var block = {
+    c: function create() {
+      if_block.c();
+      if_block_anchor = empty();
+    },
+    l: function claim(nodes) {
+      if_block.l(nodes);
+      if_block_anchor = empty();
+    },
+    m: function mount(target, anchor) {
+      if_block.m(target, anchor);
+      insert_dev(target, if_block_anchor, anchor);
+    },
+    p: function update(ctx, dirty) {
+      if (current_block_type !== (current_block_type = select_block_type_1(ctx, dirty))) {
+        if_block.d(1);
+        if_block = current_block_type(ctx);
+
+        if (if_block) {
+          if_block.c();
+          if_block.m(if_block_anchor.parentNode, if_block_anchor);
+        }
+      }
+    },
+    i: noop,
+    o: noop,
+    d: function destroy(detaching) {
+      if_block.d(detaching);
+      if (detaching) detach_dev(if_block_anchor);
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_if_block.name,
+    type: "if",
+    source: "(794:10) {#if bundle.gold > 0}",
+    ctx: ctx
+  });
+  return block;
+} // (806:18) {#if $save !== null && bundle.completedItems.length > i}
+
+
+function create_if_block_3(ctx) {
+  var itembutton;
+  var current;
+  itembutton = new ItemButton({
+    props: {
+      scale: 2,
+      item:
+      /*bundle*/
+      ctx[7].completedItems[
+      /*i*/
+      ctx[13]]
+    },
+    $$inline: true
+  });
+  var block = {
+    c: function create() {
+      create_component(itembutton.$$.fragment);
+    },
+    l: function claim(nodes) {
+      claim_component(itembutton.$$.fragment, nodes);
+    },
+    m: function mount(target, anchor) {
+      mount_component(itembutton, target, anchor);
+      current = true;
+    },
+    p: function update(ctx, dirty) {
+      var itembutton_changes = {};
+      if (dirty &
+      /*$sections*/
+      1) itembutton_changes.item =
+      /*bundle*/
+      ctx[7].completedItems[
+      /*i*/
+      ctx[13]];
+      itembutton.$set(itembutton_changes);
+    },
+    i: function intro(local) {
+      if (current) return;
+      transition_in(itembutton.$$.fragment, local);
+      current = true;
+    },
+    o: function outro(local) {
+      transition_out(itembutton.$$.fragment, local);
+      current = false;
+    },
+    d: function destroy(detaching) {
+      destroy_component(itembutton, detaching);
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_if_block_3.name,
+    type: "if",
+    source: "(806:18) {#if $save !== null && bundle.completedItems.length > i}",
+    ctx: ctx
+  });
+  return block;
+} // (804:14) {#each [...Array(bundle.slots).keys()] as i}
+
+
+function create_each_block_3(ctx) {
+  var span;
+  var t;
+  var current;
+  var if_block =
+  /*$save*/
+  ctx[1] !== null &&
+  /*bundle*/
+  ctx[7].completedItems.length >
+  /*i*/
+  ctx[13] && create_if_block_3(ctx);
+  var block = {
+    c: function create() {
+      span = element("span");
+      if (if_block) if_block.c();
+      t = space();
+      this.h();
+    },
+    l: function claim(nodes) {
+      span = claim_element(nodes, "SPAN", {
+        class: true
+      });
+      var span_nodes = children(span);
+      if (if_block) if_block.l(span_nodes);
+      t = claim_space(span_nodes);
+      span_nodes.forEach(detach_dev);
+      this.h();
+    },
+    h: function hydrate() {
+      attr_dev(span, "class", "slot svelte-o09d7q");
+      add_location(span, file, 804, 16, 24367);
+    },
+    m: function mount(target, anchor) {
+      insert_dev(target, span, anchor);
+      if (if_block) if_block.m(span, null);
+      append_dev(span, t);
+      current = true;
+    },
+    p: function update(ctx, dirty) {
+      if (
+      /*$save*/
+      ctx[1] !== null &&
+      /*bundle*/
+      ctx[7].completedItems.length >
+      /*i*/
+      ctx[13]) {
+        if (if_block) {
+          if_block.p(ctx, dirty);
+
+          if (dirty &
+          /*$save, $sections*/
+          3) {
+            transition_in(if_block, 1);
+          }
+        } else {
+          if_block = create_if_block_3(ctx);
+          if_block.c();
+          transition_in(if_block, 1);
+          if_block.m(span, t);
+        }
+      } else if (if_block) {
+        group_outros();
+        transition_out(if_block, 1, 1, function () {
+          if_block = null;
+        });
+        check_outros();
+      }
+    },
+    i: function intro(local) {
+      if (current) return;
+      transition_in(if_block);
+      current = true;
+    },
+    o: function outro(local) {
+      transition_out(if_block);
+      current = false;
+    },
+    d: function destroy(detaching) {
+      if (detaching) detach_dev(span);
+      if (if_block) if_block.d();
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_each_block_3.name,
+    type: "each",
+    source: "(804:14) {#each [...Array(bundle.slots).keys()] as i}",
+    ctx: ctx
+  });
+  return block;
+} // (814:12) {:else}
+
+
+function create_else_block_2(ctx) {
+  var div;
+  var current;
+  var each_value_2 =
+  /*bundle*/
+  ctx[7].items.filter(func_2);
+  validate_each_argument(each_value_2);
+  var each_blocks = [];
+
+  for (var i = 0; i < each_value_2.length; i += 1) {
+    each_blocks[i] = create_each_block_2(get_each_context_2(ctx, each_value_2, i));
+  }
+
+  var out = function out(i) {
+    return transition_out(each_blocks[i], 1, 1, function () {
+      each_blocks[i] = null;
+    });
+  };
+
+  var block = {
+    c: function create() {
+      div = element("div");
+
+      for (var _i7 = 0; _i7 < each_blocks.length; _i7 += 1) {
+        each_blocks[_i7].c();
+      }
+
+      this.h();
+    },
+    l: function claim(nodes) {
+      div = claim_element(nodes, "DIV", {
+        class: true
+      });
+      var div_nodes = children(div);
+
+      for (var _i8 = 0; _i8 < each_blocks.length; _i8 += 1) {
+        each_blocks[_i8].l(div_nodes);
+      }
+
+      div_nodes.forEach(detach_dev);
+      this.h();
+    },
+    h: function hydrate() {
+      attr_dev(div, "class", "options svelte-o09d7q");
+      add_location(div, file, 814, 14, 24807);
+    },
+    m: function mount(target, anchor) {
+      insert_dev(target, div, anchor);
+
+      for (var _i9 = 0; _i9 < each_blocks.length; _i9 += 1) {
+        each_blocks[_i9].m(div, null);
+      }
+
+      current = true;
+    },
+    p: function update(ctx, dirty) {
+      if (dirty &
+      /*Object, $sections*/
+      1) {
+        each_value_2 =
+        /*bundle*/
+        ctx[7].items.filter(func_2);
+        validate_each_argument(each_value_2);
+
+        var _i10;
+
+        for (_i10 = 0; _i10 < each_value_2.length; _i10 += 1) {
+          var child_ctx = get_each_context_2(ctx, each_value_2, _i10);
+
+          if (each_blocks[_i10]) {
+            each_blocks[_i10].p(child_ctx, dirty);
+
+            transition_in(each_blocks[_i10], 1);
+          } else {
+            each_blocks[_i10] = create_each_block_2(child_ctx);
+
+            each_blocks[_i10].c();
+
+            transition_in(each_blocks[_i10], 1);
+
+            each_blocks[_i10].m(div, null);
+          }
+        }
+
+        group_outros();
+
+        for (_i10 = each_value_2.length; _i10 < each_blocks.length; _i10 += 1) {
+          out(_i10);
+        }
+
+        check_outros();
+      }
+    },
+    i: function intro(local) {
+      if (current) return;
+
+      for (var _i11 = 0; _i11 < each_value_2.length; _i11 += 1) {
+        transition_in(each_blocks[_i11]);
+      }
+
+      current = true;
+    },
+    o: function outro(local) {
+      each_blocks = each_blocks.filter(Boolean);
+
+      for (var _i12 = 0; _i12 < each_blocks.length; _i12 += 1) {
+        transition_out(each_blocks[_i12]);
+      }
+
+      current = false;
+    },
+    d: function destroy(detaching) {
+      if (detaching) detach_dev(div);
+      destroy_each(each_blocks, detaching);
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_else_block_2.name,
+    type: "else",
+    source: "(814:12) {:else}",
+    ctx: ctx
+  });
+  return block;
+} // (812:12) {#if $save !== null && bundle.items.every((item) => item.completed)}
+
+
+function create_if_block_2(ctx) {
+  var div;
+  var t;
+  var block = {
+    c: function create() {
+      div = element("div");
+      t = text("check");
+      this.h();
+    },
+    l: function claim(nodes) {
+      div = claim_element(nodes, "DIV", {
+        class: true
+      });
+      var div_nodes = children(div);
+      t = claim_text(div_nodes, "check");
+      div_nodes.forEach(detach_dev);
+      this.h();
+    },
+    h: function hydrate() {
+      attr_dev(div, "class", "completed material-icons svelte-o09d7q");
+      add_location(div, file, 812, 14, 24723);
+    },
+    m: function mount(target, anchor) {
+      insert_dev(target, div, anchor);
+      append_dev(div, t);
+    },
+    p: noop,
+    i: noop,
+    o: noop,
+    d: function destroy(detaching) {
+      if (detaching) detach_dev(div);
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_if_block_2.name,
+    type: "if",
+    source: "(812:12) {#if $save !== null && bundle.items.every((item) => item.completed)}",
+    ctx: ctx
+  });
+  return block;
+} // (816:16) {#each bundle.items.filter((item) => !item.completed) as item}
+
+
+function create_each_block_2(ctx) {
+  var itembutton;
+  var current;
+  itembutton = new ItemButton({
+    props: {
+      item:
+      /*item*/
+      ctx[10],
+      scale: 2,
+      quality:
+      /*item*/
+      ctx[10].quality,
+      quantity:
+      /*item*/
+      ctx[10].amount
+    },
+    $$inline: true
+  });
+  var block = {
+    c: function create() {
+      create_component(itembutton.$$.fragment);
+    },
+    l: function claim(nodes) {
+      claim_component(itembutton.$$.fragment, nodes);
+    },
+    m: function mount(target, anchor) {
+      mount_component(itembutton, target, anchor);
+      current = true;
+    },
+    p: function update(ctx, dirty) {
+      var itembutton_changes = {};
+      if (dirty &
+      /*$sections*/
+      1) itembutton_changes.item =
+      /*item*/
+      ctx[10];
+      if (dirty &
+      /*$sections*/
+      1) itembutton_changes.quality =
+      /*item*/
+      ctx[10].quality;
+      if (dirty &
+      /*$sections*/
+      1) itembutton_changes.quantity =
+      /*item*/
+      ctx[10].amount;
+      itembutton.$set(itembutton_changes);
+    },
+    i: function intro(local) {
+      if (current) return;
+      transition_in(itembutton.$$.fragment, local);
+      current = true;
+    },
+    o: function outro(local) {
+      transition_out(itembutton.$$.fragment, local);
+      current = false;
+    },
+    d: function destroy(detaching) {
+      destroy_component(itembutton, detaching);
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_each_block_2.name,
+    type: "each",
+    source: "(816:16) {#each bundle.items.filter((item) => !item.completed) as item}",
+    ctx: ctx
+  });
+  return block;
+} // (799:12) {:else}
+
+
+function create_else_block(ctx) {
+  var div;
+  var t;
+  var block = {
+    c: function create() {
+      div = element("div");
+      t = text("close");
+      this.h();
+    },
+    l: function claim(nodes) {
+      div = claim_element(nodes, "DIV", {
+        class: true
+      });
+      var div_nodes = children(div);
+      t = claim_text(div_nodes, "close");
+      div_nodes.forEach(detach_dev);
+      this.h();
+    },
+    h: function hydrate() {
+      attr_dev(div, "class", "not-completed material-icons svelte-o09d7q");
+      add_location(div, file, 799, 14, 24138);
+    },
+    m: function mount(target, anchor) {
+      insert_dev(target, div, anchor);
+      append_dev(div, t);
+    },
+    d: function destroy(detaching) {
+      if (detaching) detach_dev(div);
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_else_block.name,
+    type: "else",
+    source: "(799:12) {:else}",
+    ctx: ctx
+  });
+  return block;
+} // (795:12) {#if $save !== null && $save.bundleCompletion                 .get(bundle.id)                 .some((e) => e)}
+
+
+function create_if_block_1(ctx) {
+  var div;
+  var t;
+  var block = {
+    c: function create() {
+      div = element("div");
+      t = text("check");
+      this.h();
+    },
+    l: function claim(nodes) {
+      div = claim_element(nodes, "DIV", {
+        class: true
+      });
+      var div_nodes = children(div);
+      t = claim_text(div_nodes, "check");
+      div_nodes.forEach(detach_dev);
+      this.h();
+    },
+    h: function hydrate() {
+      attr_dev(div, "class", "completed material-icons svelte-o09d7q");
+      add_location(div, file, 797, 14, 24054);
+    },
+    m: function mount(target, anchor) {
+      insert_dev(target, div, anchor);
+      append_dev(div, t);
+    },
+    d: function destroy(detaching) {
+      if (detaching) detach_dev(div);
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_if_block_1.name,
+    type: "if",
+    source: "(795:12) {#if $save !== null && $save.bundleCompletion                 .get(bundle.id)                 .some((e) => e)}",
+    ctx: ctx
+  });
+  return block;
+} // (791:6) {#each bundles as bundle}
+
+
+function create_each_block_1(ctx) {
+  var div;
+  var h5;
+  var t0_value =
+  /*bundle*/
+  ctx[7].name + "";
+  var t0;
+  var t1;
+  var current_block_type_index;
+  var if_block;
+  var current;
+  var if_block_creators = [create_if_block, create_else_block_1];
+  var if_blocks = [];
+
+  function select_block_type(ctx, dirty) {
+    if (
+    /*bundle*/
+    ctx[7].gold > 0) return 0;
+    return 1;
+  }
+
+  current_block_type_index = select_block_type(ctx);
+  if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
+  var block = {
+    c: function create() {
+      div = element("div");
+      h5 = element("h5");
+      t0 = text(t0_value);
+      t1 = space();
+      if_block.c();
+      this.h();
+    },
+    l: function claim(nodes) {
+      div = claim_element(nodes, "DIV", {
+        class: true
+      });
+      var div_nodes = children(div);
+      h5 = claim_element(div_nodes, "H5", {
+        class: true
+      });
+      var h5_nodes = children(h5);
+      t0 = claim_text(h5_nodes, t0_value);
+      h5_nodes.forEach(detach_dev);
+      t1 = claim_space(div_nodes);
+      if_block.l(div_nodes);
+      div_nodes.forEach(detach_dev);
+      this.h();
+    },
+    h: function hydrate() {
+      attr_dev(h5, "class", "mdc-typography--headline6 svelte-o09d7q");
+      add_location(h5, file, 792, 10, 23828);
+      attr_dev(div, "class", "bundle mdc-card mdc-card--outlined svelte-o09d7q");
+      add_location(div, file, 791, 8, 23769);
+    },
+    m: function mount(target, anchor) {
+      insert_dev(target, div, anchor);
+      append_dev(div, h5);
+      append_dev(h5, t0);
+      append_dev(div, t1);
+      if_blocks[current_block_type_index].m(div, null);
+      current = true;
+    },
+    p: function update(ctx, dirty) {
+      if ((!current || dirty &
+      /*$sections*/
+      1) && t0_value !== (t0_value =
+      /*bundle*/
+      ctx[7].name + "")) set_data_dev(t0, t0_value);
+      var previous_block_index = current_block_type_index;
+      current_block_type_index = select_block_type(ctx);
+
+      if (current_block_type_index === previous_block_index) {
+        if_blocks[current_block_type_index].p(ctx, dirty);
+      } else {
+        group_outros();
+        transition_out(if_blocks[previous_block_index], 1, 1, function () {
+          if_blocks[previous_block_index] = null;
+        });
+        check_outros();
+        if_block = if_blocks[current_block_type_index];
+
+        if (!if_block) {
+          if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
+          if_block.c();
+        } else {
+          if_block.p(ctx, dirty);
+        }
+
+        transition_in(if_block, 1);
+        if_block.m(div, null);
+      }
+    },
+    i: function intro(local) {
+      if (current) return;
+      transition_in(if_block);
+      current = true;
+    },
+    o: function outro(local) {
+      transition_out(if_block);
+      current = false;
+    },
+    d: function destroy(detaching) {
+      if (detaching) detach_dev(div);
+      if_blocks[current_block_type_index].d();
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_each_block_1.name,
+    type: "each",
+    source: "(791:6) {#each bundles as bundle}",
+    ctx: ctx
+  });
+  return block;
+} // (788:2) {#each Object.entries($sections) as [name, bundles]}
+
+
+function create_each_block(ctx) {
+  var h1;
+  var t0_value =
+  /*name*/
+  ctx[3] + "";
+  var t0;
+  var t1;
+  var div;
+  var t2;
+  var current;
+  var each_value_1 =
+  /*bundles*/
+  ctx[4];
+  validate_each_argument(each_value_1);
+  var each_blocks = [];
+
+  for (var i = 0; i < each_value_1.length; i += 1) {
+    each_blocks[i] = create_each_block_1(get_each_context_1(ctx, each_value_1, i));
+  }
+
+  var out = function out(i) {
+    return transition_out(each_blocks[i], 1, 1, function () {
+      each_blocks[i] = null;
+    });
+  };
+
+  var block = {
+    c: function create() {
+      h1 = element("h1");
+      t0 = text(t0_value);
+      t1 = space();
+      div = element("div");
+
+      for (var _i13 = 0; _i13 < each_blocks.length; _i13 += 1) {
+        each_blocks[_i13].c();
+      }
+
+      t2 = space();
+      this.h();
+    },
+    l: function claim(nodes) {
+      h1 = claim_element(nodes, "H1", {
+        class: true
+      });
+      var h1_nodes = children(h1);
+      t0 = claim_text(h1_nodes, t0_value);
+      h1_nodes.forEach(detach_dev);
+      t1 = claim_space(nodes);
+      div = claim_element(nodes, "DIV", {
+        class: true
+      });
+      var div_nodes = children(div);
+
+      for (var _i14 = 0; _i14 < each_blocks.length; _i14 += 1) {
+        each_blocks[_i14].l(div_nodes);
+      }
+
+      t2 = claim_space(div_nodes);
+      div_nodes.forEach(detach_dev);
+      this.h();
+    },
+    h: function hydrate() {
+      attr_dev(h1, "class", "svelte-o09d7q");
+      add_location(h1, file, 788, 4, 23687);
+      attr_dev(div, "class", "section svelte-o09d7q");
+      add_location(div, file, 789, 4, 23707);
+    },
+    m: function mount(target, anchor) {
+      insert_dev(target, h1, anchor);
+      append_dev(h1, t0);
+      insert_dev(target, t1, anchor);
+      insert_dev(target, div, anchor);
+
+      for (var _i15 = 0; _i15 < each_blocks.length; _i15 += 1) {
+        each_blocks[_i15].m(div, null);
+      }
+
+      append_dev(div, t2);
+      current = true;
+    },
+    p: function update(ctx, dirty) {
+      if ((!current || dirty &
+      /*$sections*/
+      1) && t0_value !== (t0_value =
+      /*name*/
+      ctx[3] + "")) set_data_dev(t0, t0_value);
+
+      if (dirty &
+      /*$save, Object, $sections, Array*/
+      3) {
+        each_value_1 =
+        /*bundles*/
+        ctx[4];
+        validate_each_argument(each_value_1);
+
+        var _i16;
+
+        for (_i16 = 0; _i16 < each_value_1.length; _i16 += 1) {
+          var child_ctx = get_each_context_1(ctx, each_value_1, _i16);
+
+          if (each_blocks[_i16]) {
+            each_blocks[_i16].p(child_ctx, dirty);
+
+            transition_in(each_blocks[_i16], 1);
+          } else {
+            each_blocks[_i16] = create_each_block_1(child_ctx);
+
+            each_blocks[_i16].c();
+
+            transition_in(each_blocks[_i16], 1);
+
+            each_blocks[_i16].m(div, t2);
+          }
+        }
+
+        group_outros();
+
+        for (_i16 = each_value_1.length; _i16 < each_blocks.length; _i16 += 1) {
+          out(_i16);
+        }
+
+        check_outros();
+      }
+    },
+    i: function intro(local) {
+      if (current) return;
+
+      for (var _i17 = 0; _i17 < each_value_1.length; _i17 += 1) {
+        transition_in(each_blocks[_i17]);
+      }
+
+      current = true;
+    },
+    o: function outro(local) {
+      each_blocks = each_blocks.filter(Boolean);
+
+      for (var _i18 = 0; _i18 < each_blocks.length; _i18 += 1) {
+        transition_out(each_blocks[_i18]);
+      }
+
+      current = false;
+    },
+    d: function destroy(detaching) {
+      if (detaching) detach_dev(h1);
+      if (detaching) detach_dev(t1);
+      if (detaching) detach_dev(div);
+      destroy_each(each_blocks, detaching);
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_each_block.name,
+    type: "each",
+    source: "(788:2) {#each Object.entries($sections) as [name, bundles]}",
+    ctx: ctx
+  });
+  return block;
+}
+
+function create_fragment(ctx) {
+  var t;
+  var div;
+  var current;
+  var each_value = Object.entries(
+  /*$sections*/
+  ctx[0]);
+  validate_each_argument(each_value);
+  var each_blocks = [];
+
+  for (var i = 0; i < each_value.length; i += 1) {
+    each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
+  }
+
+  var out = function out(i) {
+    return transition_out(each_blocks[i], 1, 1, function () {
+      each_blocks[i] = null;
+    });
+  };
+
+  var block = {
+    c: function create() {
+      t = space();
+      div = element("div");
+
+      for (var _i19 = 0; _i19 < each_blocks.length; _i19 += 1) {
+        each_blocks[_i19].c();
+      }
+
+      this.h();
+    },
+    l: function claim(nodes) {
+      var head_nodes = query_selector_all("[data-svelte=\"svelte-kcgu6a\"]", document.head);
+      head_nodes.forEach(detach_dev);
+      t = claim_space(nodes);
+      div = claim_element(nodes, "DIV", {
+        class: true
+      });
+      var div_nodes = children(div);
+
+      for (var _i20 = 0; _i20 < each_blocks.length; _i20 += 1) {
+        each_blocks[_i20].l(div_nodes);
+      }
+
+      div_nodes.forEach(detach_dev);
+      this.h();
+    },
+    h: function hydrate() {
+      document.title = "Bundles | Stardew Completionist";
+      attr_dev(div, "class", "container svelte-o09d7q");
+      add_location(div, file, 786, 0, 23604);
+    },
+    m: function mount(target, anchor) {
+      insert_dev(target, t, anchor);
+      insert_dev(target, div, anchor);
+
+      for (var _i21 = 0; _i21 < each_blocks.length; _i21 += 1) {
+        each_blocks[_i21].m(div, null);
+      }
+
+      current = true;
+    },
+    p: function update(ctx, _ref) {
+      var _ref2 = _slicedToArray(_ref, 1),
+          dirty = _ref2[0];
+
+      if (dirty &
+      /*Object, $sections, $save, Array*/
+      3) {
+        each_value = Object.entries(
+        /*$sections*/
+        ctx[0]);
+        validate_each_argument(each_value);
+
+        var _i22;
+
+        for (_i22 = 0; _i22 < each_value.length; _i22 += 1) {
+          var child_ctx = get_each_context(ctx, each_value, _i22);
+
+          if (each_blocks[_i22]) {
+            each_blocks[_i22].p(child_ctx, dirty);
+
+            transition_in(each_blocks[_i22], 1);
+          } else {
+            each_blocks[_i22] = create_each_block(child_ctx);
+
+            each_blocks[_i22].c();
+
+            transition_in(each_blocks[_i22], 1);
+
+            each_blocks[_i22].m(div, null);
+          }
+        }
+
+        group_outros();
+
+        for (_i22 = each_value.length; _i22 < each_blocks.length; _i22 += 1) {
+          out(_i22);
+        }
+
+        check_outros();
+      }
+    },
+    i: function intro(local) {
+      if (current) return;
+
+      for (var _i23 = 0; _i23 < each_value.length; _i23 += 1) {
+        transition_in(each_blocks[_i23]);
+      }
+
+      current = true;
+    },
+    o: function outro(local) {
+      each_blocks = each_blocks.filter(Boolean);
+
+      for (var _i24 = 0; _i24 < each_blocks.length; _i24 += 1) {
+        transition_out(each_blocks[_i24]);
+      }
+
+      current = false;
+    },
+    d: function destroy(detaching) {
+      if (detaching) detach_dev(t);
+      if (detaching) detach_dev(div);
+      destroy_each(each_blocks, detaching);
+    }
+  };
+  dispatch_dev("SvelteRegisterBlock", {
+    block: block,
+    id: create_fragment.name,
+    type: "component",
+    source: "",
+    ctx: ctx
+  });
+  return block;
+}
+
+var func = function func(e) {
+  return e;
+};
+
+var func_1 = function func_1(item) {
+  return item.completed;
+};
+
+var func_2 = function func_2(item) {
+  return !item.completed;
+};
+
+function instance($$self, $$props, $$invalidate) {
+  var $sections;
+  var $save;
+  validate_store(save, "save");
+  component_subscribe($$self, save, function ($$value) {
+    return $$invalidate(1, $save = $$value);
+  });
+  var _$$props$$$slots = $$props.$$slots,
+      slots = _$$props$$$slots === void 0 ? {} : _$$props$$$slots,
+      $$scope = $$props.$$scope;
+  validate_slots("Bundles", slots, []);
+  var sections = derived(save, function ($save) {
+    return gameInfo.bundles.reduce(function (acc, bundle) {
+      var _a;
+
+      return Object.assign(Object.assign({}, acc), _defineProperty({}, bundle.section, [].concat(_toConsumableArray((_a = acc[bundle.section]) !== null && _a !== void 0 ? _a : []), [Object.assign(Object.assign({}, bundle), {
+        items: bundle.items.filter(function (item) {
+          return item.id in gameInfo.items;
+        }).map(function (item, i) {
+          var _a;
+
+          return Object.assign(Object.assign(Object.assign({}, item), gameInfo.items[item.id]), {
+            completed: $save !== null && $save.bundleCompletion.has(bundle.id) && ((_a = $save.bundleCompletion.get(bundle.id)) === null || _a === void 0 ? void 0 : _a[i])
+          });
+        }),
+        completedItems: bundle.items.filter(function (_ref3, i) {
+          var id = _ref3.id;
+
+          var _a, _b;
+
+          return ((_b = (_a = $save === null || $save === void 0 ? void 0 : $save.bundleCompletion.get(bundle.id)) === null || _a === void 0 ? void 0 : _a[i]) !== null && _b !== void 0 ? _b : true) && gameInfo.items[id];
+        }).map(function (_ref4) {
+          var id = _ref4.id;
+          return gameInfo.items[id];
+        })
+      })])));
+    }, {});
+  });
+  validate_store(sections, "sections");
+  component_subscribe($$self, sections, function (value) {
+    return $$invalidate(0, $sections = value);
+  });
+  var writable_props = [];
+  Object_1.keys($$props).forEach(function (key) {
+    if (!~writable_props.indexOf(key) && key.slice(0, 2) !== "$$") console.warn("<Bundles> was created with unknown prop '".concat(key, "'"));
+  });
+
+  $$self.$capture_state = function () {
+    return {
+      ItemButton: ItemButton,
+      gameInfo: gameInfo,
+      derived: derived,
+      save: save,
+      sections: sections,
+      $sections: $sections,
+      $save: $save
+    };
+  };
+
+  return [$sections, $save, sections];
+}
+
+var Bundles = /*#__PURE__*/function (_SvelteComponentDev) {
+  _inherits(Bundles, _SvelteComponentDev);
+
+  var _super = _createSuper(Bundles);
+
+  function Bundles(options) {
+    var _this;
+
+    _classCallCheck(this, Bundles);
+
+    _this = _super.call(this, options);
+    init(_assertThisInitialized(_this), options, instance, create_fragment, safe_not_equal, {});
+    dispatch_dev("SvelteRegisterComponent", {
+      component: _assertThisInitialized(_this),
+      tagName: "Bundles",
+      options: options,
+      id: create_fragment.name
+    });
+    return _this;
+  }
+
+  return Bundles;
+}(SvelteComponentDev);
+
+export default Bundles;
