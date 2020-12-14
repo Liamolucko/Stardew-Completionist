@@ -1,22 +1,11 @@
-<script context="module">
-  import gameInfo from "../game-info";
-
-  export async function preload() {
-    return {
-      gameInfo: await gameInfo.fetch(this.fetch),
-    };
-  }
-</script>
-
 <script lang="ts">
   import DataTable, { Body, Cell, Head, Row } from "@smui/data-table";
   import { derived } from "svelte/store";
   import ItemButton from "../components/ItemButton.svelte";
-  import type { GameInfo, Villager } from "../game-info";
+  import type { Villager } from "../game-info";
   import save from "../save";
   import type { Relationship } from "../save";
-
-  export let gameInfo: GameInfo;
+  import gameInfo from "../game-info";
 
   let villagers = derived<typeof save, (Villager & Relationship)[]>(
     save,

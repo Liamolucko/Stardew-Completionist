@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  import _gameInfo from "../game-info";
+  import gameInfo from "../game-info";
   import { categoryNames } from "../names";
 
   export async function preload(page: {
@@ -29,21 +29,17 @@
       return this.error(404, "Not found");
     }
 
-    const gameInfo = await _gameInfo.fetch(this.fetch);
-
     if (
       page.params.collection === "cooking" ||
       page.params.collection === "crafting"
     ) {
       return {
-        gameInfo,
         title: categoryNames.get(page.params.collection),
         recipes: gameInfo[page.params.collection],
         items: gameInfo[page.params.collection].map((recipe) => recipe.result),
       };
     } else {
       return {
-        gameInfo,
         title: categoryNames.get(page.params.collection),
         items: gameInfo[page.params.collection],
         recipes: undefined,
@@ -55,13 +51,12 @@
 <script lang="ts">
   import DataTable, { Body, Cell, Head, Row } from "@smui/data-table";
   import ItemButton from "../components/ItemButton.svelte";
-  import type { Item, Recipe, GameInfo } from "../game-info";
+  import type { Item, Recipe } from "../game-info";
   import save from "../save";
   import { derived } from "svelte/store";
   import { categories } from "../names";
   import { stores } from "@sapper/app";
 
-  export let gameInfo: GameInfo;
   export let title: string;
   export let items: Item[];
   export let recipes: Recipe[] | undefined;

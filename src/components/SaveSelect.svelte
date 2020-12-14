@@ -2,7 +2,6 @@
   import Button, { Label } from "@smui/button";
   import Dialog, { Actions, Content, Title } from "@smui/dialog";
   import List, { Item as ListItem, Text } from "@smui/list";
-  import "blob-polyfill";
   import localForage from "localforage";
   import backend from "../backend";
   import type { Handle, SaveInfo } from "../save";
@@ -211,7 +210,8 @@
                   save.set(await getSaveFile(option.handle));
                   close();
                 }}>
-                <Text>{option.name}</Text>
+                <img src={option.sprite} alt={option.name} />
+                <Text style="padding-left: 8px">{option.name}</Text>
               </ListItem>
             {/await}
           {/each}

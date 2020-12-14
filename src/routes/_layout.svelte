@@ -1,11 +1,3 @@
-<script context="module" lang="ts">
-  import gameInfo from "../game-info";
-
-  export async function preload() {
-    await gameInfo.fetch(this.fetch);
-  }
-</script>
-
 <script lang="ts">
   import Button, { Label } from "@smui/button";
   import Dialog, { Actions, Content, Title } from "@smui/dialog";

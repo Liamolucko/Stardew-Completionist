@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as localForage from "localforage";
 import { writable } from "svelte/store";
 import backend from "./backend";
-import _gameInfo from "./game-info";
+import gameInfo from "./game-info";
+import Jimp from "./jimp";
 import { seasonValues } from "./names";
-import { assert } from "./util";
+import { createFarmerSprite } from "./sprite";
 
 /** Metadata about a save file */
 export interface SaveInfo {
@@ -14,7 +14,7 @@ export interface SaveInfo {
   name: string;
   lastSaved: number;
 
-  valid: boolean;
+  sprite: string;
 }
 
 export interface SaveGame {
@@ -96,184 +96,149 @@ export function isValidSaveFile(
     farmer.querySelector("saveTime") !== null;
 }
 
-/**
- * Gets `element.querySelector(selectors)`, but throws error of your choice if it does not exist.
- */
-function assertQuerySelector(
-  element: Element,
-  selectors: string,
-  message?: string,
-): Element {
-  const child = element.querySelector(selectors);
-  assert(child !== null, message);
-  return child;
-}
-
-function assertAllNonNull<T extends {}>(
-  obj: T,
-  message: string,
-): asserts obj is { [K in keyof T]: NonNullable<T[K]> } {
-  if (Object.values(obj).some((item) => item === null)) {
-    throw new Error(message);
-  }
-}
-
 export async function processSaveFile(
   file: XMLDocument | { handle: Handle; data: XMLDocument },
 ): Promise<SaveGame> {
   const save = (file instanceof XMLDocument ? file : file.data)
     .querySelector("SaveGame");
-  if (save === null) throw Error("Invalid save file");
-
-  const data = {
-    name: save.querySelector("player > name"),
-    cookingRecipes: save.querySelector("player > cookingRecipes"),
-    craftingRecipes: save.querySelector("player > craftingRecipes"),
-    itemsShipped: save.querySelector("player > basicShipped"),
-    mineralsFound: save.querySelector("player > mineralsFound"),
-    recipesCooked: save.querySelector("player > recipesCooked"),
-    artifactsFound: save.querySelector("player > archaeologyFound"),
-    fishCaught: save.querySelector("player > fishCaught"),
-    friendships: save.querySelector("player > friendshipData"),
-    currentDay: save.querySelector("dayOfMonth"),
-    currentSeason: save.querySelector("currentSeason"),
-    currentYear: save.querySelector("year"),
-    lastSaved: save.querySelector("player > saveTime"),
-    bundles: Array.from(
-      Array.from(save.querySelectorAll("locations > GameLocation"))
-        .find((el) => el.getAttribute("xsi:type") == "CommunityCenter")
-        ?.querySelectorAll("bundles > item") ?? [],
-    ),
-    items: Array.from(
-      save.querySelectorAll(
-        "locations > GameLocation > objects > item > value > Object",
-      ),
-    )
-      .filter((el) => el.querySelector("items"))
-      .flatMap((el) => Array.from(el.querySelectorAll("items > Item")))
-      .filter((el) => el.getAttribute("xsi:type") == "Object"),
-  };
+  if (save === null) throw new Error("Invalid save file");
 
   const errorMessage = `Invalid save file ${
     file instanceof XMLDocument
-      ? data.name?.textContent?.trim() ?? ""
+      ? save.querySelector("player > name")?.textContent?.trim() ?? ""
       : typeof file.handle === "string"
       ? file.handle
       : file.handle.name
   }`;
 
-  assertAllNonNull(data, errorMessage);
+  const queryText = (selector: string, el = save) => {
+    const contents = el.querySelector(selector)?.textContent?.trim();
+    if (contents == null) {
+      throw new Error(errorMessage);
+    }
+    return contents;
+  };
 
-  const currentDay = parseInt(data.currentDay.textContent ?? "0", 10);
-  const currentSeason = seasonValues.get(data.currentSeason.textContent ?? "spring") ?? 0;
+  const queryNumber = (selector: string, el = save) =>
+    parseInt(queryText(selector, el), 10);
 
-  const gameInfo = await _gameInfo.fetch();
+  const queryAllNodes = (selector: string, el = save) =>
+    Array.from(el.querySelectorAll(selector));
+
+  const queryMapNodes = (selector: string, el = save) => {
+    const items = queryAllNodes(`${selector} > item`, el);
+    return items.map((item) => {
+      const key = item.querySelector("key")?.textContent?.trim();
+      const value = item.querySelector("value");
+      if (key == null || value == null) {
+        throw new Error(errorMessage);
+      }
+      return [key, value] as [string, Element];
+    });
+  };
+
+  const queryMap = (selector: string, el = save) => {
+    const items = queryAllNodes(`${selector} > item`, el);
+    return new Map(items.map((item) => {
+      const key = item.querySelector("key")?.textContent?.trim();
+      const value = item.querySelector("value")?.textContent?.trim();
+      if (key == null || value == null) {
+        throw new Error(errorMessage);
+      }
+      return [key, value];
+    }));
+  };
+
+  const findNode = (selector: string, predicate: (el: Element) => boolean) => {
+    const node = queryAllNodes(selector).find(predicate);
+    if (node == null) {
+      throw new Error(errorMessage);
+    }
+    return node;
+  };
+
+  const currentDay = queryNumber("dayOfMonth");
+  const currentSeason = seasonValues.get(queryText("currentSeason")) ?? 0;
 
   return {
     handle: file instanceof XMLDocument ? null : file.handle,
-    name: data.name.textContent?.trim() ?? "",
-    lastSaved: parseInt(data.lastSaved.textContent ?? "", 10),
+    name: queryText("player > name"),
+    lastSaved: queryNumber("player > saveTime"),
 
     currentDay,
     currentSeason,
-    currentYear: parseInt(data.currentYear.textContent!, 10),
+    currentYear: queryNumber("year"),
     currentDate: currentSeason * 28 + currentDay,
 
     collectedItems: [
-      ...Array.from(data.itemsShipped.querySelectorAll("item")),
-      ...Array.from(data.mineralsFound.querySelectorAll("item")),
-      ...Array.from(data.recipesCooked.querySelectorAll("item")),
-      ...Array.from(data.artifactsFound.querySelectorAll("item")),
-      ...Array.from(data.fishCaught.querySelectorAll("item")),
-    ].map((item) =>
-      assertQuerySelector(item, "key", errorMessage).textContent!.trim()
-    )
-      .concat(
-        Array.from(data.craftingRecipes.querySelectorAll("item"))
-          .filter((item) =>
-            parseInt(
-                item.querySelector("value")?.textContent?.trim() ?? "-1",
-                10,
-              ) > 0 &&
-            assertQuerySelector(item, "key", errorMessage).textContent! in
-              gameInfo.recipes
-          )
-          .map((item) =>
-            gameInfo
-              .recipes[
-              assertQuerySelector(item, "key", errorMessage).textContent!
-            ].result.id
-          ),
-      ),
+      ...queryMap("player > basicShipped").keys(),
+      ...queryMap("player > mineralsFound").keys(),
+      ...queryMap("player > recipesCooked").keys(),
+      ...queryMap("player > archaeologyFound").keys(),
+      ...queryMap("player > fishCaught").keys(),
+      ...Array.from(queryMap("player > craftingRecipes").entries())
+        .filter(([key, value]) =>
+          parseInt(value) > 0 && key in gameInfo.recipes
+        )
+        .map(([key]) => gameInfo.recipes[key].result.id),
+    ],
+
     knownRecipes: [
-      ...Array.from(data.cookingRecipes.querySelectorAll("item")),
-      ...Array.from(data.craftingRecipes.querySelectorAll("item")),
-    ]
-      .map((item) =>
-        assertQuerySelector(item, "key", errorMessage).textContent!.trim()
-      ),
+      ...queryMap("player > cookingRecipes").keys(),
+      ...queryMap("player > craftingRecipes").keys(),
+    ],
 
     relationships: new Map(
-      Array.from(data.friendships.querySelectorAll("item")).map(
-        (relationship) => {
-          const friendship = assertQuerySelector(
-            relationship,
-            "value > Friendship",
-            errorMessage,
-          );
-          const name = assertQuerySelector(relationship, "key", errorMessage)
-            .textContent!.trim();
+      queryMapNodes("player > friendshipData")
+        .map(([key, value]) => {
+          const villager = gameInfo.villagers[key];
 
-          const villager = gameInfo.villagers[name];
-
-          if (typeof villager !== "undefined") {
-            return [name, {
-              hearts: parseInt(
-                assertQuerySelector(friendship, "Points", errorMessage)
-                  .textContent!,
-                10,
-              ) / 250,
-              maxHearts: assertQuerySelector(friendship, "Status", errorMessage)
-                  .textContent!.trim() === "Married"
+          if (villager) {
+            return [key, {
+              hearts: queryNumber("Friendship > Points", value) / 250,
+              maxHearts: queryText("Friendship > Status", value) === "Married"
                 ? 14
                 : villager.datable
                 ? 8
                 : 10,
-              giftsThisWeek: parseInt(
-                assertQuerySelector(friendship, "GiftsThisWeek", errorMessage)
-                  .textContent!.trim(),
-                10,
-              ),
-            }];
+              giftsThisWeek: queryNumber("Friendship > GiftsThisWeek", value),
+            }] as [string, Relationship];
           }
-        },
-      ).filter((item) => typeof item !== "undefined") as [
-        string,
-        Relationship,
-      ][],
+        })
+        .filter((item): item is [string, Relationship] => item != null),
     ),
 
-    bundleCompletion: new Map(data.bundles
-      .map((el) => [
-        parseInt(el.querySelector("key")?.textContent!),
-        Array.from(el.querySelectorAll("value > ArrayOfBoolean > boolean")).map(
-          (el) => el.textContent == "true",
+    bundleCompletion: new Map(
+      queryMapNodes(
+        "bundles",
+        findNode(
+          "locations > GameLocation",
+          (el) => el.getAttribute("xsi:type") == "CommunityCenter",
         ),
-      ])),
+      ).map(([key, value]) => [
+        parseInt(key),
+        queryAllNodes("ArrayOfBoolean > boolean", value)
+          .map((el) => el.textContent == "true"),
+      ]),
+    ),
 
-    items: data.items.reduce((acc, el) => {
-      const isCraftable =
-        el.querySelector("bigCraftable")?.textContent === "true";
-      const id = (isCraftable ? "c" : "") +
-        assertQuerySelector(el, "parentSheetIndex", errorMessage).textContent;
+    items: queryAllNodes(
+      "locations > GameLocation > objects > item > value > Object",
+    )
+      .filter((el) => el.querySelector("items"))
+      .flatMap((el) => Array.from(el.querySelectorAll("items > Item")))
+      .filter((el) => el.getAttribute("xsi:type") == "Object")
+      .reduce((acc, el) => {
+        const isCraftable =
+          el.querySelector("bigCraftable")?.textContent === "true";
+        const id = (isCraftable ? "c" : "") +
+          queryText("parentSheetIndex", el);
 
-      acc[id] ??= 0;
-      acc[id] += parseInt(
-        assertQuerySelector(el, "stack", errorMessage).textContent!,
-      );
+        acc[id] ??= 0;
+        acc[id] += queryNumber("stack", el);
 
-      return acc;
-    }, {}),
+        return acc;
+      }, {}),
   };
 }
 
@@ -288,15 +253,54 @@ export async function getSaveInfo(handle: Handle): Promise<SaveInfo> {
     "text/xml",
   );
 
+  const errorMessage = `Invalid save file ${
+    typeof handle === "string" ? handle : handle.name
+  }`;
+
+  function queryText(selector: string) {
+    const contents = file.querySelector(selector)?.textContent?.trim();
+    if (!contents) {
+      throw new Error(errorMessage);
+    }
+    return contents;
+  }
+
+  function queryNumber(selector: string) {
+    return parseInt(queryText(selector), 10);
+  }
+
+  function queryColor(selector: string) {
+    return Jimp.rgbaToInt(
+      queryNumber(`${selector} > R`),
+      queryNumber(`${selector} > G`),
+      queryNumber(`${selector} > B`),
+      queryNumber(`${selector} > A`),
+    );
+  }
+
+  const hatStr = file.querySelector("Farmer > hat > which")?.textContent;
+  const hat = hatStr != null ? parseInt(hatStr) : null;
+
   return {
     handle,
 
-    name: file.querySelector("Farmer > name")!.textContent!.trim(),
-    lastSaved: parseInt(
-      file.querySelector("Farmer > saveTime")!.textContent!.trim(),
-    ),
+    name: queryText("Farmer > name"),
+    lastSaved: queryNumber("Farmer > saveTime"),
 
-    valid: isValidSaveFile(file),
+    sprite: await createFarmerSprite({
+      shirt: queryNumber("Farmer > shirtItem > indexInTileSheet"),
+      hair: queryNumber("Farmer > hair"),
+      skin: queryNumber("Farmer > skin"),
+      shoes: queryNumber("Farmer > shoes"),
+      accessory: queryNumber("Farmer > accessory"),
+      facialHair: queryNumber("Farmer > facialHair"),
+      pants: queryNumber("Farmer > pantsItem > indexInTileSheet"),
+      hairColor: queryColor("Farmer > hairstyleColor"),
+      pantsColor: queryColor("Farmer > pantsColor"),
+      eyeColor: queryColor("Farmer > newEyeColor"),
+      hat,
+      isMale: queryText("Farmer > isMale") === "true",
+    }),
   };
 }
 
@@ -324,24 +328,18 @@ function isDirectory(
 export async function getSaveFiles(
   dir?: string | FileSystemDirectoryHandle,
 ): Promise<SaveInfo[]> {
-  let saves: SaveInfo[] = [];
-  if (
-    typeof backend !== "undefined" &&
-    (typeof dir === "string" || typeof dir === "undefined")
-  ) {
+  let saves: (SaveInfo | null)[] = [];
+  if (backend && (typeof dir === "string" || dir == null)) {
     if (typeof dir !== "undefined") backend.setSavesDir(dir);
     saves = await backend.listSaveFiles().then((saves) =>
-      Promise.all(saves.map(getSaveInfo))
+      Promise.all(saves.map((save) => getSaveInfo(save).catch(() => null)))
     );
   } else if (
-    typeof globalThis.showDirectoryPicker !== "undefined" &&
-    typeof dir !== "string" && typeof dir !== "undefined"
+    globalThis.showDirectoryPicker && typeof dir !== "string" && dir != null
   ) {
     for await (const save of dir.values()) {
       if (isDirectory(save)) {
-        try {
-          saves.push(await getSaveInfo(save));
-        } catch {}
+        saves.push(await getSaveInfo(save).catch(() => null));
       }
     }
   } else {
@@ -350,7 +348,7 @@ export async function getSaveFiles(
     );
   }
 
-  return saves.filter((save) => save.valid);
+  return saves.filter((save): save is SaveInfo => save != null);
 }
 
 // This doesn't technically exist, but Sapper replaces every occurence of process.browser with true or false depending if it's in the browser.

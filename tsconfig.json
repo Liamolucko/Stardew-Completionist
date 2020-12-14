@@ -1,14 +1,11 @@
 {
   "extends": "@tsconfig/svelte/tsconfig.json",
-
-  "include": ["src/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "public/*", "electron/*"],
   "compilerOptions": {
-    "typeRoots": ["node_modules/@types", "src/node_modules"],
-    "types": ["svelte", "@sapper"],
-
-    "allowSyntheticDefaultImports": true,
+    "lib": ["DOM", "ESNext", "WebWorker"],
+    
     "strictNullChecks": true,
-    "lib": ["ESNext", "DOM"]
-  }
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*", "src/node_modules/**/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "static/*"]
 }

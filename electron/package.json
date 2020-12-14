@@ -1,6 +1,6 @@
 {
   "name": "stardew-completionist",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "productName": "Stardew Completionist",
   "description": "An app designed to help people 100% Stardew Valley.",
   "homepage": "https://github.com/Liamolucko/Stardew-Completionist",
@@ -26,7 +26,7 @@
   "dependencies": {
     "electron-serve": "^1.0.0",
     "electron-squirrel-startup": "^1.0.0",
-    "svelte": "^3.29.4"
+    "svelte": "^3.31.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.54",
@@ -34,8 +34,8 @@
     "@electron-forge/maker-rpm": "^6.0.0-beta.54",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
     "@electron-forge/maker-zip": "^6.0.0-beta.54",
-    "electron": "^10.1.5",
+    "electron": "^10.2.0",
     "fs-extra": "^9.0.1",
-    "typescript": "^4.0.5"
+    "typescript": "^4.1.3"
   }
 }

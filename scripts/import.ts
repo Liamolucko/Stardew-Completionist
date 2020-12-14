@@ -22,7 +22,7 @@ import type {
   Item,
   RawRecipe as Recipe,
   RawVillager as Villager,
-} from "../src/game-info.ts";
+} from "../src/game-info-types.ts";
 
 //#region Constants
 const useTitleItems = [
@@ -313,7 +313,7 @@ async function getRawText(wikitext: string): Promise<string> {
 
 const listSplitRegex =
   /(?<=}}) ?(?=\[\[)|(?:(?<=]]|}}) ?|(?<=\)) )(?={{)| (?:•|&bull;) |(?<!^)(?<!>)<\/?[^\[\]{\}\/]+(?:\/>(?!\()|>)(?!<)(?!$)|\n/g;
-async function parseList(wikitext: string) {
+function parseList(wikitext: string) {
   return Promise.all(wikitext.trim().split(listSplitRegex).map(getRawText));
 }
 

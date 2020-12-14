@@ -16,7 +16,9 @@ process.once("beforeExit", async () => {
   // Don't require js-yaml until PNPM has actually installed it.
   const yaml = require("js-yaml");
 
-  const lockfile = yaml.safeLoad(await fs.readFile("./pnpm-lock.yaml", "utf-8"))
+  const lockfile = yaml.safeLoad(
+    await fs.readFile("./pnpm-lock.yaml", "utf-8"),
+  );
 
   const packages = Object.entries(lockfile.packages).map(([path, pkg]) => {
     const [key, version] = path.split(/\/(?=[^/]*$)/);

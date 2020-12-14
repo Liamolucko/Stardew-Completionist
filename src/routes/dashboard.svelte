@@ -1,24 +1,13 @@
-<script context="module" lang="ts">
-  import gameInfo from "../game-info";
-
-  export async function preload() {
-    return {
-      gameInfo: await gameInfo.fetch(this.fetch),
-    };
-  }
-</script>
-
 <script lang="ts">
   import DataTable, { Body, Cell, Head, Row } from "@smui/data-table";
   import { derived } from "svelte/store";
   import type { Readable } from "svelte/store";
   import ItemButton from "../components/ItemButton.svelte";
-  import type { GameInfo, Item, Recipe } from "../game-info";
+  import type { Item, Recipe } from "../game-info";
   import { seasonNames } from "../names";
   import save from "../save";
   import type { SaveGame } from "../save";
-
-  export let gameInfo: GameInfo;
+  import gameInfo from "../game-info";
 
   interface Birthday {
     villager: string;

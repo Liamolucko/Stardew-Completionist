@@ -1,24 +1,11 @@
-<script context="module" lang="ts">
-  import _gameInfo from "../game-info";
+<script lang="ts">
+  import type { Readable } from "svelte/store";
+  import ItemButton from "../components/ItemButton.svelte";
   import type { Bundle, Item } from "../game-info";
+  import gameInfo from "../game-info";
   import { derived } from "svelte/store";
   import save from "../save";
 
-  export async function preload() {
-    const gameInfo = await _gameInfo.fetch(this.fetch);
-
-    return {
-      gameInfo,
-    };
-  }
-</script>
-
-<script lang="ts">
-  import type { GameInfo } from "../game-info";
-  import ItemButton from "../components/ItemButton.svelte";
-  import type { Readable } from "svelte/store";
-
-  export let gameInfo: GameInfo;
   const sections: Readable<Record<
     string,
     ({
