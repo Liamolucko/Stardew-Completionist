@@ -46,7 +46,7 @@ module.exports = {
   ],
   hooks: {
     async generateAssets() {
-      await fs.copy("../__sapper__/export", "./www");
+      await fs.copy("../build", "./www");
 
       const pkg = await fs.readJson("./package.json");
       const rootPkg = await fs.readJson("../package.json");

@@ -26,9 +26,25 @@ process.once("beforeExit", async () => {
   });
 
   const toRemove = packages.filter((pkg) =>
-    pkg.os && !pkg.os.includes(process.platform) ||
-    pkg.cpu && !pkg.cpu.includes(process.arch)
+    pkg.optional && (pkg.os && !pkg.os.includes(process.platform) ||
+      pkg.cpu && !pkg.cpu.includes(process.arch))
   );
+
+  for (const pkg of toRemove) {
+    for (
+      const [key, version] of [
+        ...Object.entries(pkg.dependencies ?? {}),
+        ...Object.entries(pkg.devDependencies ?? {}),
+      ]
+    ) {
+      const pkg = packages.find((pkg) =>
+        pkg.key === key && pkg.version === version
+      );
+      if (pkg?.optional && !toRemove.includes(pkg)) {
+        toRemove.push(pkg);
+      }
+    }
+  }
 
   console.log(
     `\n[pnpmfile] Removing platform-specific dependencies (pnpm/pnpm#2038):\n- ${
@@ -38,16 +54,17 @@ process.once("beforeExit", async () => {
 
   for (const pkg of toRemove) {
     if (
-      includesDep(lockfile.dependencies, pkg) ||
-      includesDep(lockfile.devDependencies, pkg)
+      includesDep(lockfile.dependencies ?? {}, pkg) ||
+      includesDep(lockfile.devDependencies ?? {}, pkg)
     ) {
       fs.unlink(
         path.join("./node_modules", `${pkg.key}@${pkg.version}`),
       );
     } else {
+      // It might have already been removed in an earlier pass
       fs.unlink(
         path.join("./node_modules/.pnpm/node_modules", `${pkg.key}`),
-      );
+      ).catch(() => {});
     }
 
     for (

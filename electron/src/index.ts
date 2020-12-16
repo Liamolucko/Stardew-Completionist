@@ -1,14 +1,10 @@
 import { app, BrowserWindow, session, shell } from "electron";
-import serve from "electron-serve";
 import * as path from "path";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-
-// Run 'server'
-serve({ directory: path.join(__dirname, "../www") });
 
 function createWindow(): void {
   // Create the browser window.
@@ -28,7 +24,7 @@ function createWindow(): void {
   });
 
   // and load the index.html of the app.
-  win.loadURL("app://-");
+  win.loadFile(path.join(__dirname, "../www/index.html"));
 
   win.once("ready-to-show", win.show);
 }

@@ -1,11 +1,25 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
+  // "extends": "@tsconfig/svelte/tsconfig.json",
+  "include": ["src", "types", "node_modules/imagescript/**/*.js", "node_modules/.pnpm/*/node_modules/imagescript/**/*.js"],
   "compilerOptions": {
-    "lib": ["DOM", "ESNext", "WebWorker"],
-    
-    "strictNullChecks": true,
-    "resolveJsonModule": true
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "baseUrl": "./",
+    /* paths - If you configure Snowpack import aliases, add them here. */
+    "paths": {},
+    /* noEmit - Snowpack builds (emits) files, not tsc. */
+    "noEmit": true,
+    /* Additional Options */
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "useDefineForClassFields": true,
+    "allowSyntheticDefaultImports": true,
+    "importsNotUsedAsValues": "error",
+    "types": ["svelte", "snowpack-env"],
+    "allowJs": true,
   },
-  "include": ["src/**/*", "src/node_modules/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "static/*"]
 }

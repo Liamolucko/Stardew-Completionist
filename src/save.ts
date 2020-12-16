@@ -2,7 +2,7 @@ import * as localForage from "localforage";
 import { writable } from "svelte/store";
 import backend from "./backend";
 import gameInfo from "./game-info";
-import Jimp from "./jimp";
+import { Image } from "imagescript";
 import { seasonValues } from "./names";
 import { createFarmerSprite } from "./sprite";
 
@@ -53,8 +53,9 @@ export const save = {
     if (typeof save.handle === "string" && typeof backend !== "undefined") {
       unsubscribeFromLast?.();
 
-      backend.watchSaveFile(save.handle).then((store) =>
-        store.subscribe(async (file) => {
+      unsubscribeFromLast = backend.watchSaveFile(save.handle)
+        .subscribe(async (file) => {
+          if (file === null) return;
           const data = new DOMParser().parseFromString(file.trim(), "text/xml");
           if (isValidSaveFile(data)) {
             const newSave = await processSaveFile({
@@ -64,12 +65,10 @@ export const save = {
             localForage.setItem("lastSaveFile", newSave);
             _save.set(newSave);
           }
-        })
-      ).then((unsubscriber) => unsubscribeFromLast = unsubscriber);
-    } else {
-      localForage.setItem("lastSaveFile", save);
-      _save.set(save);
+        });
     }
+    localForage.setItem("lastSaveFile", save);
+    _save.set(save);
   },
 };
 
@@ -228,7 +227,7 @@ export async function processSaveFile(
       .filter((el) => el.querySelector("items"))
       .flatMap((el) => Array.from(el.querySelectorAll("items > Item")))
       .filter((el) => el.getAttribute("xsi:type") == "Object")
-      .reduce((acc, el) => {
+      .reduce<Record<string, number>>((acc, el) => {
         const isCraftable =
           el.querySelector("bigCraftable")?.textContent === "true";
         const id = (isCraftable ? "c" : "") +
@@ -270,7 +269,7 @@ export async function getSaveInfo(handle: Handle): Promise<SaveInfo> {
   }
 
   function queryColor(selector: string) {
-    return Jimp.rgbaToInt(
+    return Image.rgbaToColor(
       queryNumber(`${selector} > R`),
       queryNumber(`${selector} > G`),
       queryNumber(`${selector} > B`),
@@ -351,12 +350,8 @@ export async function getSaveFiles(
   return saves.filter((save): save is SaveInfo => save != null);
 }
 
-// This doesn't technically exist, but Sapper replaces every occurence of process.browser with true or false depending if it's in the browser.
-declare var process: { browser: boolean };
-if (process.browser) {
-  localForage.getItem<SaveGame>("lastSaveFile").then((saveGame) => {
-    if (saveGame !== null) save.set(saveGame);
-  });
-}
+localForage.getItem<SaveGame>("lastSaveFile").then((saveGame) => {
+  if (saveGame !== null) save.set(saveGame);
+});
 
 export default save;

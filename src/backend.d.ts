@@ -5,7 +5,7 @@ declare namespace backend {
   function getSaveInfo(id: string): Promise<string>;
   function getSaveFile(id: string): Promise<string>;
   function listSaveFiles(): Promise<string[]>;
-  function watchSaveFile(id: string): Promise<Readable<string>>;
+  function watchSaveFile(id: string): Readable<string | null>;
   function setSavesDir(url: string): void;
 }
 

@@ -44,21 +44,18 @@ contextBridge.exposeInMainWorld("backend", {
       });
   },
 
-  async watchSaveFile(id: string) {
+  watchSaveFile(id: string) {
     const savePath = path.join(savesDir, id, id);
 
-    return readable<string>(
-      await readFile(savePath, { encoding: "utf-8" }),
-      (set) => {
-        const watcher = watch(savePath, async () => {
-          set(await readFile(savePath, { encoding: "utf-8" }));
-        });
+    return readable<string | null>(null, (set) => {
+      const watcher = watch(savePath, async () => {
+        set(await readFile(savePath, { encoding: "utf-8" }));
+      });
 
-        return function stop() {
-          watcher.close();
-        };
-      },
-    );
+      return function stop() {
+        watcher.close();
+      };
+    });
   },
 
   setSavesDir(url: string) {

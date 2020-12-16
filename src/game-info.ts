@@ -1,4 +1,4 @@
-import json from "../static/game-info.json";
+import _json from "../assets/game-info.json";
 export type {
   Bundle,
   GameInfo,
@@ -6,6 +6,9 @@ export type {
   Recipe,
   Villager,
 } from "./game-info-types";
+import type { GameInfo, RawGameInfo } from "./game-info-types";
+
+const json: RawGameInfo = _json;
 
 const recipes = Object.fromEntries(
   Object.entries(json.recipes)
@@ -15,7 +18,7 @@ const recipes = Object.fromEntries(
     }]),
 );
 
-export default {
+const gameInfo: GameInfo = {
   items: json.items,
   recipes,
   shipping: json.shipping.map((id) => json.items[id]),
@@ -33,3 +36,5 @@ export default {
       }]),
   ),
 };
+
+export default gameInfo;
