@@ -8,27 +8,16 @@ module.exports = {
     "@snowpack/plugin-svelte",
     "@snowpack/plugin-typescript",
   ],
-  install: [
-    /* ... */
-  ],
-  installOptions: {
-    /* ... */
-  },
   devOptions: {
     open: "none",
   },
   buildOptions: {
     baseUrl: "./",
   },
-  proxy: {
-    /* ... */
-  },
-  alias: {
-    "imagescript": "./imagescript.js",
-  },
-  experiments: {
-    optimize: {
-      bundle: true,
-    },
+  optimize: {
+    bundle: true,
+    minify: true,
+    treeshake: true,
+    target: "es2018",
   },
 };

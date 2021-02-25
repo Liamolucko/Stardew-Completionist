@@ -334,7 +334,7 @@ export async function getSaveFiles(
       Promise.all(saves.map((save) => getSaveInfo(save).catch(() => null)))
     );
   } else if (
-    globalThis.showDirectoryPicker && typeof dir !== "string" && dir != null
+    "showDirectoryPicker" in globalThis && typeof dir !== "string" && dir != null
   ) {
     for await (const save of dir.values()) {
       if (isDirectory(save)) {
