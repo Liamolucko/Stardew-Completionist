@@ -13,6 +13,7 @@ module.exports = {
   },
   buildOptions: {
     baseUrl: "./",
+    sourcemap: true,
   },
   optimize: {
     bundle: true,

@@ -1,3 +1,5 @@
+/// <reference types="wicg-file-system-access" />
+
 import * as localForage from "localforage";
 import { writable } from "svelte/store";
 import backend from "./backend";

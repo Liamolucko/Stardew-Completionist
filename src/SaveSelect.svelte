@@ -74,36 +74,22 @@
   }
 </script>
 
-<style lang="scss">
-  mwc-list-item {
-    --mdc-list-item-graphic-margin: 0px;
-    --mdc-list-item-graphic-size: 36px;
-
-    img {
-      image-rendering: crisp-edges;
-      image-rendering: pixelated;
-      width: 20px;
-      height: 34px;
-    }
-  }
-
-  mwc-circular-progress {
-    margin: 8px 92px 0;
-  }
-</style>
-
 <input
   on:change={async () => {
     if (fileInput.files === null) return;
-    const contents = new DOMParser().parseFromString(await fileInput.files[0].text(), 'text/xml');
+    const contents = new DOMParser().parseFromString(
+      await fileInput.files[0].text(),
+      "text/xml"
+    );
     if (!isValidSaveFile(contents)) return;
     save.set(await processSaveFile(contents));
-    fileInput.value = '';
+    fileInput.value = "";
     dialog.close();
   }}
   bind:this={fileInput}
   type="file"
-  style="display: none" />
+  style="display: none"
+/>
 
 <mwc-dialog heading="Select Save File" bind:this={dialog}>
   <mwc-button slot="secondaryAction" dialogAction="close">Cancel</mwc-button>
@@ -133,7 +119,7 @@
             .
           </p>
         {/if}
-        {#if platformName === 'Windows'}
+        {#if platformName === "Windows"}
           <p>
             Paste
             <code>{savesDirPath}</code>
@@ -143,7 +129,7 @@
             <code>Saves</code>
             .
           </p>
-        {:else if platformName === 'macOS'}
+        {:else if platformName === "macOS"}
           <p>
             Press
             <kbd>⇧</kbd>
@@ -160,7 +146,7 @@
             .
           </p>
         {/if}
-        {#if !hasBackend && (platformName === 'Windows' || platformName === 'macOS')}
+        {#if !hasBackend && (platformName === "Windows" || platformName === "macOS")}
           Then navigate to your chosen save file and choose the file with the
           same name as the enclosing folder.
         {/if}
@@ -170,20 +156,25 @@
       {#if savesDirPath !== null}
         <mwc-button
           slot="secondaryAction"
-          on:click={() => navigator.clipboard.writeText(savesDirPath)}>
+          on:click={() => navigator.clipboard.writeText(savesDirPath)}
+        >
           Copy path
         </mwc-button>
         <mwc-button
           slot="primaryAction"
           on:click={async () => {
-            if (typeof backend !== 'undefined') {
+            if (typeof backend !== "undefined") {
               setSavesDir(await backend.chooseFolder());
-            } else if (typeof globalThis.showDirectoryPicker !== 'undefined' && platformName !== 'Windows') {
+            } else if (
+              typeof globalThis.showDirectoryPicker !== "undefined" &&
+              platformName !== "Windows"
+            ) {
               setSavesDir(await globalThis.showDirectoryPicker());
             } else {
               fileInput.click();
             }
-          }}>
+          }}
+        >
           Choose
           {#if hasBackend}directory{:else}file{/if}
         </mwc-button>
@@ -191,7 +182,7 @@
     {:else}
       <mwc-list activatable>
         {#each options as option}
-          {#await $save !== null && (typeof option.handle === 'string' ? option.handle === $save.handle : option.handle.isSameEntry($save.handle)) then selected}
+          {#await $save !== null && (typeof option.handle === "string" ? option.handle === $save.handle : option.handle.isSameEntry($save.handle)) then selected}
             <mwc-list-item
               {selected}
               activated={selected}
@@ -199,13 +190,15 @@
               on:click={async () => {
                 save.set(await getSaveFile(option.handle));
                 close();
-              }}>
+              }}
+            >
               <img
                 width="20"
                 height="34"
                 slot="graphic"
                 src={option.sprite}
-                alt={option.name} />
+                alt={option.name}
+              />
               {option.name}
             </mwc-list-item>
           {/await}
@@ -216,9 +209,28 @@
         on:click={() => {
           savesDir = null;
           options = null;
-        }}>
+        }}
+      >
         Change directory
       </mwc-button>
     {/if}
   {/await}
 </mwc-dialog>
+
+<style lang="scss">
+  mwc-list-item {
+    --mdc-list-item-graphic-margin: 0px;
+    --mdc-list-item-graphic-size: 36px;
+
+    img {
+      image-rendering: crisp-edges;
+      image-rendering: pixelated;
+      width: 20px;
+      height: 34px;
+    }
+  }
+
+  mwc-circular-progress {
+    margin: 8px 92px 0;
+  }
+</style>

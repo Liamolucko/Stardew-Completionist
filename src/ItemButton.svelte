@@ -15,6 +15,35 @@
   $: size = (item.isCraftable ? 32 : 16) * scale;
 </script>
 
+<button
+  style="--scale: {scale}; --size: {size}px"
+  on:click={() => {
+    dialog.open(item);
+  }}
+>
+  <img
+    class="sprite"
+    src="data:image/png;base64,{item.sprite}"
+    alt={item.name}
+    width={16 * scale}
+    height={size}
+    class:grey
+    class:shadow
+  />
+  <img
+    class="quality"
+    src="./images/quality-{quality}.png"
+    alt="{qualityNames.get(quality)} quality"
+  />
+  {#if quantity > 1}
+    <div class="quantity">
+      {#each quantity.toString() as char}
+        <img src="./numbers/{char}.png" alt={char} />
+      {/each}
+    </div>
+  {/if}
+</button>
+
 <style lang="scss">
   button {
     position: relative; // Make `position: absolute` work for subsequent elements
@@ -95,29 +124,3 @@
     }
   }
 </style>
-
-<button
-  style="--scale: {scale}; --size: {size}px"
-  on:click={() => {
-    dialog.open(item);
-  }}>
-  <img
-    class="sprite"
-    src="data:image/png;base64,{item.sprite}"
-    alt={item.name}
-    width={16 * scale}
-    height={size}
-    class:grey
-    class:shadow />
-  <img
-    class="quality"
-    src="./images/quality-{quality}.png"
-    alt="{qualityNames.get(quality)} quality" />
-  {#if quantity > 1}
-    <div class="quantity">
-      {#each quantity.toString() as char}
-        <img src="./numbers/{char}.png" alt={char} />
-      {/each}
-    </div>
-  {/if}
-</button>

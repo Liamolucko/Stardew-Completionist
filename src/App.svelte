@@ -10,11 +10,7 @@
   import type { Item } from "./game-info.js";
   import gameInfo from "./game-info.js";
   import ItemInfo from "./ItemInfo.svelte";
-  import Bundles from "./pages/Bundles.svelte";
-  import Collection from "./pages/Collection.svelte";
-  import Dashboard from "./pages/Dashboard.svelte";
   import Fallback from "./pages/Fallback.svelte";
-  import Friendship from "./pages/Friendship.svelte";
   import Redirect from "./pages/Redirect.svelte";
   import save, { getSaveFile } from "./save.js";
   import SaveSelect from "./SaveSelect.svelte";
@@ -22,25 +18,27 @@
 
   const routes = {
     "/": Redirect,
-    "/dashboard": Dashboard,
+    "/dashboard": wrap({
+      asyncComponent: () => import("./pages/Dashboard.svelte"),
+    }),
     "/shipping": wrap({
-      component: Collection,
+      asyncComponent: () => import("./pages/Collection.svelte"),
       props: { title: "Items Shipped", items: gameInfo.shipping },
     }),
     "/fish": wrap({
-      component: Collection,
+      asyncComponent: () => import("./pages/Collection.svelte"),
       props: { title: "Fish", items: gameInfo.fish },
     }),
     "/artifacts": wrap({
-      component: Collection,
+      asyncComponent: () => import("./pages/Collection.svelte"),
       props: { title: "Artifacts", items: gameInfo.artifacts },
     }),
     "/minerals": wrap({
-      component: Collection,
+      asyncComponent: () => import("./pages/Collection.svelte"),
       props: { title: "Minerals", items: gameInfo.minerals },
     }),
     "/cooking": wrap({
-      component: Collection,
+      asyncComponent: () => import("./pages/Collection.svelte"),
       props: {
         title: "Cooking",
         recipes: gameInfo.cooking,
@@ -48,15 +46,19 @@
       },
     }),
     "/crafting": wrap({
-      component: Collection,
+      asyncComponent: () => import("./pages/Collection.svelte"),
       props: {
         title: "Crafting",
         recipes: gameInfo.crafting,
         items: gameInfo.crafting.map((recipe) => recipe.result),
       },
     }),
-    "/bundles": Bundles,
-    "/friendship": Friendship,
+    "/bundles": wrap({
+      asyncComponent: () => import("./pages/Bundles.svelte"),
+    }),
+    "/friendship": wrap({
+      asyncComponent: () => import("./pages/Friendship.svelte"),
+    }),
     "*": Fallback,
   };
 
@@ -93,6 +95,70 @@
     });
   }
 </script>
+
+<div class="container">
+  <div class="nav-rail">
+    <div class="nav-section top-section">
+      <a href="#/dashboard">
+        <mwc-icon-button class="rail-button" icon="dashboard" />
+      </a>
+      {#each ["shipping", "fish", "artifacts", "minerals", "cooking", "crafting", "bundles", "friendship"] as page}
+        <a href="#/{page}">
+          <mwc-icon-button class="rail-button">
+            <img
+              width="24"
+              height="24"
+              src="./images/{page}.png"
+              alt="{page} icon"
+            />
+          </mwc-icon-button>
+        </a>
+      {/each}
+    </div>
+    <div class="nav-section bottom-section">
+      {#if $save?.handle != null}
+        <mwc-icon-button
+          class="rail-button"
+          icon="refresh"
+          on:click={async () => {
+            if (typeof $save.handle !== "string") {
+              const state = await $save.handle.requestPermission({
+                mode: "read",
+              });
+              if (state === "denied") return;
+            }
+            save.set(await getSaveFile($save.handle));
+          }}
+        />
+      {/if}
+      <mwc-icon-button
+        class="rail-button"
+        icon="folder"
+        on:click={saveSelect.show}
+      />
+    </div>
+  </div>
+  <main
+    class:border={typeof backend !== "undefined" &&
+      /Windows(?: NT)? 10\.0/.test(navigator.userAgent)}
+  >
+    <Router {routes} />
+  </main>
+</div>
+
+<mwc-dialog heading="Welcome" bind:this={introDialog}>
+  <p>
+    Welcome to Stardew Completionist! This is an app which analyzes your Stardew
+    Valley save file and tells you what you've yet to do. It can also act as
+    somewhat of a streamlined wiki.
+  </p>
+  <p>You can select your save file using the folder icon in the bottom left.</p>
+  <mwc-button slot="primaryAction" dialogAction="close">Close</mwc-button>
+</mwc-dialog>
+
+<ItemInfo item={selectedItem} bind:this={itemInfoDialog} />
+
+<SaveSelect bind:this={saveSelect} />
 
 <style lang="scss">
   .container {
@@ -165,62 +231,3 @@
     color: inherit;
   }
 </style>
-
-<div class="container">
-  <div class="nav-rail">
-    <div class="nav-section top-section">
-      <a href="#/dashboard">
-        <mwc-icon-button class="rail-button" icon="dashboard" />
-      </a>
-      {#each ['shipping', 'fish', 'artifacts', 'minerals', 'cooking', 'crafting', 'bundles', 'friendship'] as page}
-        <a href="#/{page}">
-          <mwc-icon-button class="rail-button">
-            <img
-              width="24"
-              height="24"
-              src="./images/{page}.png"
-              alt="{page} icon" />
-          </mwc-icon-button>
-        </a>
-      {/each}
-    </div>
-    <div class="nav-section bottom-section">
-      {#if $save?.handle != null}
-        <mwc-icon-button
-          class="rail-button"
-          icon="refresh"
-          on:click={async () => {
-            if (typeof $save.handle !== 'string') {
-              const state = await $save.handle.requestPermission({
-                mode: 'read',
-              });
-              if (state === 'denied') return;
-            }
-            save.set(await getSaveFile($save.handle));
-          }} />
-      {/if}
-      <mwc-icon-button
-        class="rail-button"
-        icon="folder"
-        on:click={saveSelect.show} />
-    </div>
-  </div>
-  <main
-    class:border={typeof backend !== 'undefined' && /Windows(?: NT)? 10\.0/.test(navigator.userAgent)}>
-    <Router {routes} />
-  </main>
-</div>
-
-<mwc-dialog heading="Welcome" bind:this={introDialog}>
-  <p>
-    Welcome to Stardew Completionist! This is an app which analyzes your Stardew
-    Valley save file and tells you what you've yet to do. It can also act as
-    somewhat of a streamlined wiki.
-  </p>
-  <p>You can select your save file using the folder icon in the bottom left.</p>
-  <mwc-button slot="primaryAction" dialogAction="close">Close</mwc-button>
-</mwc-dialog>
-
-<ItemInfo item={selectedItem} bind:this={itemInfoDialog} />
-
-<SaveSelect bind:this={saveSelect} />

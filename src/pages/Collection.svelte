@@ -74,6 +74,91 @@
   });
 </script>
 
+<svelte:head>
+  <title>{title} | Stardew Completionist</title>
+</svelte:head>
+
+<div
+  class="container"
+  class:has-unknown-recipes={recipes != null && $save !== null}
+>
+  <div class="mdc-card mdc-card--outlined grid-card">
+    <h2 class="mdc-typography--headline6">{title}</h2>
+    <div class="item-grid">
+      {#each items as item}
+        <ItemButton
+          {item}
+          scale={item.isCraftable ? 2 : 3}
+          shadow
+          grey={$save === null
+            ? false
+            : !$save.collectedItems.includes(item.id)}
+        />
+      {/each}
+    </div>
+  </div>
+
+  {#if recipes != null && $save != null}
+    <div class="mdc-data-table">
+      <div class="mdc-data-table__table-container">
+        <table class="mdc-data-table__table">
+          <thead>
+            <tr class="mdc-data-table__header-row">
+              <th
+                class="mdc-data-table__header-cell"
+                role="columnheader"
+                scope="col"
+              >
+                Recipe
+              </th>
+              <th
+                class="mdc-data-table__header-cell"
+                role="columnheader"
+                scope="col"
+              >
+                Sources
+              </th>
+            </tr>
+          </thead>
+          <tbody class="mdc-data-table__content">
+            {#each recipes.filter((recipe) => !$save.knownRecipes.includes(recipe.name)) as recipe}
+              <tr class="mdc-data-table__row">
+                <th class="mdc-data-table__cell" scope="row">
+                  <ItemButton
+                    item={recipe.result}
+                    scale={recipe.result.isCraftable ? 1 : 2}
+                  />
+                  <span style="padding-left: 8px">{recipe.name}</span>
+                </th>
+                <td class="mdc-data-table__cell">
+                  {#if recipe.sources != null}
+                    <ul class="source-list">
+                      {#each recipe.sources as source}
+                        <li>{source}</li>
+                      {/each}
+                    </ul>
+                  {/if}
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="mdc-card mdc-card--outlined ingredients">
+      <h2 class="mdc-typography--headline6">Required Ingredients</h2>
+      <ul>
+        {#each Object.entries($requiredIngredients ?? {}) as [id, amount]}
+          <li>
+            {categories.get(id) || gameInfo.items[id].name}:
+            {$save.items[id] ?? 0}/{amount}
+          </li>
+        {/each}
+      </ul>
+    </div>
+  {/if}
+</div>
+
 <style lang="scss">
   .container {
     display: grid;
@@ -143,81 +228,3 @@
     }
   }
 </style>
-
-<svelte:head>
-  <title>{title} | Stardew Completionist</title>
-</svelte:head>
-
-<div
-  class="container"
-  class:has-unknown-recipes={recipes != null && $save !== null}>
-  <div class="mdc-card mdc-card--outlined grid-card">
-    <h2 class="mdc-typography--headline6">{title}</h2>
-    <div class="item-grid">
-      {#each items as item}
-        <ItemButton
-          {item}
-          scale={item.isCraftable ? 2 : 3}
-          shadow
-          grey={$save === null ? false : !$save.collectedItems.includes(item.id)} />
-      {/each}
-    </div>
-  </div>
-
-  {#if recipes != null && $save != null}
-    <div class="mdc-data-table">
-      <div class="mdc-data-table__table-container">
-        <table class="mdc-data-table__table">
-          <thead>
-            <tr class="mdc-data-table__header-row">
-              <th
-                class="mdc-data-table__header-cell"
-                role="columnheader"
-                scope="col">
-                Recipe
-              </th>
-              <th
-                class="mdc-data-table__header-cell"
-                role="columnheader"
-                scope="col">
-                Sources
-              </th>
-            </tr>
-          </thead>
-          <tbody class="mdc-data-table__content">
-            {#each recipes.filter((recipe) => !$save.knownRecipes.includes(recipe.name)) as recipe}
-              <tr class="mdc-data-table__row">
-                <th class="mdc-data-table__cell" scope="row">
-                  <ItemButton
-                    item={recipe.result}
-                    scale={recipe.result.isCraftable ? 1 : 2} />
-                  <span style="padding-left: 8px">{recipe.name}</span>
-                </th>
-                <td class="mdc-data-table__cell">
-                  {#if recipe.sources != null}
-                    <ul class="source-list">
-                      {#each recipe.sources as source}
-                        <li>{source}</li>
-                      {/each}
-                    </ul>
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="mdc-card mdc-card--outlined ingredients">
-      <h2 class="mdc-typography--headline6">Required Ingredients</h2>
-      <ul>
-        {#each Object.entries($requiredIngredients ?? {}) as [id, amount]}
-          <li>
-            {categories.get(id) || gameInfo.items[id].name}:
-            {$save.items[id] ?? 0}/{amount}
-          </li>
-        {/each}
-      </ul>
-    </div>
-  {/if}
-</div>

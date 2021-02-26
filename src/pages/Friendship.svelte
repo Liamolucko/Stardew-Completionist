@@ -26,6 +26,81 @@
   );
 </script>
 
+<svelte:head>
+  <title>Friendship | Stardew Completionist</title>
+</svelte:head>
+
+<h1 class="mdc-typography--headline4">Friendship</h1>
+<div class="mdc-data-table">
+  <div class="mdc-data-table__table-container">
+    <table class="mdc-data-table__table" aria-label="Dessert calories">
+      <thead>
+        <tr class="mdc-data-table__header-row">
+          <th
+            class="mdc-data-table__header-cell"
+            role="columnheader"
+            scope="col"
+          >
+            Villager
+          </th>
+          {#if $save !== null}
+            <th
+              class="mdc-data-table__header-cell"
+              role="columnheader"
+              scope="col"
+            >
+              Hearts
+            </th>
+          {/if}
+          <th
+            class="mdc-data-table__header-cell"
+            role="columnheader"
+            scope="col"
+          >
+            Birthday
+          </th>
+          <th
+            class="mdc-data-table__header-cell"
+            role="columnheader"
+            scope="col"
+          >
+            Best Gifts
+          </th>
+        </tr>
+      </thead>
+      <tbody class="mdc-data-table__content">
+        {#each $villagers.filter((villager) => typeof villager.hearts === "undefined" || villager.hearts < villager.maxHearts) as villager}
+          <tr class="mdc-data-table__row">
+            <th class="mdc-data-table__cell" scope="row">{villager.name}</th>
+            {#if $save !== null}
+              <td class="mdc-data-table__cell">
+                <div class="hearts">
+                  {#each [...Array(villager.maxHearts).keys()] as i}
+                    <img
+                      alt="heart"
+                      src="./images/heart-{villager.hearts >= i + 1
+                        ? 'filled'
+                        : 'outline'}.png"
+                    />
+                  {/each}
+                </div>
+              </td>
+            {/if}
+            <td class="mdc-data-table__cell">{villager.birthday}</td>
+            <td class="mdc-data-table__cell">
+              <div class="best-gifts">
+                {#each villager.bestGifts as item}
+                  <ItemButton {item} scale={item.isCraftable ? 1 : 2} />
+                {/each}
+              </div>
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <style lang="scss">
   h1 {
     margin: 20px 20px 0.5em;
@@ -57,71 +132,3 @@
     }
   }
 </style>
-
-<svelte:head>
-  <title>Friendship | Stardew Completionist</title>
-</svelte:head>
-
-<h1 class="mdc-typography--headline4">Friendship</h1>
-<div class="mdc-data-table">
-  <div class="mdc-data-table__table-container">
-    <table class="mdc-data-table__table" aria-label="Dessert calories">
-      <thead>
-        <tr class="mdc-data-table__header-row">
-          <th
-            class="mdc-data-table__header-cell"
-            role="columnheader"
-            scope="col">
-            Villager
-          </th>
-          {#if $save !== null}
-            <th
-              class="mdc-data-table__header-cell"
-              role="columnheader"
-              scope="col">
-              Hearts
-            </th>
-          {/if}
-          <th
-            class="mdc-data-table__header-cell"
-            role="columnheader"
-            scope="col">
-            Birthday
-          </th>
-          <th
-            class="mdc-data-table__header-cell"
-            role="columnheader"
-            scope="col">
-            Best Gifts
-          </th>
-        </tr>
-      </thead>
-      <tbody class="mdc-data-table__content">
-        {#each $villagers.filter((villager) => typeof villager.hearts === 'undefined' || villager.hearts < villager.maxHearts) as villager}
-          <tr class="mdc-data-table__row">
-            <th class="mdc-data-table__cell" scope="row">{villager.name}</th>
-            {#if $save !== null}
-              <td class="mdc-data-table__cell">
-                <div class="hearts">
-                  {#each [...Array(villager.maxHearts).keys()] as i}
-                    <img
-                      alt="heart"
-                      src="./images/heart-{villager.hearts >= i + 1 ? 'filled' : 'outline'}.png" />
-                  {/each}
-                </div>
-              </td>
-            {/if}
-            <td class="mdc-data-table__cell">{villager.birthday}</td>
-            <td class="mdc-data-table__cell">
-              <div class="best-gifts">
-                {#each villager.bestGifts as item}
-                  <ItemButton {item} scale={item.isCraftable ? 1 : 2} />
-                {/each}
-              </div>
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
-</div>
