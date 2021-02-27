@@ -89,3 +89,6 @@ export interface Villager {
   birthday: string;
   birthDate: number;
 }
+
+// Snowpack breaks on empty files right now, so make sure this isn't transpiled to an empty file
+export const _ = null;

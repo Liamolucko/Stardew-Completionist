@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getContext } from "svelte";
-  import type { Item } from "../game-info";
-  import { qualityNames } from "../names";
+  import type { Item } from "./game-info";
+  import { qualityNames } from "./names";
 
   export let item: Item;
   export let scale = 2;

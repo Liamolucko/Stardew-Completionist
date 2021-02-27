@@ -1,22 +1,24 @@
 <script lang="ts">
   import type { Readable } from "svelte/store";
-  import ItemButton from "../components/ItemButton.svelte";
-  import type { Bundle, Item } from "../game-info";
-  import gameInfo from "../game-info";
+  import ItemButton from "$components/ItemButton.svelte";
+  import type { Bundle, Item } from "$components/game-info";
+  import gameInfo from "$components/game-info";
   import { derived } from "svelte/store";
-  import save from "../save";
+  import save from "$components/save";
 
-  const sections: Readable<Record<
-    string,
-    ({
-      items: (Item & {
-        amount: number;
-        quality: number;
-        completed: boolean;
-      })[];
-      completedItems: Item[];
-    } & Bundle)[]
-  >> = derived(save, ($save) =>
+  const sections: Readable<
+    Record<
+      string,
+      ({
+        items: (Item & {
+          amount: number;
+          quality: number;
+          completed: boolean;
+        })[];
+        completedItems: Item[];
+      } & Bundle)[]
+    >
+  > = derived(save, ($save) =>
     gameInfo.bundles.reduce(
       (acc, bundle) => ({
         ...acc,
@@ -49,11 +51,58 @@
   );
 </script>
 
-<style lang="scss">
-  @use "@material/card";
-  @use "@material/typography/mdc-typography";
+<svelte:head>
+  <title>Bundles | Stardew Completionist</title>
+</svelte:head>
 
-  @include card.core-styles;
+<div class="container">
+  {#each Object.entries($sections) as [name, bundles]}
+    <h1>{name}</h1>
+    <div class="section">
+      {#each bundles as bundle}
+        <div class="bundle mdc-card mdc-card--outlined">
+          <h5 class="text-h6">{bundle.name}</h5>
+          {#if bundle.gold > 0}
+            {#if $save !== null && $save.bundleCompletion
+                .get(bundle.id)
+                .some((e) => e)}
+              <div class="completed material-icons">check</div>
+            {:else}
+              <div class="not-completed material-icons">close</div>
+            {/if}
+          {:else}
+            <div class="slots" style="--slots: {bundle.slots}">
+              {#each [...Array(bundle.slots).keys()] as i}
+                <span class="slot">
+                  {#if $save !== null && bundle.completedItems.length > i}
+                    <ItemButton scale={2} item={bundle.completedItems[i]} />
+                  {/if}
+                </span>
+              {/each}
+            </div>
+            {#if $save !== null && bundle.items.every((item) => item.completed)}
+              <div class="completed material-icons">check</div>
+            {:else}
+              <div class="options">
+                {#each bundle.items.filter((item) => !item.completed) as item}
+                  <ItemButton
+                    {item}
+                    scale={2}
+                    quality={item.quality}
+                    quantity={item.amount}
+                  />
+                {/each}
+              </div>
+            {/if}
+          {/if}
+        </div>
+      {/each}
+    </div>
+  {/each}
+</div>
+
+<style lang="scss">
+  @import "@material/card/dist/mdc.card.min.css";
 
   .container {
     padding: 20px;
@@ -149,52 +198,3 @@
     }
   }
 </style>
-
-<svelte:head>
-  <title>Bundles | Stardew Completionist</title>
-</svelte:head>
-
-<div class="container">
-  {#each Object.entries($sections) as [name, bundles]}
-    <h1>{name}</h1>
-    <div class="section">
-      {#each bundles as bundle}
-        <div class="bundle mdc-card mdc-card--outlined">
-          <h5 class="mdc-typography--headline6">{bundle.name}</h5>
-          {#if bundle.gold > 0}
-            {#if $save !== null && $save.bundleCompletion
-                .get(bundle.id)
-                .some((e) => e)}
-              <div class="completed material-icons">check</div>
-            {:else}
-              <div class="not-completed material-icons">close</div>
-            {/if}
-          {:else}
-            <div class="slots" style="--slots: {bundle.slots}">
-              {#each [...Array(bundle.slots).keys()] as i}
-                <span class="slot">
-                  {#if $save !== null && bundle.completedItems.length > i}
-                    <ItemButton scale={2} item={bundle.completedItems[i]} />
-                  {/if}
-                </span>
-              {/each}
-            </div>
-            {#if $save !== null && bundle.items.every((item) => item.completed)}
-              <div class="completed material-icons">check</div>
-            {:else}
-              <div class="options">
-                {#each bundle.items.filter((item) => !item.completed) as item}
-                  <ItemButton
-                    {item}
-                    scale={2}
-                    quality={item.quality}
-                    quantity={item.amount} />
-                {/each}
-              </div>
-            {/if}
-          {/if}
-        </div>
-      {/each}
-    </div>
-  {/each}
-</div>
