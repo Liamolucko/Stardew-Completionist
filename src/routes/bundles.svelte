@@ -1,11 +1,11 @@
 <script lang="ts">
+  import { mdiCheck, mdiClose } from "@mdi/js";
+  import { Card, Icon } from "svelte-materialify";
   import { derived } from "svelte/store";
   import ItemButton from "../components/ItemButton.svelte";
   import type { Bundle, Item } from "../game-info.js";
   import gameInfo from "../game-info.js";
   import save from "../save";
-  import { Card, Icon } from "svelte-materialify";
-  import { mdiCheck, mdiClose } from "@mdi/js";
 
   const sections = derived(save, ($save) =>
     gameInfo.bundles.reduce<
@@ -34,13 +34,13 @@
                 ...gameInfo.items[item.id],
                 completed:
                   $save !== null &&
-                  $save.bundleCompletion.has(bundle.id) &&
-                  $save.bundleCompletion.get(bundle.id)![i],
+                  bundle.id in $save.bundleCompletion &&
+                  $save.bundleCompletion[bundle.id][i],
               })),
             completedItems: bundle.items
               .filter(
                 ({ id }, i) =>
-                  ($save?.bundleCompletion.get(bundle.id)?.[i] ?? true) &&
+                  ($save?.bundleCompletion[bundle.id]?.[i] ?? true) &&
                   gameInfo.items[id]
               )
               .map(({ id }) => gameInfo.items[id]),
@@ -64,9 +64,7 @@
         <Card outlined class="bundle pa-4">
           <h6>{bundle.name}</h6>
           {#if bundle.gold > 0}
-            {#if $save !== null && $save.bundleCompletion
-                .get(bundle.id)
-                .some((e) => e)}
+            {#if $save !== null && $save.bundleCompletion[bundle.id].some((e) => e)}
               <Icon path={mdiCheck} class="green-text" size="64px" />
             {:else}
               <Icon path={mdiClose} class="red-text" size="64px" />

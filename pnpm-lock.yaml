@@ -1,6 +1,6 @@
 dependencies:
   compression: 1.7.4
-  polka: 0.5.2
+  polka: 1.0.0-next.11
   sirv: 1.0.11
 devDependencies:
   '@babel/core': 7.13.8
@@ -23,6 +23,8 @@ devDependencies:
   '@types/polka': 0.5.2
   '@types/wicg-file-system-access': 2020.9.1
   base64-js: 1.5.1
+  cborg: github.com/rvagg/cborg/8c12677f9339b23a65af2f96fad40c6270cbf452
+  cookie: 0.4.1
   gh-pages: 3.1.0
   imagescript: github.com/matmen/ImageScript/b93cb99c5369da0b4fe9c0d5c0b8d5bf7c0a8b11
   localforage: 1.9.0
@@ -37,14 +39,9 @@ devDependencies:
   svelte-preprocess: 4.6.9_b435b2a41d04c2689e49fc3741c5447e
   tslib: 2.1.0
   typescript: 4.2.2
+  universal-cookie: 4.0.4
 lockfileVersion: 5.2
 packages:
-  /@arr/every/1.0.1:
-    dev: false
-    engines:
-      node: '>=4'
-    resolution:
-      integrity: sha512-UQFQ6SgyJ6LX42W8rHCs8KVc0JS0tzVL9ct4XYedJukskYVWTo49tNiMEK9C2HTyarbNiT/RVIRSY82vH+6sTg==
   /@babel/code-frame/7.12.13:
     dependencies:
       '@babel/highlight': 7.13.8
@@ -988,10 +985,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-BbeHMgeK2/vjdJIRnx12wvQ6s8xAYfvMmEAVsUx9b+7GiQGQ9Za8jpwp17dMKr9CgKRvemlAM4S7S3QOtEbp4A==
-  /@polka/url/0.5.0:
-    dev: false
-    resolution:
-      integrity: sha512-oZLYFEAzUKyi3SKnXvj32ZCEGH6RDnao7COuCVhDydMS9NrCSVXhM79VaKyP5+Zc33m0QXEd2DN3UkU7OsHcfw==
   /@polka/url/1.0.0-next.11:
     dev: false
     resolution:
@@ -1131,6 +1124,10 @@ packages:
     dev: true
     resolution:
       integrity: sha512-ePPA/JuI+X0vb+gSWlPKOY0NdNAie/rPUqX2GUPpbZwiKTkSPhjXWuee47E4MtE54QVzGCQMQkAL6JhV2E1+cQ==
+  /@types/cookie/0.3.3:
+    dev: true
+    resolution:
+      integrity: sha512-LKVP3cgXBT9RYj+t+9FDKwS5tdI+rPBXaNSkma7hvqy35lc7mAokC2zsqWJH0LaqIt3B962nuYI77hsJoT1gow==
   /@types/estree/0.0.39:
     dev: true
     resolution:
@@ -1462,6 +1459,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-4FJkXzKXEDB1snCFZlLP4gpC3JILicCpGbzG9f9G7tGqGCzETQ2hWPrcinA9oU4wtf2biUaEH5065UnMeR33oA==
+  /cookie/0.4.1:
+    dev: true
+    engines:
+      node: '>= 0.6'
+    resolution:
+      integrity: sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==
   /core-js-compat/3.9.0:
     dependencies:
       browserslist: 4.16.3
@@ -1908,14 +1911,6 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==
-  /matchit/1.1.0:
-    dependencies:
-      '@arr/every': 1.0.1
-    dev: false
-    engines:
-      node: '>=6'
-    resolution:
-      integrity: sha512-+nGYoOlfHmxe5BW5tE0EMJppXEwdSf8uBA1GTZC7Q77kbT35+VKLYJMzVNWCHSsga1ps1tPYFtFyvxvKzWVmMA==
   /merge-stream/2.0.0:
     dev: true
     resolution:
@@ -2117,13 +2112,15 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==
-  /polka/0.5.2:
+  /polka/1.0.0-next.11:
     dependencies:
-      '@polka/url': 0.5.0
-      trouter: 2.0.1
+      '@polka/url': 1.0.0-next.11
+      trouter: 3.1.0
     dev: false
+    engines:
+      node: '>=6'
     resolution:
-      integrity: sha512-FVg3vDmCqP80tOrs+OeNlgXYmFppTXdjD5E7I4ET1NjvtNmQrb1/mJibybKkb/d4NA7YWAr1ojxuhpL3FHqdlw==
+      integrity: sha512-M/HBkS6ILksrDq7uvktCTev81OzuLwNtpxMyYdUhxLKQlMWdsu789XMotQU+p8JY8CM8vx8ML0HudyWjRus/lg==
   /postcss/8.2.6:
     dependencies:
       colorette: 1.2.2
@@ -2185,6 +2182,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-eOf6vka5IO151Jfsw2NO9WpGX58W6wWmefK3I1zEGr0lOD0u8rwPaNqQL1aRxUaxLeKO3ArNh3VYg1KbaD+FFw==
+  /regexparam/1.3.0:
+    dev: false
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-6IQpFBv6e5vz1QAqI+V4k8P2e/3gRrqfCJ9FI+O1FLQTO+Uz6RXZEZOPmTJ6hlGj7gkERzY5BRCv09whKP96/g==
   /regexpu-core/4.7.1:
     dependencies:
       regenerate: 1.4.2
@@ -2519,14 +2522,14 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-42RqLqTokTEr9+rObPsFOAvAHCE=
-  /trouter/2.0.1:
+  /trouter/3.1.0:
     dependencies:
-      matchit: 1.1.0
+      regexparam: 1.3.0
     dev: false
     engines:
       node: '>=6'
     resolution:
-      integrity: sha512-kr8SKKw94OI+xTGOkfsvwZQ8mWoikZDd2n8XZHjJVZUARZT+4/VV6cacRS6CLsH9bNm+HFIPU1Zx4CnNnb4qlQ==
+      integrity: sha512-3Swwu638QQWOefHLss9cdyLi5/9BKYmXZEXpH0KOFfB9YZwUAwHbDAcoYxaHfqAeFvbi/LqAK7rGkhCr1v1BJA==
   /tslib/2.1.0:
     dev: true
     resolution:
@@ -2572,6 +2575,13 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-PqSoPh/pWetQ2phoj5RLiaqIk4kCNwoV3CI+LfGmWLKI3rE3kl1h59XpX2BjgDrmbxD9ARtQobPGU1SguCYuQg==
+  /universal-cookie/4.0.4:
+    dependencies:
+      '@types/cookie': 0.3.3
+      cookie: 0.4.1
+    dev: true
+    resolution:
+      integrity: sha512-lbRVHoOMtItjWbM7TwDLdl8wug7izB0tq3/YVKhT/ahB4VDvWMyvnADfnJI8y6fSvsjh51Ix7lTGC6Tn4rMPhw==
   /universalify/0.1.2:
     dev: true
     engines:
@@ -2600,6 +2610,13 @@ packages:
     resolution:
       tarball: https://codeload.github.com/matmen/ImageScript/tar.gz/b93cb99c5369da0b4fe9c0d5c0b8d5bf7c0a8b11
     version: 1.1.16
+  github.com/rvagg/cborg/8c12677f9339b23a65af2f96fad40c6270cbf452:
+    dev: true
+    hasBin: true
+    name: cborg
+    resolution:
+      tarball: https://codeload.github.com/rvagg/cborg/tar.gz/8c12677f9339b23a65af2f96fad40c6270cbf452
+    version: 1.0.4
 specifiers:
   '@babel/core': ^7.13.8
   '@babel/plugin-syntax-dynamic-import': ^7.8.3
@@ -2621,11 +2638,13 @@ specifiers:
   '@types/polka': ^0.5.2
   '@types/wicg-file-system-access': ^2020.9.1
   base64-js: ^1.5.1
+  cborg: github:rvagg/cborg
   compression: ^1.7.4
+  cookie: ^0.4.1
   gh-pages: ^3.1.0
   imagescript: github:matmen/ImageScript#browser
   localforage: ^1.9.0
-  polka: ^0.5.2
+  polka: next
   postcss: ^8.2.6
   rollup: ^2.40.0
   rollup-plugin-svelte: ^7.1.0
@@ -2638,3 +2657,4 @@ specifiers:
   svelte-preprocess: ^4.6.9
   tslib: ^2.1.0
   typescript: ^4.2.2
+  universal-cookie: ^4.0.4

@@ -7,6 +7,11 @@ import gameInfo from "./game-info.js";
 import { Image } from "imagescript";
 import { seasonValues } from "./names";
 import { createFarmerSprite } from "./sprite";
+import Cookies from "universal-cookie";
+import * as cborg from "cborg";
+import * as base64 from "base64-js";
+
+const cookies = new Cookies();
 
 /** Metadata about a save file */
 export interface SaveInfo {
@@ -33,16 +38,17 @@ export interface SaveGame {
   collectedItems: string[];
   knownRecipes: string[];
 
-  relationships: Map<string, Relationship>;
+  relationships: Record<string, Relationship>;
 
-  bundleCompletion: Map<number, boolean[]>;
+  bundleCompletion: Record<number, boolean[]>;
   items: Record<string, number>;
 }
 
 export interface Relationship {
   hearts: number;
   maxHearts: number;
-  giftsThisWeek: number;
+  /** Gifts given this week. Shortened so saves will fit inside a cookie. */
+  given: number;
 }
 
 export type Handle = string | FileSystemDirectoryHandle;
@@ -51,8 +57,8 @@ const _save = writable<SaveGame | null>(null);
 let unsubscribeFromLast: () => void;
 export const save = {
   subscribe: _save.subscribe,
-  set(save: SaveGame): void {
-    if (typeof save.handle === "string" && typeof backend !== "undefined") {
+  set(save: SaveGame | null): void {
+    if (typeof save?.handle === "string" && typeof backend !== "undefined") {
       unsubscribeFromLast?.();
 
       backend.watchSaveFile(save.handle).then((store) =>
@@ -63,13 +69,27 @@ export const save = {
               handle: save.handle!,
               data,
             });
-            localForage.setItem("lastSaveFile", newSave);
+            // We need to use both because localforage can store file handles in IndexedDB
+            // and cookies are needed so the server can SSR with the save.
+            localForage.setItem("save", newSave);
+            // I'm not sure what it would try and serialize a file handle as, but it wouldn't work anyway.
+            cookies.set(
+              "save",
+              base64.fromByteArray(cborg.encode({ ...newSave, handle: null })),
+            );
             _save.set(newSave);
           }
         })
       ).then((unsubscriber) => unsubscribeFromLast = unsubscriber);
     } else {
-      localForage.setItem("lastSaveFile", save);
+      if (process.browser) {
+        localForage.setItem("save", save);
+      }
+      cookies.set(
+        "save",
+        base64.fromByteArray(cborg.encode({ ...save, handle: null })),
+      );
+
       _save.set(save);
     }
   },
@@ -141,7 +161,7 @@ export async function processSaveFile(
 
   const queryMap = (selector: string, el = save) => {
     const items = queryAllNodes(`${selector} > item`, el);
-    return new Map(items.map((item) => {
+    return Object.fromEntries(items.map((item) => {
       const key = item.querySelector("key")?.textContent?.trim();
       const value = item.querySelector("value")?.textContent?.trim();
       if (key == null || value == null) {
@@ -173,12 +193,12 @@ export async function processSaveFile(
     currentDate: currentSeason * 28 + currentDay,
 
     collectedItems: [
-      ...queryMap("player > basicShipped").keys(),
-      ...queryMap("player > mineralsFound").keys(),
-      ...queryMap("player > recipesCooked").keys(),
-      ...queryMap("player > archaeologyFound").keys(),
-      ...queryMap("player > fishCaught").keys(),
-      ...Array.from(queryMap("player > craftingRecipes").entries())
+      ...Object.keys(queryMap("player > basicShipped")),
+      ...Object.keys(queryMap("player > mineralsFound")),
+      ...Object.keys(queryMap("player > recipesCooked")),
+      ...Object.keys(queryMap("player > archaeologyFound")),
+      ...Object.keys(queryMap("player > fishCaught")),
+      ...Object.entries(queryMap("player > craftingRecipes"))
         .filter(([key, value]) =>
           parseInt(value) > 0 && key in gameInfo.recipes
         )
@@ -186,11 +206,11 @@ export async function processSaveFile(
     ],
 
     knownRecipes: [
-      ...queryMap("player > cookingRecipes").keys(),
-      ...queryMap("player > craftingRecipes").keys(),
+      ...Object.keys(queryMap("player > cookingRecipes")),
+      ...Object.keys(queryMap("player > craftingRecipes")),
     ],
 
-    relationships: new Map(
+    relationships: Object.fromEntries(
       queryMapNodes("player > friendshipData")
         .map(([key, value]) => {
           const villager = gameInfo.villagers[key];
@@ -203,14 +223,14 @@ export async function processSaveFile(
                 : villager.datable
                 ? 8
                 : 10,
-              giftsThisWeek: queryNumber("Friendship > GiftsThisWeek", value),
+              given: queryNumber("Friendship > GiftsThisWeek", value),
             }] as [string, Relationship];
           }
         })
         .filter((item): item is [string, Relationship] => item != null),
     ),
 
-    bundleCompletion: new Map(
+    bundleCompletion: Object.fromEntries(
       queryMapNodes(
         "bundles",
         findNode(
@@ -220,7 +240,10 @@ export async function processSaveFile(
       ).map(([key, value]) => [
         parseInt(key),
         queryAllNodes("ArrayOfBoolean > boolean", value)
-          .map((el) => el.textContent == "true"),
+          .map((el) => el.textContent == "true")
+          .filter((_, i) =>
+            i < gameInfo.bundles[parseInt(key)]?.items.length ?? Infinity
+          ),
       ]),
     ),
 
@@ -337,7 +360,8 @@ export async function getSaveFiles(
       Promise.all(saves.map((save) => getSaveInfo(save).catch(() => null)))
     );
   } else if (
-    "showDirectoryPicker" in globalThis && typeof dir !== "string" && dir != null
+    "showDirectoryPicker" in globalThis && typeof dir !== "string" &&
+    dir != null
   ) {
     for await (const save of dir.values()) {
       if (isDirectory(save)) {
@@ -357,7 +381,9 @@ export async function getSaveFiles(
 declare var process: { browser: boolean };
 if (process.browser) {
   localForage.getItem<SaveGame>("lastSaveFile").then((saveGame) => {
-    if (saveGame !== null) save.set(saveGame);
+    // We only care about the localforage version if it has a file handle;
+    // otherwise we already got the same thing from session and there's no point setting it again.
+    if (saveGame?.handle != null) save.set(saveGame);
   });
 }
 

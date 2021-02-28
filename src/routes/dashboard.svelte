@@ -1,5 +1,7 @@
 <script lang="ts">
   import "svelte-materialify";
+  import { Card } from "svelte-materialify";
+  import Table from "svelte-materialify/dist/components/Table";
   import type { Readable } from "svelte/store";
   import { derived } from "svelte/store";
   import ItemButton from "../components/ItemButton.svelte";
@@ -8,8 +10,6 @@
   import { seasonNames } from "../names";
   import type { SaveGame } from "../save";
   import save from "../save";
-  import { Card } from "svelte-materialify";
-  import Table from "svelte-materialify/dist/components/Table";
 
   interface Birthday {
     villager: string;
@@ -33,9 +33,9 @@
             .map((villager) => ({
               villager: villager.name,
               date: villager.birthday,
-              hearts: $save.relationships.get(villager.name)?.hearts ?? 0,
+              hearts: $save.relationships[villager.name]?.hearts ?? 0,
               maxHearts:
-                $save.relationships.get(villager.name)?.maxHearts ??
+                $save.relationships[villager.name]?.maxHearts ??
                 (villager.datable ? 8 : 10),
               bestGifts: villager.bestGifts,
             }))
@@ -116,7 +116,7 @@
       for (const bundle of Object.values(gameInfo.bundles)) {
         for (const index in bundle.items) {
           const item = bundle.items[index];
-          if (!$save.bundleCompletion.get(bundle.id)![index]) {
+          if (!$save.bundleCompletion[bundle.id]![index]) {
             output[item.id] ??= 0;
             output[item.id] += item.amount;
           }

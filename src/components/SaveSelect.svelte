@@ -125,7 +125,7 @@
                 <p>
                   Please select your saves directory. On
                   {platformName}, this is typically located at
-                  <code>{savesDirPath}</code>
+                  <kbd>{savesDirPath}</kbd>
                   .
                 </p>
               {:else}
@@ -136,18 +136,18 @@
               <p>
                 Please select your save file. On
                 {platformName}, this is typically located at
-                <code>{savePath}</code>
+                <kbd>{savePath}</kbd>
                 .
               </p>
             {/if}
             {#if platformName === "Windows"}
               <p>
                 Paste
-                <code>{savesDirPath}</code>
+                <kbd>{savesDirPath}</kbd>
                 into the address bar at the top of Explorer and press
                 <kbd>Enter</kbd>
                 to navigate to
-                <code>Saves</code>
+                <kbd>Saves</kbd>
                 .
               </p>
             {:else if platformName === "macOS"}
@@ -159,11 +159,11 @@
                 +
                 <kbd>G</kbd>
                 to open Go To Folder and paste
-                <code>{savesDirPath}</code>
+                <kbd>{savesDirPath}</kbd>
                 into it, then press
                 <kbd>Enter</kbd>
                 to navigate to
-                <code>Saves</code>
+                <kbd>Saves</kbd>
                 .
               </p>
             {/if}

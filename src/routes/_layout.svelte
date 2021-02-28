@@ -1,3 +1,11 @@
+<script context="module" lang="ts">
+  declare var process: { browser: boolean };
+
+  export async function preload(_: unknown, session: unknown) {
+    return session;
+  }
+</script>
+
 <script lang="ts">
   import { mdiFolder, mdiRefresh, mdiViewDashboard } from "@mdi/js";
   import { onMount, setContext } from "svelte";
@@ -16,11 +24,20 @@
   import SaveSelect from "../components/SaveSelect.svelte";
   import type { Item } from "../game-info.js";
   import save, { getSaveFile } from "../save";
+  import type { SaveGame } from "../save";
+  import Cookies from "universal-cookie";
 
   // A warning is thrown in the browser console if I don't declare this, so it's here even if I don't use it.
   export let segment;
   // Stop Svelte complaining it's unused.
   segment;
+
+  export let theme: "light" | "dark";
+  export let lastSave: SaveGame | null;
+
+  if (lastSave) {
+    save.set(lastSave);
+  }
 
   let saveSelect: SaveSelect;
 
@@ -40,9 +57,21 @@
       localStorage.setItem("hasSeenIntro", "true");
     }
   });
+
+  if (process.browser) {
+    const cookies = new Cookies();
+
+    const newTheme = matchMedia("(prefers-color-scheme: dark)")
+      ? "dark"
+      : "light";
+    if (theme !== newTheme) {
+      theme = newTheme;
+      cookies.set("theme", theme);
+    }
+  }
 </script>
 
-<MaterialApp theme={globalThis.matchMedia?.("(prefers-color-scheme: dark)") ? "dark" : "light"}>
+<MaterialApp {theme}>
   <div class="container">
     <nav class="nav-rail">
       <div class="nav-section top-section">
@@ -54,7 +83,12 @@
         {#each ["shipping", "fish", "artifacts", "minerals", "cooking", "crafting", "bundles", "friendship"] as page}
           <a href={page}>
             <Button class="rail-button" icon size="large">
-              <img width="24" height="24" src="./images/{page}.png" alt="{page} icon" />
+              <img
+                width="24"
+                height="24"
+                src="./images/{page}.png"
+                alt="{page} icon"
+              />
             </Button>
           </a>
         {/each}
@@ -114,13 +148,13 @@
           Stardew Valley save file and tells you what you've yet to do. It can
           also act as somewhat of a streamlined wiki.
         </p>
-        <p>
+        <p class="mb-0">
           You can select your save file using the folder icon in the bottom
           left.
         </p>
       </CardText>
       <CardActions>
-        <Button>Close</Button>
+        <Button text on:click={() => (introOpen = false)}>Close</Button>
       </CardActions>
     </Card>
   </Dialog>

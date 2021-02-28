@@ -1,13 +1,13 @@
 <script context="module" lang="ts">
   import { stores } from "@sapper/app";
+  import { Card } from "svelte-materialify";
+  import Table from "svelte-materialify/dist/components/Table";
   import { derived } from "svelte/store";
   import ItemButton from "../components/ItemButton.svelte";
   import type { Item, Recipe } from "../game-info.js";
   import gameInfo from "../game-info.js";
   import { categories, categoryNames } from "../names";
   import save from "../save";
-  import { Card, CardTitle, CardText } from "svelte-materialify";
-  import Table from "svelte-materialify/dist/components/Table";
 
   export async function preload(
     this: { error: (status: number, error: string | Error) => void },
@@ -165,7 +165,6 @@
                 <ItemButton
                   item={recipe.result}
                   scale={recipe.result.isCraftable ? 1 : 2}
-                  square
                 />
                 <span class="pa-3">{recipe.name}</span>
               </th>
