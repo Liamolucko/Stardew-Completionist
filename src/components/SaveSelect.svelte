@@ -91,7 +91,8 @@
 <input
   on:change={async () => {
     if (fileInput.files === null) return;
-    const contents = new DOMParser().parseFromString(
+    // Make Svelte shut up about DOMParser not being defined
+    const contents = new globalThis.DOMParser().parseFromString(
       await fileInput.files[0].text(),
       "text/xml"
     );

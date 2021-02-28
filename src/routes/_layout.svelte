@@ -42,7 +42,7 @@
   });
 </script>
 
-<MaterialApp theme="dark">
+<MaterialApp theme={globalThis.matchMedia?.("(prefers-color-scheme: dark)") ? "dark" : "light"}>
   <div class="container">
     <nav class="nav-rail">
       <div class="nav-section top-section">
