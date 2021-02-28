@@ -1,8 +1,9 @@
 <script lang="ts">
-  import IconButton from '@smui/icon-button';
-  import gameInfo from '../game-info';
-  import type { Item } from '../game-info';
-  import { categories, locationNames, weatherNames } from '../names';
+  import { mdiLaunch } from "@mdi/js";
+  import { Button, Card, Icon } from "svelte-materialify";
+  import type { Item } from "../game-info.js";
+  import gameInfo from "../game-info.js";
+  import { categories, locationNames, weatherNames } from "../names";
 
   export let item: Item;
 
@@ -11,15 +12,134 @@
   }
 </script>
 
+{#if typeof item !== "undefined"}
+  <div class="header">
+    <img
+      class="dialog-icon"
+      src="data:image/png;base64,{item.sprite}"
+      alt={item.name}
+      height={item.isCraftable ? 64 : 48}
+    />
+    {item.name}
+    <a href={item.url}>
+      <Button target="_blank" icon>
+        <Icon path={mdiLaunch} />
+      </Button>
+    </a>
+  </div>
+  <div class="content">
+    {#if typeof item.seasons !== "undefined"}
+      <Card class="section seasons">
+        <h2 class="text-subtitle-2">Seasons</h2>
+        <ul class="text-body-2">
+          {#if item.seasons.includes("spring")}
+            <li>
+              <img src="./images/spring.png" alt="Spring" />
+              Spring
+            </li>
+          {/if}
+          {#if item.seasons.includes("summer")}
+            <li>
+              <img src="./images/summer.png" alt="Summer" />
+              Summer
+            </li>
+          {/if}
+          {#if item.seasons.includes("fall")}
+            <li>
+              <img src="./images/fall.png" alt="Fall" />
+              Fall
+            </li>
+          {/if}
+          {#if item.seasons.includes("winter")}
+            <li>
+              <img src="./images/winter.png" alt="Winter" />
+              Winter
+            </li>
+          {/if}
+        </ul>
+      </Card>
+    {/if}
+
+    {#if typeof item.sources !== "undefined" || typeof item.monsterDrops !== "undefined" || typeof item.artifactSpots !== "undefined"}
+      <Card class="section">
+        {#if typeof item.sources !== "undefined" || typeof item.monsterDrops !== "undefined"}
+          <h2 class="text-subtitle-2">Sources</h2>
+          <ul class="text-body-2">
+            {#if typeof item.sources !== "undefined"}
+              {#each item.sources as source}
+                <li>{source}</li>
+              {/each}
+            {/if}
+            {#if typeof item.monsterDrops !== "undefined"}
+              {#each Object.entries(item.monsterDrops) as [monster, probability]}
+                <li>{monster} ({calcProbability(probability)}%)</li>
+              {/each}
+            {/if}
+          </ul>
+        {/if}
+
+        {#if typeof item.artifactSpots !== "undefined"}
+          <h2 class="text-subtitle-2">Artifact Spots</h2>
+          <ul class="text-body-2">
+            {#each Object.entries(item.artifactSpots) as [location, probability]}
+              <li>
+                {locationNames.get(location)} ({calcProbability(probability)}%)
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      </Card>
+    {/if}
+
+    {#if typeof item.ingredients !== "undefined"}
+      <Card class="section">
+        <h2 class="text-subtitle-2">Ingredients</h2>
+        <ul class="text-body-2">
+          {#each Object.entries(item.ingredients) as [id, quantity]}
+            <li>
+              {categories.get(id) || gameInfo.items[id].name}
+              {#if quantity > 1}× {quantity}{/if}
+            </li>
+          {/each}
+        </ul>
+
+        {#if typeof item.recipeSources !== "undefined"}
+          <h2 class="text-subtitle-2">Recipe Sources</h2>
+          <ul class="text-body-2">
+            {#each item.recipeSources as source}
+              <li>{source}</li>
+            {/each}
+          </ul>
+        {/if}
+      </Card>
+    {/if}
+
+    {#if typeof item.locations !== "undefined"}
+      <Card class="section">
+        <h2 class="text-subtitle-2">Found in</h2>
+        <ul class="text-body-2">
+          {#each item.locations as location}
+            <li>{location}</li>
+          {/each}
+        </ul>
+        {#if typeof item.time !== "undefined" && item.time !== "6AM – 2AM"}
+          <p class="text-body-2">{item.time}</p>
+        {/if}
+        {#if typeof item.weather !== "undefined" && item.weather !== "both"}
+          <p class="text-body-2">
+            <img
+              src="./images/{item.weather}.png"
+              alt={weatherNames.get(item.weather)}
+            />
+            {weatherNames.get(item.weather)}
+          </p>
+        {/if}
+      </Card>
+    {/if}
+  </div>
+{/if}
+
 <style lang="scss">
-  @use "@material/card";
-  @use "@material/typography/mixins" as *;
-
-  @include card.core-styles;
-
-  .mdc-dialog__title {
-    padding-right: 0;
-  }
 
   .header {
     display: inline-flex;
@@ -27,13 +147,14 @@
 
     width: 100%;
     height: 100%;
-    padding: 8px 8px 8px 0;
+    padding: 8px 0;
 
-    :global(:last-child) {
+    a {
       display: inline-block;
       vertical-align: middle;
 
       margin-left: auto;
+      color: inherit;
     }
 
     img {
@@ -60,176 +181,45 @@
           position: relative;
           top: 3px;
           margin-right: 8px;
-          
+
           image-rendering: crisp-edges;
           image-rendering: pixelated;
         }
       }
     }
 
-    .section {
-      padding: 16px;
+    :global {
+      .section {
+        padding: 16px;
 
-      h2 {
-        margin: 0;
+        h2 {
+          margin: 0;
 
-        @include typography("subtitle2");
-
-        &:not(:first-of-type) {
-          margin-top: 8px;
+          &:not(:first-of-type) {
+            margin-top: 8px;
+          }
         }
-      }
 
-      ul {
-        @include typography("body2");
-        color: black;
+        ul {
+          margin: 0;
+          padding: 0;
+          list-style-position: inside;
+        }
 
-        margin: 0;
-        padding: 0;
-        list-style-position: inside;
-      }
+        p {
+          margin: 0;
+          padding: 0;
 
-      p {
-        @include typography("body2");
-        color: black;
+          img {
+            position: relative;
+            top: 3px;
+            margin-right: 4px;
 
-        margin: 0;
-        padding: 0;
-
-        img {
-          position: relative;
-          top: 3px;
-          margin-right: 4px;
-          
-          image-rendering: crisp-edges;
-          image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+          }
         }
       }
     }
   }
 </style>
-
-{#if typeof item !== 'undefined'}
-  <div class="mdc-dialog__title">
-    <div class="header">
-      <img
-        class="dialog-icon"
-        src="data:image/png;base64,{item.sprite}"
-        alt={item.name}
-        height={item.isCraftable ? 64 : 48} />
-      {item.name}
-      <IconButton class="material-icons" href={item.url} target="_blank">
-        launch
-      </IconButton>
-    </div>
-  </div>
-  <div class="mdc-dialog__content content">
-    {#if typeof item.seasons !== 'undefined'}
-      <div class="mdc-card section section seasons">
-        <h2>Seasons</h2>
-        <ul>
-          {#if item.seasons.includes('spring')}
-            <li>
-              <img src="spring.png" alt="Spring" />
-              Spring
-            </li>
-          {/if}
-          {#if item.seasons.includes('summer')}
-            <li>
-              <img src="summer.png" alt="Summer" />
-              Summer
-            </li>
-          {/if}
-          {#if item.seasons.includes('fall')}
-            <li>
-              <img src="fall.png" alt="Fall" />
-              Fall
-            </li>
-          {/if}
-          {#if item.seasons.includes('winter')}
-            <li>
-              <img src="winter.png" alt="Winter" />
-              Winter
-            </li>
-          {/if}
-        </ul>
-      </div>
-    {/if}
-
-    {#if typeof item.sources !== 'undefined' || typeof item.monsterDrops !== 'undefined' || typeof item.artifactSpots !== 'undefined'}
-      <div class="mdc-card section">
-        {#if typeof item.sources !== 'undefined' || typeof item.monsterDrops !== 'undefined'}
-          <h2>Sources</h2>
-          <ul>
-            {#if typeof item.sources !== 'undefined'}
-              {#each item.sources as source}
-                <li>{source}</li>
-              {/each}
-            {/if}
-            {#if typeof item.monsterDrops !== 'undefined'}
-              {#each Object.entries(item.monsterDrops) as [monster, probability]}
-                <li>{monster} ({calcProbability(probability)}%)</li>
-              {/each}
-            {/if}
-          </ul>
-        {/if}
-
-        {#if typeof item.artifactSpots !== 'undefined'}
-          <h2>Artifact Spots</h2>
-          <ul>
-            {#each Object.entries(item.artifactSpots) as [location, probability]}
-              <li>
-                {locationNames.get(location)} ({calcProbability(probability)}%)
-              </li>
-            {/each}
-          </ul>
-        {/if}
-      </div>
-    {/if}
-
-    {#if typeof item.ingredients !== 'undefined'}
-      <div class="mdc-card section">
-        <h2>Ingredients</h2>
-        <ul>
-          {#each Object.entries(item.ingredients) as [id, quantity]}
-            <li>
-              {categories.get(id) || gameInfo.items[id].name}
-              {#if quantity > 1}× {quantity}{/if}
-            </li>
-          {/each}
-        </ul>
-
-        {#if typeof item.recipeSources !== 'undefined'}
-          <h2>Recipe Sources</h2>
-          <ul>
-            {#each item.recipeSources as source}
-              <li>{source}</li>
-            {/each}
-          </ul>
-        {/if}
-      </div>
-    {/if}
-
-    {#if typeof item.locations !== 'undefined'}
-      <div class="mdc-card section">
-        <h2>Found in</h2>
-        <ul>
-          {#each item.locations as location}
-            <li>{location}</li>
-          {/each}
-        </ul>
-        {#if typeof item.time !== 'undefined' && item.time !== '6AM – 2AM'}
-          <p>{item.time}</p>
-        {/if}
-        {#if typeof item.weather !== 'undefined' && item.weather !== 'both'}
-          <p>
-            <img
-              src="{item.weather}.png"
-              alt={weatherNames.get(item.weather)} />
-            {weatherNames.get(item.weather)}
-          </p>
-        {/if}
-      </div>
-    {/if}
-  </div>
-{/if}

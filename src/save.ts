@@ -1,8 +1,10 @@
+/// <reference types="wicg-file-system-access" />
+
 import * as localForage from "localforage";
 import { writable } from "svelte/store";
 import backend from "./backend";
-import gameInfo from "./game-info";
-import Jimp from "./jimp";
+import gameInfo from "./game-info.js";
+import { Image } from "imagescript";
 import { seasonValues } from "./names";
 import { createFarmerSprite } from "./sprite";
 
@@ -228,7 +230,7 @@ export async function processSaveFile(
       .filter((el) => el.querySelector("items"))
       .flatMap((el) => Array.from(el.querySelectorAll("items > Item")))
       .filter((el) => el.getAttribute("xsi:type") == "Object")
-      .reduce((acc, el) => {
+      .reduce<Record<string, number>>((acc, el) => {
         const isCraftable =
           el.querySelector("bigCraftable")?.textContent === "true";
         const id = (isCraftable ? "c" : "") +
@@ -270,7 +272,7 @@ export async function getSaveInfo(handle: Handle): Promise<SaveInfo> {
   }
 
   function queryColor(selector: string) {
-    return Jimp.rgbaToInt(
+    return Image.rgbaToColor(
       queryNumber(`${selector} > R`),
       queryNumber(`${selector} > G`),
       queryNumber(`${selector} > B`),
@@ -335,7 +337,7 @@ export async function getSaveFiles(
       Promise.all(saves.map((save) => getSaveInfo(save).catch(() => null)))
     );
   } else if (
-    globalThis.showDirectoryPicker && typeof dir !== "string" && dir != null
+    "showDirectoryPicker" in globalThis && typeof dir !== "string" && dir != null
   ) {
     for await (const save of dir.values()) {
       if (isDirectory(save)) {

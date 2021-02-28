@@ -1,10 +1,13 @@
 {
   "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
-    "lib": ["DOM", "ESNext", "WebWorker"],
+    "target": "ES2019",
+    "lib": ["DOM", "ES2019", "WebWorker"],
     
-    "strictNullChecks": true,
-    "resolveJsonModule": true
+    "strict": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "maxNodeModuleJsDepth": 1
   },
   "include": ["src/**/*", "src/node_modules/**/*"],
   "exclude": ["node_modules/*", "__sapper__/*", "static/*"]

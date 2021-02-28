@@ -1,10 +1,10 @@
-import * as sapper from "@sapper/server";
-import compression from "compression";
-import polka from "polka";
 import sirv from "sirv";
+import polka from "polka";
+import compression from "compression";
+import * as sapper from "@sapper/server";
 
-const dev = process.env.NODE_ENV === "development";
-process.env.PORT = process.env.PORT || "9619";
+const { PORT, NODE_ENV } = process.env;
+const dev = NODE_ENV === "development";
 
 polka() // You can also use Express
   .use(
@@ -12,6 +12,6 @@ polka() // You can also use Express
     sirv("static", { dev }),
     sapper.middleware(),
   )
-  .listen(process.env.PORT, (err) => {
+  .listen(PORT, (err: unknown) => {
     if (err) console.log("error", err);
   });

@@ -1,4 +1,5 @@
-import json from "../static/game-info.json";
+import _json from "./game-info.json";
+import type { RawGameInfo } from "./game-info-types";
 export type {
   Bundle,
   GameInfo,
@@ -6,6 +7,8 @@ export type {
   Recipe,
   Villager,
 } from "./game-info-types";
+
+const json: RawGameInfo = _json;
 
 const recipes = Object.fromEntries(
   Object.entries(json.recipes)

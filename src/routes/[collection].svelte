@@ -1,21 +1,31 @@
 <script context="module" lang="ts">
-  import gameInfo from "../game-info";
-  import { categoryNames } from "../names";
+  import { stores } from "@sapper/app";
+  import { derived } from "svelte/store";
+  import ItemButton from "../components/ItemButton.svelte";
+  import type { Item, Recipe } from "../game-info.js";
+  import gameInfo from "../game-info.js";
+  import { categories, categoryNames } from "../names";
+  import save from "../save";
+  import { Card, CardTitle, CardText } from "svelte-materialify";
+  import Table from "svelte-materialify/dist/components/Table";
 
-  export async function preload(page: {
-    host: string;
-    path: string;
-    params: {
-      collection:
-        | "shipping"
-        | "fish"
-        | "artifacts"
-        | "minerals"
-        | "cooking"
-        | "crafting";
-    };
-    query: Record<string, string | boolean>;
-  }) {
+  export async function preload(
+    this: { error: (status: number, error: string | Error) => void },
+    page: {
+      host: string;
+      path: string;
+      params: {
+        collection:
+          | "shipping"
+          | "fish"
+          | "artifacts"
+          | "minerals"
+          | "cooking"
+          | "crafting";
+      };
+      query: Record<string, string | boolean>;
+    }
+  ) {
     if (
       ![
         "shipping",
@@ -49,14 +59,6 @@
 </script>
 
 <script lang="ts">
-  import DataTable, { Body, Cell, Head, Row } from "@smui/data-table";
-  import ItemButton from "../components/ItemButton.svelte";
-  import type { Item, Recipe } from "../game-info";
-  import save from "../save";
-  import { derived } from "svelte/store";
-  import { categories } from "../names";
-  import { stores } from "@sapper/app";
-
   export let title: string;
   export let items: Item[];
   export let recipes: Recipe[] | undefined;
@@ -100,7 +102,7 @@
         recipesNeeded[recipe.name] ??= 1;
       }
 
-      const output = {};
+      const output: Record<string, number> = {};
 
       for (const [name, recipeAmount] of Object.entries(recipesNeeded)) {
         const recipe = gameInfo.recipes[name];
@@ -122,12 +124,80 @@
   });
 </script>
 
+<svelte:head>
+  <title>{title} | Stardew Completionist</title>
+</svelte:head>
+
+<div
+  class="container"
+  class:has-unknown-recipes={typeof recipes !== "undefined" && $save !== null}
+>
+  <Card outlined class="pa-4 grid-card">
+    <h6>{title}</h6>
+    <div class="item-grid">
+      {#each items as item}
+        <ItemButton
+          {item}
+          scale={item.isCraftable ? 2 : 3}
+          shadow
+          grey={$save === null
+            ? false
+            : !$save.collectedItems.includes(item.id)}
+        />
+      {/each}
+    </div>
+  </Card>
+
+  {#if typeof recipes !== "undefined" && $save !== null}
+    <Card outlined style="grid-area: r">
+      <h6 class="pl-4 pt-4 pr-4">Unknown Recipes</h6>
+      <Table>
+        <thead>
+          <tr>
+            <th role="columnheader" scope="col">Recipe</th>
+            <th role="columnheader" scope="col">Sources</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each recipes.filter((recipe) => !$save.knownRecipes.includes(recipe.name)) as recipe}
+            <tr>
+              <th scope="row">
+                <ItemButton
+                  item={recipe.result}
+                  scale={recipe.result.isCraftable ? 1 : 2}
+                  square
+                />
+                <span class="pa-3">{recipe.name}</span>
+              </th>
+              <td>
+                {#if recipe.sources != null}
+                  <ul class="source-list">
+                    {#each recipe.sources as source}
+                      <li>{source}</li>
+                    {/each}
+                  </ul>
+                {/if}
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
+    </Card>
+    <Card outlined class="pa-4 ingredients">
+      <h6>Required Ingredients</h6>
+      <ul>
+        {#each Object.entries($requiredIngredients ?? {}) as [id, amount]}
+          <li>
+            {categories.get(id) || gameInfo.items[id].name}:
+            {$save.items[id] ?? 0}/{amount}
+          </li>
+        {/each}
+      </ul>
+    </Card>
+  {/if}
+</div>
+
 <style lang="scss">
-  @use "@material/card";
-  @use "@material/typography/mdc-typography";
-
-  @include card.core-styles;
-
   .container {
     display: grid;
 
@@ -155,28 +225,26 @@
 
     justify-content: center;
 
-    .mdc-card {
-      padding: 16px;
-    }
+    :global {
+      .grid-card {
+        width: max-content;
+        height: max-content;
 
-    .grid-card {
-      width: max-content;
-      height: max-content;
+        grid-area: g;
 
-      grid-area: g;
+        .item-grid {
+          display: grid;
+          gap: 8px;
+          grid-auto-flow: row;
+          grid-auto-rows: 64px;
+          grid-template-columns: repeat(10, 64px);
 
-      .item-grid {
-        display: grid;
-        gap: 8px;
-        grid-auto-flow: row;
-        grid-auto-rows: 64px;
-        grid-template-columns: repeat(10, 64px);
+          justify-content: center;
 
-        justify-content: center;
-
-        & > :global(button) {
-          width: 100%;
-          height: 100%;
+          & > :global(button) {
+            width: 100%;
+            height: 100%;
+          }
         }
       }
     }
@@ -187,72 +255,11 @@
       list-style-position: inside;
     }
 
-    .ingredients {
-      height: max-content;
+    :global {
+      .ingredients {
+        height: max-content;
+        grid-area: i;
+      }
     }
   }
 </style>
-
-<svelte:head>
-  <title>{title} | Stardew Completionist</title>
-</svelte:head>
-
-<div
-  class="container"
-  class:has-unknown-recipes={typeof recipes !== 'undefined' && $save !== null}>
-  <div class="mdc-card mdc-card--outlined grid-card">
-    <h2 class="mdc-typography--headline6">{title}</h2>
-    <div class="item-grid">
-      {#each items as item}
-        <ItemButton
-          {item}
-          scale={item.isCraftable ? 2 : 3}
-          shadow
-          grey={$save === null ? false : !$save.collectedItems.includes(item.id)} />
-      {/each}
-    </div>
-  </div>
-
-  {#if typeof recipes !== 'undefined' && $save !== null}
-    <DataTable style="grid-area: r">
-      <Head>
-        <Row>
-          <Cell>Recipe</Cell>
-          <Cell>Sources</Cell>
-        </Row>
-      </Head>
-      <Body>
-        {#each recipes.filter((recipe) => !$save.knownRecipes.includes(recipe.name)) as recipe}
-          <Row>
-            <Cell>
-              <ItemButton
-                item={recipe.result}
-                scale={recipe.result.isCraftable ? 1 : 2} />
-              <span style="padding-left: 8px">{recipe.name}</span>
-            </Cell>
-            <Cell>
-              {#if typeof recipe.sources !== 'undefined'}
-                <ul class="source-list">
-                  {#each recipe.sources as source}
-                    <li>{source}</li>
-                  {/each}
-                </ul>
-              {/if}
-            </Cell>
-          </Row>
-        {/each}
-      </Body>
-    </DataTable>
-    <div class="mdc-card mdc-card--outlined ingredients">
-      <h2 class="mdc-typography--headline6">Required Ingredients</h2>
-      <ul>
-        {#each Object.entries($requiredIngredients ?? {}) as [id, amount]}
-          <li>
-            {categories.get(id) || gameInfo.items[id].name}:
-            {$save.items[id] ?? 0}/{amount}
-          </li>
-        {/each}
-      </ul>
-    </div>
-  {/if}
-</div>

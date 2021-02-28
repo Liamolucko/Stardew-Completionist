@@ -1,13 +1,15 @@
 <script lang="ts">
-  import DataTable, { Body, Cell, Head, Row } from "@smui/data-table";
-  import { derived } from "svelte/store";
+  import "svelte-materialify";
   import type { Readable } from "svelte/store";
+  import { derived } from "svelte/store";
   import ItemButton from "../components/ItemButton.svelte";
-  import type { Item, Recipe } from "../game-info";
+  import type { Item, Recipe } from "../game-info.js";
+  import gameInfo from "../game-info.js";
   import { seasonNames } from "../names";
-  import save from "../save";
   import type { SaveGame } from "../save";
-  import gameInfo from "../game-info";
+  import save from "../save";
+  import { Card } from "svelte-materialify";
+  import Table from "svelte-materialify/dist/components/Table";
 
   interface Birthday {
     villager: string;
@@ -112,7 +114,8 @@
       }
 
       for (const bundle of Object.values(gameInfo.bundles)) {
-        for (const [index, item] of Object.entries(bundle.items)) {
+        for (const index in bundle.items) {
+          const item = bundle.items[index];
           if (!$save.bundleCompletion.get(bundle.id)![index]) {
             output[item.id] ??= 0;
             output[item.id] += item.amount;
@@ -153,12 +156,91 @@
   );
 </script>
 
+<svelte:head>
+  <title>Dashboard | Stardew Completionist</title>
+</svelte:head>
+
+<h4 class="title">Dashboard</h4>
+{#if $save !== null}
+  <div class="container">
+    <Card outlined>
+      <Table>
+        <thead>
+          <tr>
+            <th role="columnheader" scope="col">Villager</th>
+            <th role="columnheader" scope="col">Hearts</th>
+            <th role="columnheader" scope="col">Birthday</th>
+            <th role="columnheader" scope="col">Best Gifts</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each $birthdays as birthday}
+            <tr>
+              <th scope="row">
+                {birthday.villager}
+              </th>
+              <td>
+                <div class="hearts">
+                  {#each [...Array(birthday.maxHearts).keys()] as i}
+                    <img
+                      alt="heart"
+                      src="./images/heart-{birthday.hearts >= i + 1
+                        ? 'filled'
+                        : 'outline'}.png"
+                    />
+                  {/each}
+                </div>
+              </td>
+              <td>{birthday.date}</td>
+              <td>
+                <div class="best-gifts">
+                  {#each birthday.bestGifts as item}
+                    <ItemButton {item} scale={item.isCraftable ? 1 : 2} />
+                  {/each}
+                </div>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </Table>
+    </Card>
+    <Card outlined class="seasonal">
+      <h6>
+        {seasonNames.get($save.currentSeason)}
+      </h6>
+      <div class="seasonal-items">
+        {#each Object.entries($seasonalItems) as [id, quantity]}
+          <ItemButton
+            item={gameInfo.items[id]}
+            scale={gameInfo.items[id].isCraftable ? 2 : 3}
+            {quantity}
+          />
+        {/each}
+      </div>
+    </Card>
+    <Card outlined class="seasonal">
+      <h6>
+        {seasonNames.get($save.currentSeason)}
+      </h6>
+      <div class="seasonal-items">
+        {#each Object.entries($seasonalItems) as [id, quantity]}
+          <ItemButton
+            item={gameInfo.items[id]}
+            scale={gameInfo.items[id].isCraftable ? 2 : 3}
+            {quantity}
+          />
+        {/each}
+      </div>
+    </Card>
+  </div>
+{:else}
+  <p class="no-save">
+    When you select a save file, this section shows information about what you
+    should do next.
+  </p>
+{/if}
+
 <style lang="scss">
-  @use "@material/card";
-  @use "@material/typography/mdc-typography";
-
-  @include card.core-styles;
-
   .best-gifts {
     display: flex;
     flex-direction: row;
@@ -199,27 +281,29 @@
     }
 
     padding: 0 20px 20px;
-  }
 
-  .seasonal {
-    display: flex;
-    flex-flow: column nowrap;
+    :global {
+      .seasonal {
+        display: flex;
+        flex-flow: column nowrap;
 
-    grid-area: s;
+        grid-area: s;
 
-    padding: 16px;
+        padding: 16px;
 
-    .seasonal-items {
-      display: grid;
-      grid-auto-flow: row;
-      grid-auto-rows: 64px;
-      grid-template-columns: repeat(auto-fill, 64px);
-      gap: 8px;
+        .seasonal-items {
+          display: grid;
+          grid-auto-flow: row;
+          grid-auto-rows: 64px;
+          grid-template-columns: repeat(auto-fill, 64px);
+          gap: 8px;
 
-      flex-grow: 1;
+          flex-grow: 1;
 
-      @media only screen and (min-width: 1250px) {
-        grid-template-columns: repeat(2, 64px);
+          @media only screen and (min-width: 1250px) {
+            grid-template-columns: repeat(2, 64px);
+          }
+        }
       }
     }
   }
@@ -228,65 +312,3 @@
     margin: 0px 20px;
   }
 </style>
-
-<svelte:head>
-  <title>Dashboard | Stardew Completionist</title>
-</svelte:head>
-
-<h1 class="title mdc-typography--headline4">Dashboard</h1>
-{#if $save !== null}
-  <div class="container">
-    <DataTable>
-      <Head>
-        <Row>
-          <Cell>Villager</Cell>
-          <Cell>Hearts</Cell>
-          <Cell>Birthday</Cell>
-          <Cell>Best Gifts</Cell>
-        </Row>
-      </Head>
-      <Body>
-        {#each $birthdays as birthday}
-          <Row>
-            <Cell>{birthday.villager}</Cell>
-            <Cell>
-              <div class="hearts">
-                {#each [...Array(birthday.maxHearts).keys()] as i}
-                  <img
-                    alt="heart"
-                    src="heart-{birthday.hearts >= i + 1 ? 'filled' : 'outline'}.png" />
-                {/each}
-              </div>
-            </Cell>
-            <Cell>{birthday.date}</Cell>
-            <Cell>
-              <div class="best-gifts">
-                {#each birthday.bestGifts as item}
-                  <ItemButton {item} scale={item.isCraftable ? 1 : 2} />
-                {/each}
-              </div>
-            </Cell>
-          </Row>
-        {/each}
-      </Body>
-    </DataTable>
-    <div class="mdc-card mdc-card--outlined seasonal">
-      <h2 class="mdc-typography--headline6">
-        {seasonNames.get($save.currentSeason)}
-      </h2>
-      <div class="seasonal-items">
-        {#each Object.entries($seasonalItems) as [id, quantity]}
-          <ItemButton
-            item={gameInfo.items[id]}
-            scale={gameInfo.items[id].isCraftable ? 2 : 3}
-            {quantity} />
-        {/each}
-      </div>
-    </div>
-  </div>
-{:else}
-  <p class="no-save">
-    When you select a save file, this section shows information about what you
-    should do next.
-  </p>
-{/if}

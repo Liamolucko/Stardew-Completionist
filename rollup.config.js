@@ -4,8 +4,8 @@ import json from "@rollup/plugin-json";
 import resolve from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
 import typescript from "@rollup/plugin-typescript";
-import { existsSync as exists, readdirSync } from "fs";
-import postcss from "rollup-plugin-postcss";
+import url from "@rollup/plugin-url";
+import path from "path";
 import svelte from "rollup-plugin-svelte";
 import { terser } from "rollup-plugin-terser";
 import config from "sapper/config/rollup.js";
@@ -23,39 +23,6 @@ const onwarn = (warning, onwarn) =>
   (warning.code === "THIS_IS_UNDEFINED") ||
   onwarn(warning);
 
-const svelte_onwarn = (warning, handler) => {
-  if (warning.code === "css-unused-selector") {
-    return;
-  } else {
-    handler(warning);
-  }
-};
-
-const smuiSetup = postcss({
-  extensions: [".scss", ".sass"],
-  extract: false,
-  minimize: true,
-  use: {
-    sass: {
-      includePaths: [
-        "./src/theme",
-        ...(exists("./node_modules/.pnpm/@smui") &&
-          readdirSync("./node_modules/.pnpm/@smui")
-            .map((module) =>
-              `./node_modules/.pnpm/@smui/${module}/node_modules`
-            )),
-        ...(exists("./node_modules/.pnpm/@material") &&
-          readdirSync("./node_modules/.pnpm/@material")
-            .filter((module) => module.split("@")[1].startsWith("3"))
-            .map((module) =>
-              `./node_modules/.pnpm/@material/${module}/node_modules`
-            )),
-        "./node_modules",
-      ],
-    },
-  },
-});
-
 export default {
   client: {
     input: config.client.input().replace(/\.js$/, ".ts"),
@@ -64,13 +31,18 @@ export default {
       replace({
         "process.browser": true,
         "process.env.NODE_ENV": JSON.stringify(mode),
+        preventAssignment: true,
       }),
       svelte({
-        dev,
-        hydratable: true,
-        preprocess: sveltePreprocess(),
-        emitCss: true,
-        onwarn: svelte_onwarn,
+        preprocess: sveltePreprocess({ sourceMap: dev }),
+        compilerOptions: {
+          dev,
+          hydratable: true,
+        },
+      }),
+      url({
+        sourceDir: path.resolve(__dirname, "src/node_modules/images"),
+        publicPath: "/client/",
       }),
       resolve({
         browser: true,
@@ -79,8 +51,6 @@ export default {
       commonjs(),
       typescript({ sourceMap: dev }),
       json(),
-
-      smuiSetup,
 
       legacy && babel({
         extensions: [".js", ".mjs", ".html", ".svelte"],
@@ -106,7 +76,6 @@ export default {
 
     preserveEntrySignatures: false,
     onwarn,
-    external: "/jimp.min.js",
   },
 
   server: {
@@ -116,13 +85,21 @@ export default {
       replace({
         "process.browser": false,
         "process.env.NODE_ENV": JSON.stringify(mode),
+        preventAssignment: true,
       }),
       svelte({
-        generate: "ssr",
-        hydratable: true,
-        preprocess: sveltePreprocess(),
-        dev,
-        onwarn: svelte_onwarn,
+        preprocess: sveltePreprocess({ sourceMap: dev }),
+        compilerOptions: {
+          dev,
+          generate: "ssr",
+          hydratable: true,
+        },
+        emitCss: false,
+      }),
+      url({
+        sourceDir: path.resolve(__dirname, "src/node_modules/images"),
+        publicPath: "/client/",
+        emitFiles: false, // already emitted by client build
       }),
       resolve({
         dedupe: ["svelte"],
@@ -130,8 +107,6 @@ export default {
       commonjs(),
       typescript({ sourceMap: dev }),
       json(),
-
-      smuiSetup,
     ],
     external: Object.keys(pkg.dependencies).concat(
       require("module").builtinModules,
@@ -150,6 +125,7 @@ export default {
         replace({
           "process.browser": true,
           "process.env.NODE_ENV": JSON.stringify(mode),
+          preventAssignment: true,
         }),
         commonjs(),
         typescript({ sourceMap: dev }),
