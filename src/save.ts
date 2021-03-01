@@ -1,6 +1,3 @@
-/// <reference types="wicg-file-system-access" />
-
-import * as localForage from "localforage";
 import { writable } from "svelte/store";
 import backend from "./backend";
 import gameInfo from "./game-info.js";
@@ -16,7 +13,7 @@ const cookies = new Cookies();
 /** Metadata about a save file */
 export interface SaveInfo {
   /** With the Electron backend, the save file ID. With the Native Filesystem API, the handle to the save file's directory.  */
-  handle: string | FileSystemDirectoryHandle;
+  handle: string;
 
   name: string;
   lastSaved: number;
@@ -25,7 +22,7 @@ export interface SaveInfo {
 }
 
 export interface SaveGame {
-  handle: string | FileSystemDirectoryHandle | null;
+  handle: string | null;
 
   name: string;
   lastSaved: number;
@@ -51,7 +48,7 @@ export interface Relationship {
   given: number;
 }
 
-export type Handle = string | FileSystemDirectoryHandle;
+export type Handle = string;
 
 const _save = writable<SaveGame | null>(null);
 let unsubscribeFromLast: () => void;
@@ -69,25 +66,18 @@ export const save = {
               handle: save.handle!,
               data,
             });
-            // We need to use both because localforage can store file handles in IndexedDB
-            // and cookies are needed so the server can SSR with the save.
-            localForage.setItem("save", newSave);
-            // I'm not sure what it would try and serialize a file handle as, but it wouldn't work anyway.
             cookies.set(
               "save",
-              base64.fromByteArray(cborg.encode({ ...newSave, handle: null })),
+              base64.fromByteArray(cborg.encode(newSave)),
             );
             _save.set(newSave);
           }
         })
       ).then((unsubscriber) => unsubscribeFromLast = unsubscriber);
     } else {
-      if (process.browser) {
-        localForage.setItem("save", save);
-      }
       cookies.set(
         "save",
-        base64.fromByteArray(cborg.encode({ ...save, handle: null })),
+        base64.fromByteArray(cborg.encode(save)),
       );
 
       _save.set(save);
@@ -128,9 +118,7 @@ export async function processSaveFile(
   const errorMessage = `Invalid save file ${
     file instanceof XMLDocument
       ? save.querySelector("player > name")?.textContent?.trim() ?? ""
-      : typeof file.handle === "string"
-      ? file.handle
-      : file.handle.name
+      : file.handle
   }`;
 
   const queryText = (selector: string, el = save) => {
@@ -269,18 +257,12 @@ export async function processSaveFile(
 
 export async function getSaveInfo(handle: Handle): Promise<SaveInfo> {
   const file = new DOMParser().parseFromString(
-    await (typeof handle === "string"
-      ? backend.getSaveInfo(handle)
-      : handle.getFileHandle("SaveGameInfo")
-        .then((handle) => handle.getFile())
-        .then((file) => file.text()))
+    await backend.getSaveInfo(handle)
       .then((doc) => doc.trim()),
     "text/xml",
   );
 
-  const errorMessage = `Invalid save file ${
-    typeof handle === "string" ? handle : handle.name
-  }`;
+  const errorMessage = `Invalid save file ${handle}`;
 
   function queryText(selector: string) {
     const contents = file.querySelector(selector)?.textContent?.trim();
@@ -333,58 +315,23 @@ export async function getSaveFile(handle: Handle): Promise<SaveGame> {
   return processSaveFile({
     handle,
     data: new DOMParser().parseFromString(
-      await (typeof handle === "string"
-        ? backend.getSaveFile(handle)
-        : handle.getFileHandle(handle.name)
-          .then((handle) => handle.getFile())
-          .then((file) => file.text()))
+      await backend.getSaveFile(handle)
         .then((doc) => doc.trim()),
       "text/xml",
     ),
   });
 }
 
-function isDirectory(
-  handle: FileSystemHandle,
-): handle is FileSystemDirectoryHandle {
-  return handle.kind === "directory";
-}
-
 export async function getSaveFiles(
-  dir?: string | FileSystemDirectoryHandle,
+  dir?: string,
 ): Promise<SaveInfo[]> {
-  let saves: (SaveInfo | null)[] = [];
-  if (backend && (typeof dir === "string" || dir == null)) {
-    if (typeof dir !== "undefined") backend.setSavesDir(dir);
-    saves = await backend.listSaveFiles().then((saves) =>
-      Promise.all(saves.map((save) => getSaveInfo(save).catch(() => null)))
-    );
-  } else if (
-    "showDirectoryPicker" in globalThis && typeof dir !== "string" &&
-    dir != null
-  ) {
-    for await (const save of dir.values()) {
-      if (isDirectory(save)) {
-        saves.push(await getSaveInfo(save).catch(() => null));
-      }
-    }
-  } else {
-    throw new Error(
-      "Neither Electron backend nor Native Filesystem API available",
-    );
-  }
+  if (typeof dir !== "undefined") backend.setSavesDir(dir);
+
+  const saves = await backend.listSaveFiles().then((saves) =>
+    Promise.all(saves.map((save) => getSaveInfo(save).catch(() => null)))
+  );
 
   return saves.filter((save): save is SaveInfo => save != null);
-}
-
-// This doesn't technically exist, but Sapper replaces every occurence of process.browser with true or false depending if it's in the browser.
-declare var process: { browser: boolean };
-if (process.browser) {
-  localForage.getItem<SaveGame>("lastSaveFile").then((saveGame) => {
-    // We only care about the localforage version if it has a file handle;
-    // otherwise we already got the same thing from session and there's no point setting it again.
-    if (saveGame?.handle != null) save.set(saveGame);
-  });
 }
 
 export default save;

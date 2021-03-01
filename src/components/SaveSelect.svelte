@@ -1,5 +1,4 @@
 <script lang="ts">
-  import localForage from "localforage";
   import {
     Button,
     Card,
@@ -47,11 +46,6 @@
       ? "%APPDATA%\\StardewValley\\Saves\\<save>\\<save>"
       : "~/.config/StardewValley/Saves/<save>/<save>";
 
-  const hasBackend =
-    (typeof globalThis.showDirectoryPicker !== "undefined" &&
-      platformName !== "Windows") ||
-    typeof backend !== "undefined";
-
   let fileInput: HTMLInputElement;
 
   let options: Promise<SaveInfo[] | null> = Promise.resolve(null);
@@ -59,7 +53,7 @@
   let savesDir: Handle | null = null;
   function setSavesDir(dir: Handle) {
     savesDir = dir;
-    localForage.setItem("savesDir", dir);
+    localStorage.setItem("savesDir", dir);
     options = getSaveFiles(dir)
       .then((saves) => saves.sort((a, b) => b.lastSaved - a.lastSaved))
       .catch(() => null);
@@ -67,16 +61,10 @@
 
   export async function open() {
     if (savesDir === null) {
-      const dir = await localForage.getItem<Handle>("savesDir");
+      const dir = localStorage.getItem("savesDir");
 
       if (dir !== null) {
-        if (typeof dir === "string") {
-          setSavesDir(dir);
-        } else {
-          if ((await dir.requestPermission({ mode: "read" })) === "granted") {
-            setSavesDir(dir);
-          }
-        }
+        setSavesDir(dir);
       }
     }
 
@@ -120,7 +108,7 @@
       {#if options === null}
         <CardText>
           {#if platformName !== null}
-            {#if hasBackend}
+            {#if backend}
               {#if savesDir === null}
                 <p>
                   Please select your saves directory. On
@@ -167,7 +155,7 @@
                 .
               </p>
             {/if}
-            {#if !hasBackend && (platformName === "Windows" || platformName === "macOS")}
+            {#if !backend && (platformName === "Windows" || platformName === "macOS")}
               Then navigate to your chosen save file and choose the file with
               the same name as the enclosing folder.
             {/if}
@@ -187,20 +175,15 @@
             <Button
               text
               on:click={async () => {
-                if (typeof backend !== "undefined") {
+                if (backend) {
                   setSavesDir(await backend.chooseFolder());
-                } else if (
-                  typeof globalThis.showDirectoryPicker !== "undefined" &&
-                  platformName !== "Windows"
-                ) {
-                  setSavesDir(await globalThis.showDirectoryPicker());
                 } else {
                   fileInput.click();
                 }
               }}
             >
               Choose
-              {#if hasBackend}directory{:else}file{/if}
+              {#if backend}directory{:else}file{/if}
             </Button>
           {/if}
         </CardActions>
@@ -208,18 +191,16 @@
         <CardText>
           <List>
             {#each options as option}
-              {#await $save !== null && (typeof option.handle === "string" ? option.handle === $save.handle : option.handle.isSameEntry($save.handle)) then selected}
-                <ListItem
-                  {selected}
-                  on:click={async () => {
-                    save.set(await getSaveFile(option.handle));
-                    close();
-                  }}
-                >
-                  <img src={option.sprite} alt={option.name} />
-                  <span class="pa-4">{option.name}</span>
-                </ListItem>
-              {/await}
+              <ListItem
+                selected={option.handle === $save?.handle}
+                on:click={async () => {
+                  save.set(await getSaveFile(option.handle));
+                  close();
+                }}
+              >
+                <img src={option.sprite} alt={option.name} />
+                <span class="pa-4">{option.name}</span>
+              </ListItem>
             {/each}
           </List>
         </CardText>

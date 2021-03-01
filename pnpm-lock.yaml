@@ -21,13 +21,11 @@ devDependencies:
   '@types/gh-pages': 3.0.0
   '@types/node': 14.14.31
   '@types/polka': 0.5.2
-  '@types/wicg-file-system-access': 2020.9.1
   base64-js: 1.5.1
   cborg: github.com/rvagg/cborg/8c12677f9339b23a65af2f96fad40c6270cbf452
   cookie: 0.4.1
   gh-pages: 3.1.0
   imagescript: github.com/matmen/ImageScript/b93cb99c5369da0b4fe9c0d5c0b8d5bf7c0a8b11
-  localforage: 1.9.0
   postcss: 8.2.6
   rollup: 2.40.0
   rollup-plugin-svelte: 7.1.0_rollup@2.40.0+svelte@3.34.0
@@ -1209,10 +1207,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-4LPNrqSJknLzILMVXn2P/mh0djNgFvom4T9Y1hmhaB8OBm1cY71bMMSrGRu1q5qF4JZzY6iaGT11BHmCMY/NZg==
-  /@types/wicg-file-system-access/2020.9.1:
-    dev: true
-    resolution:
-      integrity: sha512-hEN/YpLwvDjhRJrKoBiyiKtIh2zNkmJ/GY9VWIXNgjy7TBZNM9upfb/rnWDGpOoLomnEQtlTBjFBFCDra1oxOQ==
   /accepts/1.3.7:
     dependencies:
       mime-types: 2.1.29
@@ -1759,10 +1753,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha1-9KuZ4NKIF0yk4eUEB8VfuuRk7/8=
-  /immediate/3.0.6:
-    dev: true
-    resolution:
-      integrity: sha1-nbHb0Pr43m++D13V5Wu2BigN5ps=
   /inflight/1.0.6:
     dependencies:
       once: 1.4.0
@@ -1865,18 +1855,6 @@ packages:
       graceful-fs: 4.2.6
     resolution:
       integrity: sha1-h3Gq4HmbZAdrdmQPygWPnBDjPss=
-  /lie/3.1.1:
-    dependencies:
-      immediate: 3.0.6
-    dev: true
-    resolution:
-      integrity: sha1-mkNrLMd0bKWd56QfpGmz77dr2H4=
-  /localforage/1.9.0:
-    dependencies:
-      lie: 3.1.1
-    dev: true
-    resolution:
-      integrity: sha512-rR1oyNrKulpe+VM9cYmcFn6tsHuokyVHFaCM3+osEmxaHTbEk8oQu6eGDfS6DQLWi/N67XRmB8ECG37OES368g==
   /locate-path/5.0.0:
     dependencies:
       p-locate: 4.1.0
@@ -2636,14 +2614,12 @@ specifiers:
   '@types/gh-pages': ^3.0.0
   '@types/node': ^14.14.31
   '@types/polka': ^0.5.2
-  '@types/wicg-file-system-access': ^2020.9.1
   base64-js: ^1.5.1
   cborg: github:rvagg/cborg
   compression: ^1.7.4
   cookie: ^0.4.1
   gh-pages: ^3.1.0
   imagescript: github:matmen/ImageScript#browser
-  localforage: ^1.9.0
   polka: next
   postcss: ^8.2.6
   rollup: ^2.40.0
