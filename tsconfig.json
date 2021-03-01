@@ -10,5 +10,5 @@
     "maxNodeModuleJsDepth": 1
   },
   "include": ["src/**/*", "src/node_modules/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "static/*"]
+  "exclude": ["node_modules/*", "__sapper__/*", "static/*", "src/node_modules/**/*.js"]
 }
