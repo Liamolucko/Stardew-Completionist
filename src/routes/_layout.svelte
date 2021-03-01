@@ -1,4 +1,6 @@
 <script context="module" lang="ts">
+  declare var process: { browser: boolean };
+
   export async function preload(_: unknown, session: unknown) {
     return session;
   }
@@ -23,6 +25,9 @@
   import type { Item } from "../game-info.js";
   import save, { getSaveFile } from "../save";
   import type { SaveGame } from "../save";
+  import * as cookie from "cookie";
+  import * as cborg from "cborg";
+  import * as base64 from "base64-js";
 
   // A warning is thrown in the browser console if I don't declare this, so it's here even if I don't use it.
   export let segment;
@@ -33,6 +38,12 @@
 
   if (lastSave) {
     save.set(lastSave);
+  } else if (process.browser) {
+    // If this is being used without SSR, we need to check the cookie on the client side.
+    const cookies = cookie.parse(document.cookie);
+    if (cookies.save) {
+      save.set(cborg.decode(base64.toByteArray(cookies.save)));
+    }
   }
 
   let saveSelect: SaveSelect;

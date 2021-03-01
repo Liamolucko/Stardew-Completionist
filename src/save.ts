@@ -50,6 +50,12 @@ export interface Relationship {
 
 export type Handle = string;
 
+const cookieOptions = {
+  secure: true,
+  sameSite: "strict",
+  expires: new Date(2038, 0),
+} as const;
+
 const _save = writable<SaveGame | null>(null);
 let unsubscribeFromLast: () => void;
 export const save = {
@@ -69,6 +75,7 @@ export const save = {
             cookies.set(
               "save",
               base64.fromByteArray(cborg.encode(newSave)),
+              cookieOptions,
             );
             _save.set(newSave);
           }
@@ -78,6 +85,7 @@ export const save = {
       cookies.set(
         "save",
         base64.fromByteArray(cborg.encode(save)),
+        cookieOptions,
       );
 
       _save.set(save);
