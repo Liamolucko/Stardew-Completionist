@@ -15,7 +15,7 @@ polka() // You can also use Express
     compression({ threshold: 0 }),
     sirv("static", { dev }),
     sapper.middleware({
-      session(req, res) {
+      session(req) {
         // Since the save file is global, it's normally maintained across requests during SSR.
         // So we have to manually reset it to null to stop that.
         save.set(null);
@@ -23,7 +23,6 @@ polka() // You can also use Express
           ? null
           : cookie.parse(req.headers.cookie);
         return {
-          theme: cookies?.theme ?? "light",
           lastSave: cookies?.save
             ? cborg.decode(base64.toByteArray(cookies.save))
             : null,

@@ -1,6 +1,4 @@
 <script context="module" lang="ts">
-  declare var process: { browser: boolean };
-
   export async function preload(_: unknown, session: unknown) {
     return session;
   }
@@ -25,14 +23,12 @@
   import type { Item } from "../game-info.js";
   import save, { getSaveFile } from "../save";
   import type { SaveGame } from "../save";
-  import Cookies from "universal-cookie";
 
   // A warning is thrown in the browser console if I don't declare this, so it's here even if I don't use it.
   export let segment;
   // Stop Svelte complaining it's unused.
   segment;
 
-  export let theme: "light" | "dark";
   export let lastSave: SaveGame | null;
 
   if (lastSave) {
@@ -57,21 +53,9 @@
       localStorage.setItem("hasSeenIntro", "true");
     }
   });
-
-  if (process.browser) {
-    const cookies = new Cookies();
-
-    const newTheme = matchMedia("(prefers-color-scheme: dark)")
-      ? "dark"
-      : "light";
-    if (theme !== newTheme) {
-      theme = newTheme;
-      cookies.set("theme", theme);
-    }
-  }
 </script>
 
-<MaterialApp {theme}>
+<MaterialApp>
   <div class="container">
     <nav class="nav-rail">
       <div class="nav-section top-section">
@@ -220,5 +204,59 @@
 
   a {
     color: inherit;
+  }
+
+  :global {
+    // Copied from the theme--dark class.
+    @media (prefers-color-scheme: dark) {
+      .s-app {
+        --theme-surface: #212121;
+        --theme-icons-active: #fff;
+        --theme-icons-inactive: hsla(0, 0%, 100%, 0.5);
+        --theme-text-primary: #fff;
+        --theme-text-secondary: hsla(0, 0%, 100%, 0.7);
+        --theme-text-disabled: hsla(0, 0%, 100%, 0.5);
+        --theme-text-link: #82b1ff;
+        --theme-inputs-box: #fff;
+        --theme-buttons-disabled: hsla(0, 0%, 100%, 0.3);
+        --theme-tabs: hsla(0, 0%, 100%, 0.6);
+        --theme-text-fields-filled: hsla(0, 0%, 100%, 0.08);
+        --theme-text-fields-filled-hover: hsla(0, 0%, 100%, 0.16);
+        --theme-text-fields-outlined: hsla(0, 0%, 100%, 0.24);
+        --theme-text-fields-outlined-disabled: hsla(0, 0%, 100%, 0.16);
+        --theme-text-fields-border: hsla(0, 0%, 100%, 0.7);
+        --theme-controls-disabled: hsla(0, 0%, 100%, 0.3);
+        --theme-controls-thumb-inactive: #bdbdbd;
+        --theme-controls-thumb-disabled: #424242;
+        --theme-controls-track-inactive: hsla(0, 0%, 100%, 0.3);
+        --theme-controls-track-disabled: hsla(0, 0%, 100%, 0.1);
+        --theme-tables-active: #505050;
+        --theme-tables-hover: #616161;
+        --theme-tables-group: #616161;
+        --theme-dividers: hsla(0, 0%, 100%, 0.12);
+        --theme-chips: #555;
+        --theme-cards: #1e1e1e;
+        --theme-app-bar: #272727;
+        --theme-navigation-drawer: #363636;
+        background-color: var(--theme-surface);
+        color: var(--theme-text-primary);
+      }
+
+      .s-app a {
+        color: #82b1ff;
+      }
+
+      .s-app .text--primary {
+        color: var(--theme-text-primary);
+      }
+
+      .s-app .text--secondary {
+        color: var(--theme-text-secondary);
+      }
+
+      .s-app .text--disabled {
+        color: var(--theme-text-disabled);
+      }
+    }
   }
 </style>
