@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getContext } from "svelte";
-  import type { Item } from "./game-info";
+  import type { Item } from "./game-info.js";
   import { qualityNames } from "./names";
 
   export let item: Item;
@@ -15,6 +15,35 @@
   $: size = (item.isCraftable ? 32 : 16) * scale;
 </script>
 
+<button
+  style="--scale: {scale}; --size: {size}px"
+  on:click={() => {
+    dialog.open(item);
+  }}
+>
+  <img
+    class="sprite"
+    src="data:image/png;base64,{item.sprite}"
+    alt={item.name}
+    width={16 * scale}
+    height={size}
+    class:greyed={grey}
+    class:shadow
+  />
+  <img
+    class="quality"
+    src="./images/quality-{quality}.png"
+    alt="{qualityNames.get(quality)} quality"
+  />
+  {#if quantity > 1}
+    <div class="quantity">
+      {#each quantity.toString() as char}
+        <img src="./numbers/{char}.png" alt={char} />
+      {/each}
+    </div>
+  {/if}
+</button>
+
 <style lang="scss">
   button {
     position: relative; // Make `position: absolute` work for subsequent elements
@@ -22,6 +51,8 @@
     background-color: transparent;
     border: none;
     outline: none;
+    width: var(--size);
+    height: var(--size);
 
     padding: 0;
     text-align: center;
@@ -51,7 +82,7 @@
           );
         }
 
-        &.grey {
+        &.greyed {
           filter: drop-shadow(0px 0px 0px rgba(0, 0, 0, 0.3)) saturate(0)
             brightness(0.7);
         }
@@ -85,7 +116,7 @@
       $hover-scale: 52 / 48;
       transform: scale($hover-scale);
 
-      img.sprite.grey.shadow {
+      img.sprite.greyed.shadow {
         filter: drop-shadow(
           calc(var(--drop-dist) * -1) var(--drop-dist) 0px rgba(0, 0, 0, 0.3)
         );
@@ -93,31 +124,3 @@
     }
   }
 </style>
-
-<button
-  style="--scale: {scale}"
-  width={size}
-  height={size}
-  on:click={() => {
-    dialog.open(item);
-  }}>
-  <img
-    class="sprite"
-    src="data:image/png;base64,{item.sprite}"
-    alt={item.name}
-    width={16 * scale}
-    height={size}
-    class:grey
-    class:shadow />
-  <img
-    class="quality"
-    src="quality-{quality}.png"
-    alt="{qualityNames.get(quality)} quality" />
-  {#if quantity > 1}
-    <div class="quantity">
-      {#each quantity.toString() as char}
-        <img src="numbers/{char}.png" alt={char} />
-      {/each}
-    </div>
-  {/if}
-</button>

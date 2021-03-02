@@ -1,26 +1,25 @@
 <script lang="ts">
-  import localForage from "localforage";
+  import {
+    Button,
+    Card,
+    CardActions,
+    CardText,
+    CardTitle,
+    Dialog,
+    List,
+    ListItem,
+    ProgressCircular,
+  } from "svelte-materialify";
   import backend from "./backend";
-  import type { Handle, SaveInfo } from "./save";
   import save, {
     getSaveFile,
     getSaveFiles,
     isValidSaveFile,
     processSaveFile,
   } from "./save";
-  import {
-    Dialog,
-    Button,
-    List,
-    Card,
-    CardTitle,
-    CardText,
-    ProgressCircular,
-    CardActions,
-    ListItem,
-  } from "svelte-materialify";
+  import type { SaveInfo } from "./save";
 
-  let active = false;
+  export let active = false;
 
   const platformName =
     typeof navigator === "undefined"
@@ -47,51 +46,31 @@
       ? "%APPDATA%\\StardewValley\\Saves\\<save>\\<save>"
       : "~/.config/StardewValley/Saves/<save>/<save>";
 
-  const hasBackend =
-    (typeof globalThis.showDirectoryPicker !== "undefined" &&
-      platformName !== "Windows") ||
-    typeof backend !== "undefined";
-
   let fileInput: HTMLInputElement;
 
-  let options: Promise<SaveInfo[] | null> = Promise.resolve(null);
+  let options: Promise<SaveInfo[] | null>;
 
-  let savesDir: Handle | null = null;
-  function setSavesDir(dir: Handle) {
-    savesDir = dir;
-    localForage.setItem("savesDir", dir);
-    options = getSaveFiles(dir)
-      .then((saves) => saves.sort((a, b) => b.lastSaved - a.lastSaved))
-      .catch(() => null);
-  }
+  // Undefined means it's probably set on the backend but we don't know it,
+  // null means it's been intentionally unset.
+  let savesDir: string | null | undefined =
+    globalThis.localStorage?.getItem("savesDir") ?? undefined;
 
-  export async function open() {
-    if (savesDir === null) {
-      const dir = await localForage.getItem<Handle>("savesDir");
-
-      if (dir !== null) {
-        if (typeof dir === "string") {
-          setSavesDir(dir);
-        } else {
-          if ((await dir.requestPermission({ mode: "read" })) === "granted") {
-            setSavesDir(dir);
-          }
-        }
-      }
+  $: {
+    if (savesDir !== null) {
+      options = getSaveFiles(savesDir)
+        .then((saves) => saves.sort((a, b) => b.lastSaved - a.lastSaved))
+        .catch(() => null);
+    } else {
+      options = Promise.resolve(null);
     }
-
-    active = true;
-  }
-
-  export function close() {
-    active = false;
   }
 </script>
 
 <input
   on:change={async () => {
     if (fileInput.files === null) return;
-    const contents = new DOMParser().parseFromString(
+    // Make Svelte shut up about DOMParser not being defined
+    const contents = new globalThis.DOMParser().parseFromString(
       await fileInput.files[0].text(),
       "text/xml"
     );
@@ -102,7 +81,7 @@
   }}
   bind:this={fileInput}
   type="file"
-  style="display: none"
+  class="d-none"
 />
 
 <Dialog bind:active>
@@ -116,17 +95,21 @@
         <ProgressCircular indeterminate />
       </div>
     {:then options}
-      {#if options === null}
+      {#if options === null || options.length === 0}
         <CardText>
           {#if platformName !== null}
-            {#if hasBackend}
+            {#if backend}
               {#if savesDir === null}
                 <p>
                   Please select your saves directory. On
                   {platformName}, this is typically located at
-                  <code>{savesDirPath}</code>
+                  <kbd>{savesDirPath}</kbd>
                   .
                 </p>
+              {:else if options?.length === 0}
+                {savesDir}
+                does not contain any valid Stardew Valley save files. Please choose
+                another.
               {:else}
                 {savesDir}
                 is an invalid save file path. Please choose another.
@@ -135,18 +118,18 @@
               <p>
                 Please select your save file. On
                 {platformName}, this is typically located at
-                <code>{savePath}</code>
+                <kbd>{savePath}</kbd>
                 .
               </p>
             {/if}
             {#if platformName === "Windows"}
               <p>
                 Paste
-                <code>{savesDirPath}</code>
+                <kbd>{savesDirPath}</kbd>
                 into the address bar at the top of Explorer and press
                 <kbd>Enter</kbd>
                 to navigate to
-                <code>Saves</code>
+                <kbd>Saves</kbd>
                 .
               </p>
             {:else if platformName === "macOS"}
@@ -158,15 +141,15 @@
                 +
                 <kbd>G</kbd>
                 to open Go To Folder and paste
-                <code>{savesDirPath}</code>
+                <kbd>{savesDirPath}</kbd>
                 into it, then press
                 <kbd>Enter</kbd>
                 to navigate to
-                <code>Saves</code>
+                <kbd>Saves</kbd>
                 .
               </p>
             {/if}
-            {#if !hasBackend && (platformName === "Windows" || platformName === "macOS")}
+            {#if !backend && (platformName === "Windows" || platformName === "macOS")}
               Then navigate to your chosen save file and choose the file with
               the same name as the enclosing folder.
             {/if}
@@ -175,58 +158,56 @@
           {/if}
         </CardText>
         <CardActions>
-          <Button>Cancel</Button>
+          <Button text on:click={() => (active = false)}>Cancel</Button>
           {#if savesDirPath !== null}
             <Button
-              action={null}
+              text
               on:click={() => navigator.clipboard.writeText(savesDirPath)}
             >
               Copy path
             </Button>
             <Button
-              action={null}
+              text
               on:click={async () => {
-                if (typeof backend !== "undefined") {
-                  setSavesDir(await backend.chooseFolder());
-                } else if (
-                  typeof globalThis.showDirectoryPicker !== "undefined" &&
-                  platformName !== "Windows"
-                ) {
-                  setSavesDir(await globalThis.showDirectoryPicker());
+                if (backend) {
+                  savesDir = await backend.chooseFolder();
+                  localStorage.setItem("savesDir", savesDir);
                 } else {
                   fileInput.click();
                 }
               }}
             >
               Choose
-              {#if hasBackend}directory{:else}file{/if}
+              {#if backend}directory{:else}file{/if}
             </Button>
           {/if}
         </CardActions>
       {:else}
-        <CardText>
-          <List>
-            {#each options as option}
-              {#await $save !== null && (typeof option.handle === "string" ? option.handle === $save.handle : option.handle.isSameEntry($save.handle)) then selected}
-                <ListItem
-                  {selected}
-                  on:click={async () => {
-                    save.set(await getSaveFile(option.handle));
-                    close();
-                  }}
-                >
-                  <img src={option.sprite} alt={option.name} />
-                  <span style="padding-left: 8px">{option.name}</span>
-                </ListItem>
-              {/await}
-            {/each}
-          </List>
-        </CardText>
+        <List>
+          {#each options as option}
+            <ListItem
+              active={option.handle === $save?.handle}
+              on:click={async () => {
+                save.set(await getSaveFile(option.handle));
+                active = false;
+              }}
+            >
+              <img
+                slot="prepend"
+                src={option.sprite}
+                alt={option.name}
+                class="mr-2"
+              />
+              {option.name}
+            </ListItem>
+          {/each}
+        </List>
         <CardActions>
           <Button
+            text
             on:click={() => {
+              console.log("button pressed");
               savesDir = null;
-              options = null;
             }}
           >
             Change directory
@@ -236,9 +217,3 @@
     {/await}
   </Card>
 </Dialog>
-
-<style>
-  input + :global(* .mdc-dialog__surface) {
-    transition: width 0.5s, height 0.5s;
-  }
-</style>

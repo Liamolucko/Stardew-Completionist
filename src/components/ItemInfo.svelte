@@ -1,9 +1,9 @@
 <script lang="ts">
-  import gameInfo from "./game-info";
-  import type { Item } from "./game-info";
-  import { categories, locationNames, weatherNames } from "./names";
-  import { Button, Icon } from "svelte-materialify";
   import { mdiLaunch } from "@mdi/js";
+  import { Button, Card, Icon } from "svelte-materialify";
+  import type { Item } from "./game-info.js";
+  import gameInfo from "./game-info.js";
+  import { categories, locationNames, weatherNames } from "./names";
 
   export let item: Item;
 
@@ -13,55 +13,55 @@
 </script>
 
 {#if typeof item !== "undefined"}
-  <div class="mdc-dialog__title">
-    <div class="header">
-      <img
-        class="dialog-icon"
-        src="data:image/png;base64,{item.sprite}"
-        alt={item.name}
-        height={item.isCraftable ? 64 : 48}
-      />
-      {item.name}
-      <Button href={item.url} target="_blank" icon>
+  <div class="header">
+    <img
+      class="dialog-icon"
+      src="data:image/png;base64,{item.sprite}"
+      alt={item.name}
+      height={item.isCraftable ? 64 : 48}
+    />
+    {item.name}
+    <a href={item.url}>
+      <Button target="_blank" icon>
         <Icon path={mdiLaunch} />
       </Button>
-    </div>
+    </a>
   </div>
-  <div class="mdc-dialog__content content">
+  <div class="content">
     {#if typeof item.seasons !== "undefined"}
-      <div class="mdc-card section section seasons">
+      <Card class="section seasons">
         <h2 class="text-subtitle-2">Seasons</h2>
         <ul class="text-body-2">
           {#if item.seasons.includes("spring")}
             <li>
-              <img src="spring.png" alt="Spring" />
+              <img src="./images/spring.png" alt="Spring" />
               Spring
             </li>
           {/if}
           {#if item.seasons.includes("summer")}
             <li>
-              <img src="summer.png" alt="Summer" />
+              <img src="./images/summer.png" alt="Summer" />
               Summer
             </li>
           {/if}
           {#if item.seasons.includes("fall")}
             <li>
-              <img src="fall.png" alt="Fall" />
+              <img src="./images/fall.png" alt="Fall" />
               Fall
             </li>
           {/if}
           {#if item.seasons.includes("winter")}
             <li>
-              <img src="winter.png" alt="Winter" />
+              <img src="./images/winter.png" alt="Winter" />
               Winter
             </li>
           {/if}
         </ul>
-      </div>
+      </Card>
     {/if}
 
     {#if typeof item.sources !== "undefined" || typeof item.monsterDrops !== "undefined" || typeof item.artifactSpots !== "undefined"}
-      <div class="mdc-card section">
+      <Card class="section">
         {#if typeof item.sources !== "undefined" || typeof item.monsterDrops !== "undefined"}
           <h2 class="text-subtitle-2">Sources</h2>
           <ul class="text-body-2">
@@ -88,11 +88,11 @@
             {/each}
           </ul>
         {/if}
-      </div>
+      </Card>
     {/if}
 
     {#if typeof item.ingredients !== "undefined"}
-      <div class="mdc-card section">
+      <Card class="section">
         <h2 class="text-subtitle-2">Ingredients</h2>
         <ul class="text-body-2">
           {#each Object.entries(item.ingredients) as [id, quantity]}
@@ -111,11 +111,11 @@
             {/each}
           </ul>
         {/if}
-      </div>
+      </Card>
     {/if}
 
     {#if typeof item.locations !== "undefined"}
-      <div class="mdc-card section">
+      <Card class="section">
         <h2 class="text-subtitle-2">Found in</h2>
         <ul class="text-body-2">
           {#each item.locations as location}
@@ -128,37 +128,32 @@
         {#if typeof item.weather !== "undefined" && item.weather !== "both"}
           <p class="text-body-2">
             <img
-              src="{item.weather}.png"
+              src="./images/{item.weather}.png"
               alt={weatherNames.get(item.weather)}
             />
             {weatherNames.get(item.weather)}
           </p>
         {/if}
-      </div>
+      </Card>
     {/if}
   </div>
 {/if}
 
 <style lang="scss">
-  @import "@material/card/dist/mdc.card.min.css";
-
-  .mdc-dialog__title {
-    padding-right: 0;
-  }
-
   .header {
     display: inline-flex;
     align-items: center;
 
     width: 100%;
     height: 100%;
-    padding: 8px 8px 8px 0;
+    padding: 8px 0;
 
-    :global(:last-child) {
+    a {
       display: inline-block;
       vertical-align: middle;
 
       margin-left: auto;
+      color: inherit;
     }
 
     img {
@@ -192,7 +187,7 @@
       }
     }
 
-    .section {
+    :global .section {
       padding: 16px;
 
       h2 {
@@ -204,16 +199,12 @@
       }
 
       ul {
-        color: black;
-
         margin: 0;
         padding: 0;
         list-style-position: inside;
       }
 
       p {
-        color: black;
-
         margin: 0;
         padding: 0;
 

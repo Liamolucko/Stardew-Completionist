@@ -8,7 +8,4 @@ module.exports = {
   alias: {
     $components: "./src/components",
   },
-  // packageOptions: {
-  //   externalEsm: ["svelte-materialify"],
-  // },
 };

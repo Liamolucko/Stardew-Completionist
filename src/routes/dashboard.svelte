@@ -1,13 +1,15 @@
 <script lang="ts">
-  import { derived } from "svelte/store";
-  import type { Readable } from "svelte/store";
-  import ItemButton from "$components/ItemButton.svelte";
-  import type { Item, Recipe } from "$components/game-info";
-  import { seasonNames } from "$components/names";
-  import save from "$components/save";
-  import type { SaveGame } from "$components/save";
-  import gameInfo from "$components/game-info";
   import "svelte-materialify";
+  import { Card } from "svelte-materialify";
+  import Table from "svelte-materialify/dist/components/Table";
+  import type { Readable } from "svelte/store";
+  import { derived } from "svelte/store";
+  import ItemButton from "$components/ItemButton.svelte";
+  import type { Item, Recipe } from "$components/game-info.js";
+  import gameInfo from "$components/game-info.js";
+  import { seasonNames } from "$components/names";
+  import type { SaveGame } from "$components/save";
+  import save from "$components/save";
 
   interface Birthday {
     villager: string;
@@ -25,15 +27,15 @@
           Object.values(gameInfo.villagers)
             .sort(
               (a, b) =>
-                ((a.birthDate - $save.currentDate + 112) % 112) -
-                ((b.birthDate - $save.currentDate + 112) % 112)
+                ((a.birthDate - $save.date + 112) % 112) -
+                ((b.birthDate - $save.date + 112) % 112)
             )
             .map((villager) => ({
               villager: villager.name,
               date: villager.birthday,
-              hearts: $save.relationships.get(villager.name)?.hearts ?? 0,
+              hearts: $save.relationships[villager.name]?.hearts ?? 0,
               maxHearts:
-                $save.relationships.get(villager.name)?.maxHearts ??
+                $save.relationships[villager.name]?.max ??
                 (villager.datable ? 8 : 10),
               bestGifts: villager.bestGifts,
             }))
@@ -65,7 +67,7 @@
       };
 
       const rootRecipes = Object.values(gameInfo.recipes).filter(
-        (recipe) => !$save.collectedItems.includes(recipe.result.id)
+        (recipe) => !$save.collected.includes(recipe.result.id)
       );
 
       // Figure out all the recipes needed to craft other recipes
@@ -99,21 +101,22 @@
       }
 
       for (const { id } of gameInfo.shipping) {
-        if (!$save.collectedItems.includes(id)) {
+        if (!$save.collected.includes(id)) {
           output[id] ??= 0;
           output[id] += 1;
         }
       }
 
       for (const { id } of gameInfo.fish) {
-        if (!$save.collectedItems.includes(id)) {
+        if (!$save.collected.includes(id)) {
           output[id] ??= 1;
         }
       }
 
       for (const bundle of Object.values(gameInfo.bundles)) {
-        for (const [index, item] of Object.entries(bundle.items)) {
-          if (!$save.bundleCompletion.get(bundle.id)![index]) {
+        for (const index in bundle.items) {
+          const item = bundle.items[index];
+          if (!$save.bundles[bundle.id]![index]) {
             output[item.id] ??= 0;
             output[item.id] += item.amount;
           }
@@ -141,7 +144,7 @@
                 item &&
                 typeof item.seasons !== "undefined" &&
                 item.seasons.includes(
-                  ["spring", "summer", "fall", "winter"][$save!.currentSeason]
+                  ["spring", "summer", "fall", "winter"][$save!.season]
                 ) &&
                 Object.values(item.seasons).filter((value) => value).length < 3
               );
@@ -157,80 +160,54 @@
   <title>Dashboard | Stardew Completionist</title>
 </svelte:head>
 
-<h1 class="title text-h4">Dashboard</h1>
+<h4 class="title">Dashboard</h4>
 {#if $save !== null}
   <div class="container">
-    <div class="mdc-data-table">
-      <div class="mdc-data-table__table-container">
-        <table class="mdc-data-table__table">
-          <thead>
-            <tr class="mdc-data-table__header-row">
-              <th
-                class="mdc-data-table__header-cell"
-                role="columnheader"
-                scope="col"
-              >
-                Villager
+    <Card outlined>
+      <Table>
+        <thead>
+          <tr>
+            <th role="columnheader" scope="col">Villager</th>
+            <th role="columnheader" scope="col">Hearts</th>
+            <th role="columnheader" scope="col">Birthday</th>
+            <th role="columnheader" scope="col">Best Gifts</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each $birthdays as birthday}
+            <tr>
+              <th scope="row">
+                {birthday.villager}
               </th>
-              <th
-                class="mdc-data-table__header-cell"
-                role="columnheader"
-                scope="col"
-              >
-                Hearts
-              </th>
-              <th
-                class="mdc-data-table__header-cell"
-                role="columnheader"
-                scope="col"
-              >
-                Birthday
-              </th>
-              <th
-                class="mdc-data-table__header-cell"
-                role="columnheader"
-                scope="col"
-              >
-                Best Gifts
-              </th>
+              <td>
+                <div class="hearts">
+                  {#each [...Array(birthday.maxHearts).keys()] as i}
+                    <img
+                      alt="heart"
+                      src="./images/heart-{birthday.hearts >= i + 1
+                        ? 'filled'
+                        : 'outline'}.png"
+                    />
+                  {/each}
+                </div>
+              </td>
+              <td>{birthday.date}</td>
+              <td>
+                <div class="best-gifts">
+                  {#each birthday.bestGifts as item}
+                    <ItemButton {item} scale={item.isCraftable ? 1 : 2} />
+                  {/each}
+                </div>
+              </td>
             </tr>
-          </thead>
-          <tbody class="mdc-data-table__content">
-            {#each $birthdays as birthday}
-              <tr class="mdc-data-table__row">
-                <th class="mdc-data-table__cell" scope="row">
-                  {birthday.villager}
-                </th>
-                <td class="mdc-data-table__cell">
-                  <div class="hearts">
-                    {#each [...Array(birthday.maxHearts).keys()] as i}
-                      <img
-                        alt="heart"
-                        src="./images/heart-{birthday.hearts >= i + 1
-                          ? 'filled'
-                          : 'outline'}.png"
-                      />
-                    {/each}
-                  </div>
-                </td>
-                <td class="mdc-data-table__cell">{birthday.date}</td>
-                <td class="mdc-data-table__cell">
-                  <div class="best-gifts">
-                    {#each birthday.bestGifts as item}
-                      <ItemButton {item} scale={item.isCraftable ? 1 : 2} />
-                    {/each}
-                  </div>
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="mdc-card mdc-card--outlined seasonal">
-      <h2 class="text-h6">
-        {seasonNames.get($save.currentSeason)}
-      </h2>
+          {/each}
+        </tbody>
+      </Table>
+    </Card>
+    <Card outlined class="seasonal">
+      <h6>
+        {seasonNames.get($save.season)}
+      </h6>
       <div class="seasonal-items">
         {#each Object.entries($seasonalItems) as [id, quantity]}
           <ItemButton
@@ -240,11 +217,11 @@
           />
         {/each}
       </div>
-    </div>
-    <div class="mdc-card mdc-card--outlined seasonal">
-      <h2 class="text-h6">
-        {seasonNames.get($save.currentSeason)}
-      </h2>
+    </Card>
+    <Card outlined class="seasonal">
+      <h6>
+        {seasonNames.get($save.season)}
+      </h6>
       <div class="seasonal-items">
         {#each Object.entries($seasonalItems) as [id, quantity]}
           <ItemButton
@@ -254,7 +231,7 @@
           />
         {/each}
       </div>
-    </div>
+    </Card>
   </div>
 {:else}
   <p class="no-save">
@@ -264,9 +241,6 @@
 {/if}
 
 <style lang="scss">
-  @import "@material/card/dist/mdc.card.min.css";
-  @import "@material/data-table/dist/mdc.data-table.min.css";
-
   .best-gifts {
     display: flex;
     flex-direction: row;
@@ -307,27 +281,29 @@
     }
 
     padding: 0 20px 20px;
-  }
 
-  .seasonal {
-    display: flex;
-    flex-flow: column nowrap;
+    :global {
+      .seasonal {
+        display: flex;
+        flex-flow: column nowrap;
 
-    grid-area: s;
+        grid-area: s;
 
-    padding: 16px;
+        padding: 16px;
 
-    .seasonal-items {
-      display: grid;
-      grid-auto-flow: row;
-      grid-auto-rows: 64px;
-      grid-template-columns: repeat(auto-fill, 64px);
-      gap: 8px;
+        .seasonal-items {
+          display: grid;
+          grid-auto-flow: row;
+          grid-auto-rows: 64px;
+          grid-template-columns: repeat(auto-fill, 64px);
+          gap: 8px;
 
-      flex-grow: 1;
+          flex-grow: 1;
 
-      @media only screen and (min-width: 1250px) {
-        grid-template-columns: repeat(2, 64px);
+          @media only screen and (min-width: 1250px) {
+            grid-template-columns: repeat(2, 64px);
+          }
+        }
       }
     }
   }

@@ -5,8 +5,8 @@ module.exports = {
         pkg.dependencies.snowpack = "../snowpack/snowpack";
       }
 
-      if (pkg.devDependencies.snowpack) {
-        pkg.devDependencies.snowpack = "../snowpack/snowpack";
+      if (pkg.dependencies["@snowpack/plugin-svelte"]) {
+        pkg.dependencies["@snowpack/plugin-svelte"] = "next";
       }
 
       return pkg;

@@ -5,20 +5,24 @@ devDependencies:
   '@snowpack/plugin-typescript': 1.2.1_typescript@4.2.2
   '@sveltejs/adapter-node': 1.0.0-next.3
   '@sveltejs/kit': 1.0.0-next.34
-  '@sveltejs/snowpack-config': 1.0.0-next.3_433d29528610c218e6145c26b3e4b510
+  '@sveltejs/snowpack-config': 1.0.0-next.3_7ffa46f726e41430f470e95af084c5a1
   '@types/wicg-file-system-access': 2020.9.1
   base64-js: 1.5.1
+  cborg: github.com/Liamolucko/cborg/ff48e3ae69fd2c05fb5d8c47071f3f3b3ae77c11
+  cookie: 0.4.1
   gh-pages: 3.1.0
   imagescript: github.com/matmen/ImageScript/b93cb99c5369da0b4fe9c0d5c0b8d5bf7c0a8b11
   localforage: 1.9.0
+  postcss: 8.2.6
   sass: 1.32.8
-  snowpack: link:../snowpack/snowpack
-  svelte: 3.34.0
-  svelte-hmr: 0.12.6_svelte@3.34.0
-  svelte-materialify: 0.3.5_svelte@3.34.0
-  svelte-preprocess: 4.6.9_433d29528610c218e6145c26b3e4b510
+  snowpack: 3.1.0-pre.10
+  svelte: 3.35.0
+  svelte-hmr: 0.12.7_svelte@3.35.0
+  svelte-materialify: 0.3.5_svelte@3.35.0
+  svelte-preprocess: 4.6.9_7ffa46f726e41430f470e95af084c5a1
   tslib: 2.1.0
   typescript: 4.2.2
+  universal-cookie: 4.0.4
 lockfileVersion: 5.2
 packages:
   /@babel/code-frame/7.12.13:
@@ -303,19 +307,20 @@ packages:
     dev: true
     resolution:
       integrity: sha512-BbeHMgeK2/vjdJIRnx12wvQ6s8xAYfvMmEAVsUx9b+7GiQGQ9Za8jpwp17dMKr9CgKRvemlAM4S7S3QOtEbp4A==
-  /@snowpack/plugin-svelte/3.5.2_433d29528610c218e6145c26b3e4b510:
+  /@snowpack/plugin-svelte/3.1.0-pre.7_7ffa46f726e41430f470e95af084c5a1:
     dependencies:
-      rollup-plugin-svelte: 7.1.0_svelte@3.34.0
-      svelte: 3.34.0
-      svelte-hmr: 0.12.6_svelte@3.34.0
-      svelte-preprocess: 4.6.9_433d29528610c218e6145c26b3e4b510
+      rollup-plugin-svelte: 7.1.0_svelte@3.35.0
+      svelte: 3.35.0
+      svelte-hmr: 0.12.7_svelte@3.35.0
+      svelte-preprocess: 4.6.9_7ffa46f726e41430f470e95af084c5a1
     dev: true
     peerDependencies:
+      postcss: '*'
       sass: '*'
       svelte: ^3.21.0
       typescript: '*'
     resolution:
-      integrity: sha512-i7OhkIRNt1uJ/y3qpowlU7icjtSgFPIl/GjMmBxhtwoIqHAnowFLh1Ur5G6S36GCFo65ymClnYfEIM/2x1+wPQ==
+      integrity: sha512-K45uUZCnoAiRWUschc6rMVI12X9TVykbcwhgLkEjN/mmeTkdx3NtkzvOxu6q+tg1N9/4beYOp2dCR52POh0tXw==
   /@snowpack/plugin-typescript/1.2.1_typescript@4.2.2:
     dependencies:
       execa: 5.0.0
@@ -345,16 +350,21 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-J8jGIsQjCQK0GFiQAYm+kES5GtsAbPdRffK7hWIgv+R2mIBjp4IJf749v98h3DNwQfMz9q1DZhWjTUC04PIilg==
-  /@sveltejs/snowpack-config/1.0.0-next.3_433d29528610c218e6145c26b3e4b510:
+  /@sveltejs/snowpack-config/1.0.0-next.3_7ffa46f726e41430f470e95af084c5a1:
     dependencies:
-      '@snowpack/plugin-svelte': 3.5.2_433d29528610c218e6145c26b3e4b510
+      '@snowpack/plugin-svelte': 3.1.0-pre.7_7ffa46f726e41430f470e95af084c5a1
     dev: true
     peerDependencies:
+      postcss: '*'
       sass: '*'
       svelte: '*'
       typescript: '*'
     resolution:
       integrity: sha512-ML2rZTkZG1iV0qKk1H2rwt1Th2ifhD2wxQs4DTYOb61xQY57Y41tKfo0Lzf4IYjRKd4CgbvLsXwSw4NkftDl3A==
+  /@types/cookie/0.3.3:
+    dev: true
+    resolution:
+      integrity: sha512-LKVP3cgXBT9RYj+t+9FDKwS5tdI+rPBXaNSkma7hvqy35lc7mAokC2zsqWJH0LaqIt3B962nuYI77hsJoT1gow==
   /@types/node/14.14.31:
     dev: true
     resolution:
@@ -418,12 +428,24 @@ packages:
     dev: true
     resolution:
       integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
+  /big-integer/1.6.48:
+    dev: true
+    engines:
+      node: '>=0.6'
+    resolution:
+      integrity: sha512-j51egjPa7/i+RdiRuJbPdJ2FIUYYPhvYLjzoYbcMMm62ooO6F94fETG4MTs46zPAF9Brs04OajboA/qTGuz78w==
   /binary-extensions/2.2.0:
     dev: true
     engines:
       node: '>=8'
     resolution:
       integrity: sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
+  /bplist-parser/0.1.1:
+    dependencies:
+      big-integer: 1.6.48
+    dev: true
+    resolution:
+      integrity: sha1-1g1dzCDLptx+HymbNdPh+V2vuuY=
   /brace-expansion/1.1.11:
     dependencies:
       balanced-match: 1.0.0
@@ -475,6 +497,12 @@ packages:
       fsevents: 2.3.2
     resolution:
       integrity: sha512-9+s+Od+W0VJJzawDma/gvBNQqkTiqYTWLuZoyAsivsI4AaWTCzHG06/TMjsf1cYe9Cb97UCEhjz7HvnPk2p/tw==
+  /cli-spinners/2.5.0:
+    dev: true
+    engines:
+      node: '>=6'
+    resolution:
+      integrity: sha512-PC+AmIuK04E6aeSs/pUccSujsTzBhu4HzC2dL+CfJB/Jcc2qTRbEwZQDfIUpt2Xl8BodYBEq8w4fc0kU2I9DjQ==
   /color-convert/1.9.3:
     dependencies:
       color-name: 1.1.3
@@ -485,6 +513,10 @@ packages:
     dev: true
     resolution:
       integrity: sha1-p9BVi9icQveV3UIyj3QIMcpTvCU=
+  /colorette/1.2.2:
+    dev: true
+    resolution:
+      integrity: sha512-MKGMzyfeuutC/ZJ1cba9NqcNpfeqMUcYmyF1ZFY6/Cn7CNSAKx6a+s48sqLqyAiZuaP2TcqMhoo+dlwFnVxT9w==
   /commander/2.20.3:
     dev: true
     resolution:
@@ -497,6 +529,12 @@ packages:
     dev: true
     resolution:
       integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
+  /cookie/0.4.1:
+    dev: true
+    engines:
+      node: '>= 0.6'
+    resolution:
+      integrity: sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==
   /cross-spawn/7.0.3:
     dependencies:
       path-key: 3.1.1
@@ -507,6 +545,16 @@ packages:
       node: '>= 8'
     resolution:
       integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==
+  /default-browser-id/2.0.0:
+    dependencies:
+      bplist-parser: 0.1.1
+      pify: 2.3.0
+      untildify: 2.1.0
+    dev: true
+    engines:
+      node: '>=4'
+    resolution:
+      integrity: sha1-AezONxpx6F8VoXF354YwR+c9vn0=
   /detect-indent/6.0.0:
     dev: true
     engines:
@@ -517,6 +565,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-k0/r7GrWVL32kZlGwfPNgB2Y/mMXVTq/decgLczm/j34whdaspNrZO8CnXPf1laaHxI6ptUlsnAxN+UAPw+fzg==
+  /esbuild/0.8.54:
+    dev: true
+    hasBin: true
+    requiresBuild: true
+    resolution:
+      integrity: sha512-DJH38OiTgXJxFb/EhHrCrY8eGmtdkTtWymHpN9IYN9AF+4jykT0dQArr7wzFejpVbaB0TMIq2+vfNRWr3LXpvw==
   /escalade/3.1.1:
     dev: true
     engines:
@@ -605,7 +659,7 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-PpOwAdQ/YlXQ2vj8a3h8IipDuYRi3wceVQQGYWxNINccq40Anw7BlsEXCMbt1Zt+OLA6Fq9suIpIWD0OsnISlw==
-  /follow-redirects/1.13.2:
+  /follow-redirects/1.13.3:
     dev: true
     engines:
       node: '>=4.0'
@@ -615,7 +669,7 @@ packages:
       debug:
         optional: true
     resolution:
-      integrity: sha512-6mPTgLxYm3r6Bkkg0vNM0HTjfGrOEtsfbhagQvbxDEsEkpNhw582upBaoRZylzen6krEmxXJgt9Ju6HiI4O7BA==
+      integrity: sha512-DUgl6+HDzB0iEptNQEXLx/KhTmDb8tZUHSeLqpnjpknR70H0nC2t9N73BK6fN4hOvJ84pKlIQVQ4k5FFlBedKA==
   /fs-extra/8.1.0:
     dependencies:
       graceful-fs: 4.2.6
@@ -639,6 +693,10 @@ packages:
       - darwin
     resolution:
       integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
+  /function-bind/1.1.1:
+    dev: true
+    resolution:
+      integrity: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==
   /get-stream/6.0.0:
     dev: true
     engines:
@@ -707,10 +765,18 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
+  /has/1.0.3:
+    dependencies:
+      function-bind: 1.1.1
+    dev: true
+    engines:
+      node: '>= 0.4.0'
+    resolution:
+      integrity: sha512-f2dvO0VU6Oej7RkWJGrehjbzMAjFp5/VKPp5tTpWIV4JHHZK1/BxbFRtf/siA2SWTe09caDmVtYYzWEIbBS4zw==
   /http-proxy/1.18.1:
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.13.2
+      follow-redirects: 1.13.3
       requires-port: 1.0.0
     dev: true
     engines:
@@ -755,6 +821,19 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==
+  /is-core-module/2.2.0:
+    dependencies:
+      has: 1.0.3
+    dev: true
+    resolution:
+      integrity: sha512-XRAfAdyyY5F5cOXn7hYQDqh2Xmii+DEfIcQGxK/uNwMHhIkPWO0g8msXcbzLe+MpGoR951MlqM/2iIlU4vKDdQ==
+  /is-docker/2.1.1:
+    dev: true
+    engines:
+      node: '>=8'
+    hasBin: true
+    resolution:
+      integrity: sha512-ZOoqiXfEwtGknTiuDEy8pN2CfE3TxMHprvNer1mXiqwkOT77Rw3YVrUQ52EqAOU3QAWDQ+bQdx7HJzrv7LS2Hw==
   /is-extglob/2.1.1:
     dev: true
     engines:
@@ -787,6 +866,14 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-XCoy+WlUr7d1+Z8GgSuXmpuUFC9fOhRXglJMx+dwLKTkL44Cjd4W1Z5P+BQZpr+cR93aGP4S/s7Ftw6Nd/kiEw==
+  /is-wsl/2.2.0:
+    dependencies:
+      is-docker: 2.1.1
+    dev: true
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-fKzAra0rGJUUBwGBgNkHZuToZcn+TtXHpeCgmkMJMMYx1sQDYaCSyjJBSCa2nH1DGm7s3n1oBnohoVTBaN7Lww==
   /isexe/2.0.0:
     dev: true
     resolution:
@@ -871,6 +958,13 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha512-oi1b3MfbyGa7FJMP9GmLTttni5JoICpYBRlq+x5V16fZbLsnL9N3wFqqIm/nIG43FjUFkFh9Epzp/kzUGUnJxQ==
+  /nanoid/3.1.20:
+    dev: true
+    engines:
+      node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1
+    hasBin: true
+    resolution:
+      integrity: sha512-a1cQNyczgKbLX9jwbS/+d7W8fX/RfgYR7lVWwWOGIPNgK2m0MWvrGF6/m4kk6U3QcFMnZf3RIhL0v2Jgh/0Uxw==
   /normalize-path/3.0.0:
     dev: true
     engines:
@@ -916,6 +1010,21 @@ packages:
       node: '>=6'
     resolution:
       integrity: sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==
+  /open/7.4.2:
+    dependencies:
+      is-docker: 2.1.1
+      is-wsl: 2.2.0
+    dev: true
+    engines:
+      node: '>=8'
+    resolution:
+      integrity: sha512-MVHddDVweXZF3awtlAS+6pgKLlm/JgxZ90+/NBurBoQctVOOB/zDdVjcyPzQ+0laDGbsWgrRkflI65sQeOgT9Q==
+  /os-homedir/1.0.2:
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-/7xJiDNuDoM94MFox+8VISGqf7M=
   /p-limit/2.3.0:
     dependencies:
       p-try: 2.2.0
@@ -956,6 +1065,10 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==
+  /path-parse/1.0.6:
+    dev: true
+    resolution:
+      integrity: sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==
   /picomatch/2.2.2:
     dev: true
     engines:
@@ -990,6 +1103,16 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-HRDzbaKjC+AOWVXxAU/x54COGeIv9eb+6CkDSQoNTt4XyWoIJvuPsXizxu/Fr23EiekbtZwmh1IcIG/l/a10GQ==
+  /postcss/8.2.6:
+    dependencies:
+      colorette: 1.2.2
+      nanoid: 3.1.20
+      source-map: 0.6.1
+    dev: true
+    engines:
+      node: ^10 || ^12 || >=14
+    resolution:
+      integrity: sha512-xpB8qYxgPuly166AGlpRjUdEYtmOWx2iCwGmrv4vqZL9YPVviDVPZPRXxnXr6xPZOdxQ9lp3ZBFCRgWJ7LE3Sg==
   /prepend-http/1.0.4:
     dev: true
     engines:
@@ -1027,6 +1150,13 @@ packages:
     dev: true
     resolution:
       integrity: sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
+  /resolve/1.20.0:
+    dependencies:
+      is-core-module: 2.2.0
+      path-parse: 1.0.6
+    dev: true
+    resolution:
+      integrity: sha512-wENBPt4ySzg4ybFQW2TT1zMQucPK95HSh/nq2CFTZVOGut2+pQvSsgtda4d26YrYcr067wjbmzOG8byDPBX63A==
   /rollup-plugin-css-chunks/2.0.2_rollup@2.40.0:
     dependencies:
       rollup: 2.40.0
@@ -1038,11 +1168,11 @@ packages:
       rollup: '>=2.29.0'
     resolution:
       integrity: sha512-Cg/J6ZGPOWgMeGqqdp7fxnmDMr3Y+9V3fJekaFqWp+ceLr7l14Ua3FYtKJ/+m/DnSYYs009PrCt2pitOjYwWxw==
-  /rollup-plugin-svelte/7.1.0_svelte@3.34.0:
+  /rollup-plugin-svelte/7.1.0_svelte@3.35.0:
     dependencies:
       require-relative: 0.8.7
       rollup-pluginutils: 2.8.2
-      svelte: 3.34.0
+      svelte: 3.35.0
     dev: true
     engines:
       node: '>=10'
@@ -1136,6 +1266,22 @@ packages:
     dev: true
     resolution:
       integrity: sha512-VUJ49FC8U1OxwZLxIbTTrDvLnf/6TDgxZcK8wxR8zs13xpx7xbG60ndBlhNrFi2EMuFRoeDoJO7wthSLq42EjA==
+  /snowpack/3.1.0-pre.10:
+    dependencies:
+      cli-spinners: 2.5.0
+      default-browser-id: 2.0.0
+      esbuild: 0.8.54
+      open: 7.4.2
+      resolve: 1.20.0
+      rollup: 2.40.0
+    dev: true
+    engines:
+      node: '>=10.19.0'
+    hasBin: true
+    optionalDependencies:
+      fsevents: 2.3.2
+    resolution:
+      integrity: sha512-sBVdgVZuq67cwCCzc2YzcEnfHWfnhG9mpRn1zDwk4VvFAhxqGDOTqk2cqKYK3I00NwC+to9elqQKB2u2/qf4Zg==
   /sort-keys/1.1.2:
     dependencies:
       is-plain-obj: 1.1.0
@@ -1217,30 +1363,31 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==
-  /svelte-hmr/0.12.6_svelte@3.34.0:
+  /svelte-hmr/0.12.7_svelte@3.35.0:
     dependencies:
-      svelte: 3.34.0
+      svelte: 3.35.0
     dev: true
     peerDependencies:
       svelte: '>=3.19.0'
     resolution:
-      integrity: sha512-q08BjoUSbwXpKo9ij6aym93jBrt7K8eutLwix5Y9cuSFLS5djxumOoUVsSzDkdKssLlg5X//Kg/0MWHHBeQRTg==
-  /svelte-materialify/0.3.5_svelte@3.34.0:
+      integrity: sha512-f5FlHAO7o5vuRI2ZV5ZG1CTP0dtOekYDMQxjeELOR7nHJpVTXLNosFh822FM9WxYr0Vbv17caXRCOKD+l4ThEA==
+  /svelte-materialify/0.3.5_svelte@3.35.0:
     dependencies:
-      svelte: 3.34.0
+      svelte: 3.35.0
     dev: true
     peerDependencies:
       svelte: '>=3.29.4'
     resolution:
       integrity: sha512-Ke9QOXi2TLFWsT1tmmVEJCsbNK2M7UTYk4i+kKlBxuTa2CvPBW3UTTXbiNXYOVEJNaVs30RF66+ghNDbpYCeNg==
-  /svelte-preprocess/4.6.9_433d29528610c218e6145c26b3e4b510:
+  /svelte-preprocess/4.6.9_7ffa46f726e41430f470e95af084c5a1:
     dependencies:
       '@types/pug': 2.0.4
       '@types/sass': 1.16.0
       detect-indent: 6.0.0
+      postcss: 8.2.6
       sass: 1.32.8
       strip-indent: 3.0.0
-      svelte: 3.34.0
+      svelte: 3.35.0
       typescript: 4.2.2
     dev: true
     engines:
@@ -1284,12 +1431,12 @@ packages:
     requiresBuild: true
     resolution:
       integrity: sha512-SROWH0rB0DJ+0Ii264cprmNu/NJyZacs5wFD71ya93Cg/oA2lKHgQm4F6j0EWA4ktFMzeuJJm/eX6fka39hEHA==
-  /svelte/3.34.0:
+  /svelte/3.35.0:
     dev: true
     engines:
       node: '>= 8'
     resolution:
-      integrity: sha512-xWcaQ/J4Yd5k0UWz+ef6i5RW5WP3hNpluEI2qtTTKlMOXERHpVL509O9lIw7sgEn1JjJgTOS+lnnDj99vQ3YqQ==
+      integrity: sha512-gknlZkR2sXheu/X+B7dDImwANVvK1R0QGQLd8CNIfxxGPeXBmePnxfzb6fWwTQRsYQG7lYkZXvpXJvxvpsoB7g==
   /terser/5.6.0:
     dependencies:
       commander: 2.20.3
@@ -1332,12 +1479,27 @@ packages:
     hasBin: true
     resolution:
       integrity: sha512-tbb+NVrLfnsJy3M59lsDgrzWIflR4d4TIUjz+heUnHZwdF7YsrMTKoRERiIvI2lvBG95dfpLxB21WZhys1bgaQ==
+  /universal-cookie/4.0.4:
+    dependencies:
+      '@types/cookie': 0.3.3
+      cookie: 0.4.1
+    dev: true
+    resolution:
+      integrity: sha512-lbRVHoOMtItjWbM7TwDLdl8wug7izB0tq3/YVKhT/ahB4VDvWMyvnADfnJI8y6fSvsjh51Ix7lTGC6Tn4rMPhw==
   /universalify/0.1.2:
     dev: true
     engines:
       node: '>= 4.0.0'
     resolution:
       integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==
+  /untildify/2.1.0:
+    dependencies:
+      os-homedir: 1.0.2
+    dev: true
+    engines:
+      node: '>=0.10.0'
+    resolution:
+      integrity: sha1-F+soB5h/dpUunASF/DEdBqgmouA=
   /url-join/4.0.1:
     dev: true
     resolution:
@@ -1355,6 +1517,13 @@ packages:
     dev: true
     resolution:
       integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=
+  github.com/Liamolucko/cborg/ff48e3ae69fd2c05fb5d8c47071f3f3b3ae77c11:
+    dev: true
+    hasBin: true
+    name: cborg
+    resolution:
+      tarball: https://codeload.github.com/Liamolucko/cborg/tar.gz/ff48e3ae69fd2c05fb5d8c47071f3f3b3ae77c11
+    version: 1.0.4
   github.com/matmen/ImageScript/b93cb99c5369da0b4fe9c0d5c0b8d5bf7c0a8b11:
     dev: true
     engines:
@@ -1373,14 +1542,18 @@ specifiers:
   '@sveltejs/snowpack-config': next
   '@types/wicg-file-system-access': ^2020.9.1
   base64-js: ^1.5.1
+  cborg: github:Liamolucko/cborg#browser-only
+  cookie: ^0.4.1
   gh-pages: ^3.1.0
   imagescript: github:matmen/ImageScript#browser
   localforage: ^1.9.0
+  postcss: ^8.2.6
   sass: ^1.32.8
-  snowpack: ../snowpack/snowpack
+  snowpack: next
   svelte: ^3.34.0
   svelte-hmr: ^0.12.6
   svelte-materialify: ^0.3.5
   svelte-preprocess: ^4.6.9
   tslib: ^2.1.0
   typescript: ^4.2.2
+  universal-cookie: ^4.0.4

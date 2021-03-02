@@ -1,6 +1,13 @@
 <script context="module" lang="ts">
-  import gameInfo from "$components/game-info";
-  import { categoryNames } from "$components/names";
+  import { page } from "$app/stores";
+  import { Card } from "svelte-materialify";
+  import Table from "svelte-materialify/dist/components/Table";
+  import { derived } from "svelte/store";
+  import ItemButton from "$components/ItemButton.svelte";
+  import type { Item, Recipe } from "$components/game-info.js";
+  import gameInfo from "$components/game-info.js";
+  import { categories, categoryNames } from "$components/names";
+  import save from "$components/save";
 
   export async function preload(
     this: { error: (status: number, error: string | Error) => void },
@@ -52,18 +59,11 @@
 </script>
 
 <script lang="ts">
-  import ItemButton from "$components/ItemButton.svelte";
-  import type { Item, Recipe } from "$components/game-info";
-  import save from "$components/save";
-  import { derived } from "svelte/store";
-  import { categories } from "$components/names";
-  import { getStores } from "$app/stores";
-
   export let title: string;
   export let items: Item[];
   export let recipes: Recipe[] | undefined;
 
-  const requiredIngredients = derived([save, getStores().page], ([$save]) => {
+  const requiredIngredients = derived([save, page], ([$save]) => {
     if (!recipes || $save === null) {
       return null;
     } else {
@@ -84,7 +84,7 @@
       };
 
       const rootRecipes = recipes.filter(
-        (recipe) => !$save.collectedItems.includes(recipe.result.id)
+        (recipe) => !$save.collected.includes(recipe.result.id)
       );
 
       // Figure out all the recipes needed to craft other recipes
@@ -132,71 +132,56 @@
   class="container"
   class:has-unknown-recipes={typeof recipes !== "undefined" && $save !== null}
 >
-  <div class="mdc-card mdc-card--outlined grid-card">
-    <h2 class="text-h6">{title}</h2>
+  <Card outlined class="pa-4 grid-card">
+    <h6>{title}</h6>
     <div class="item-grid">
       {#each items as item}
         <ItemButton
           {item}
           scale={item.isCraftable ? 2 : 3}
           shadow
-          grey={$save === null
-            ? false
-            : !$save.collectedItems.includes(item.id)}
+          grey={$save === null ? false : !$save.collected.includes(item.id)}
         />
       {/each}
     </div>
-  </div>
+  </Card>
 
   {#if typeof recipes !== "undefined" && $save !== null}
-    <div class="mdc-data-table">
-      <div class="mdc-data-table__table-container">
-        <table class="mdc-data-table__table">
-          <thead>
-            <tr class="mdc-data-table__header-row">
-              <th
-                class="mdc-data-table__header-cell"
-                role="columnheader"
-                scope="col"
-              >
-                Recipe
+    <Card outlined style="grid-area: r">
+      <h6 class="pl-4 pt-4 pr-4">Unknown Recipes</h6>
+      <Table>
+        <thead>
+          <tr>
+            <th role="columnheader" scope="col">Recipe</th>
+            <th role="columnheader" scope="col">Sources</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each recipes.filter((recipe) => !$save.recipes.includes(recipe.name)) as recipe}
+            <tr>
+              <th scope="row">
+                <ItemButton
+                  item={recipe.result}
+                  scale={recipe.result.isCraftable ? 1 : 2}
+                />
+                <span class="pa-3">{recipe.name}</span>
               </th>
-              <th
-                class="mdc-data-table__header-cell"
-                role="columnheader"
-                scope="col"
-              >
-                Sources
-              </th>
+              <td>
+                {#if recipe.sources != null}
+                  <ul class="source-list">
+                    {#each recipe.sources as source}
+                      <li>{source}</li>
+                    {/each}
+                  </ul>
+                {/if}
+              </td>
             </tr>
-          </thead>
-          <tbody class="mdc-data-table__content">
-            {#each recipes.filter((recipe) => !$save.knownRecipes.includes(recipe.name)) as recipe}
-              <tr class="mdc-data-table__row">
-                <th class="mdc-data-table__cell" scope="row">
-                  <ItemButton
-                    item={recipe.result}
-                    scale={recipe.result.isCraftable ? 1 : 2}
-                  />
-                  <span style="padding-left: 8px">{recipe.name}</span>
-                </th>
-                <td class="mdc-data-table__cell">
-                  {#if recipe.sources != null}
-                    <ul class="source-list">
-                      {#each recipe.sources as source}
-                        <li>{source}</li>
-                      {/each}
-                    </ul>
-                  {/if}
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="mdc-card mdc-card--outlined ingredients">
-      <h2 class="text-h6">Required Ingredients</h2>
+          {/each}
+        </tbody>
+      </Table>
+    </Card>
+    <Card outlined class="pa-4 ingredients">
+      <h6>Required Ingredients</h6>
       <ul>
         {#each Object.entries($requiredIngredients ?? {}) as [id, amount]}
           <li>
@@ -205,14 +190,11 @@
           </li>
         {/each}
       </ul>
-    </div>
+    </Card>
   {/if}
 </div>
 
 <style lang="scss">
-  @import "@material/card/dist/mdc.card.min.css";
-  @import "@material/data-table/dist/mdc.data-table.min.css";
-
   .container {
     display: grid;
 
@@ -240,28 +222,26 @@
 
     justify-content: center;
 
-    .mdc-card {
-      padding: 16px;
-    }
+    :global {
+      .grid-card {
+        width: max-content;
+        height: max-content;
 
-    .grid-card {
-      width: max-content;
-      height: max-content;
+        grid-area: g;
 
-      grid-area: g;
+        .item-grid {
+          display: grid;
+          gap: 8px;
+          grid-auto-flow: row;
+          grid-auto-rows: 64px;
+          grid-template-columns: repeat(10, 64px);
 
-      .item-grid {
-        display: grid;
-        gap: 8px;
-        grid-auto-flow: row;
-        grid-auto-rows: 64px;
-        grid-template-columns: repeat(10, 64px);
+          justify-content: center;
 
-        justify-content: center;
-
-        & > :global(button) {
-          width: 100%;
-          height: 100%;
+          & > :global(button) {
+            width: 100%;
+            height: 100%;
+          }
         }
       }
     }
@@ -272,8 +252,11 @@
       list-style-position: inside;
     }
 
-    .ingredients {
-      height: max-content;
+    :global {
+      .ingredients {
+        height: max-content;
+        grid-area: i;
+      }
     }
   }
 </style>
