@@ -47,7 +47,7 @@
     "cborg": "github:rvagg/cborg",
     "cookie": "^0.4.1",
     "gh-pages": "^3.1.0",
-    "imagescript": "github:matmen/ImageScript#browser",
+    "imagescript": "github:matmen/ImageScript#9f7f149f76d01834a3da21fd4be4b68370cf707a",
     "postcss": "^8.2.6",
     "rollup": "^2.40.0",
     "rollup-plugin-svelte": "^7.1.0",

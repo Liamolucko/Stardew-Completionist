@@ -27,15 +27,15 @@
           Object.values(gameInfo.villagers)
             .sort(
               (a, b) =>
-                ((a.birthDate - $save.currentDate + 112) % 112) -
-                ((b.birthDate - $save.currentDate + 112) % 112)
+                ((a.birthDate - $save.date + 112) % 112) -
+                ((b.birthDate - $save.date + 112) % 112)
             )
             .map((villager) => ({
               villager: villager.name,
               date: villager.birthday,
               hearts: $save.relationships[villager.name]?.hearts ?? 0,
               maxHearts:
-                $save.relationships[villager.name]?.maxHearts ??
+                $save.relationships[villager.name]?.max ??
                 (villager.datable ? 8 : 10),
               bestGifts: villager.bestGifts,
             }))
@@ -67,7 +67,7 @@
       };
 
       const rootRecipes = Object.values(gameInfo.recipes).filter(
-        (recipe) => !$save.collectedItems.includes(recipe.result.id)
+        (recipe) => !$save.collected.includes(recipe.result.id)
       );
 
       // Figure out all the recipes needed to craft other recipes
@@ -101,14 +101,14 @@
       }
 
       for (const { id } of gameInfo.shipping) {
-        if (!$save.collectedItems.includes(id)) {
+        if (!$save.collected.includes(id)) {
           output[id] ??= 0;
           output[id] += 1;
         }
       }
 
       for (const { id } of gameInfo.fish) {
-        if (!$save.collectedItems.includes(id)) {
+        if (!$save.collected.includes(id)) {
           output[id] ??= 1;
         }
       }
@@ -116,7 +116,7 @@
       for (const bundle of Object.values(gameInfo.bundles)) {
         for (const index in bundle.items) {
           const item = bundle.items[index];
-          if (!$save.bundleCompletion[bundle.id]![index]) {
+          if (!$save.bundles[bundle.id]![index]) {
             output[item.id] ??= 0;
             output[item.id] += item.amount;
           }
@@ -144,7 +144,7 @@
                 item &&
                 typeof item.seasons !== "undefined" &&
                 item.seasons.includes(
-                  ["spring", "summer", "fall", "winter"][$save!.currentSeason]
+                  ["spring", "summer", "fall", "winter"][$save!.season]
                 ) &&
                 Object.values(item.seasons).filter((value) => value).length < 3
               );
@@ -206,7 +206,7 @@
     </Card>
     <Card outlined class="seasonal">
       <h6>
-        {seasonNames.get($save.currentSeason)}
+        {seasonNames.get($save.season)}
       </h6>
       <div class="seasonal-items">
         {#each Object.entries($seasonalItems) as [id, quantity]}
@@ -220,7 +220,7 @@
     </Card>
     <Card outlined class="seasonal">
       <h6>
-        {seasonNames.get($save.currentSeason)}
+        {seasonNames.get($save.season)}
       </h6>
       <div class="seasonal-items">
         {#each Object.entries($seasonalItems) as [id, quantity]}

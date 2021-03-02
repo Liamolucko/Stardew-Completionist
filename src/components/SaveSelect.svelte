@@ -11,15 +11,15 @@
     ProgressCircular,
   } from "svelte-materialify";
   import backend from "../backend";
-  import type { Handle, SaveInfo } from "../save";
   import save, {
     getSaveFile,
     getSaveFiles,
     isValidSaveFile,
     processSaveFile,
   } from "../save";
+  import type { SaveInfo } from "../save";
 
-  let active = false;
+  export let active = false;
 
   const platformName =
     typeof navigator === "undefined"
@@ -48,31 +48,21 @@
 
   let fileInput: HTMLInputElement;
 
-  let options: Promise<SaveInfo[] | null> = Promise.resolve(null);
+  let options: Promise<SaveInfo[] | null>;
 
-  let savesDir: Handle | null = null;
-  function setSavesDir(dir: Handle) {
-    savesDir = dir;
-    localStorage.setItem("savesDir", dir);
-    options = getSaveFiles(dir)
-      .then((saves) => saves.sort((a, b) => b.lastSaved - a.lastSaved))
-      .catch(() => null);
-  }
+  // Undefined means it's probably set on the backend but we don't know it,
+  // null means it's been intentionally unset.
+  let savesDir: string | null | undefined =
+    globalThis.localStorage?.getItem("savesDir") ?? undefined;
 
-  export async function open() {
-    if (savesDir === null) {
-      const dir = localStorage.getItem("savesDir");
-
-      if (dir !== null) {
-        setSavesDir(dir);
-      }
+  $: {
+    if (savesDir !== null) {
+      options = getSaveFiles(savesDir)
+        .then((saves) => saves.sort((a, b) => b.lastSaved - a.lastSaved))
+        .catch(() => null);
+    } else {
+      options = Promise.resolve(null);
     }
-
-    active = true;
-  }
-
-  export function close() {
-    active = false;
   }
 </script>
 
@@ -105,7 +95,7 @@
         <ProgressCircular indeterminate />
       </div>
     {:then options}
-      {#if options === null}
+      {#if options === null || options.length === 0}
         <CardText>
           {#if platformName !== null}
             {#if backend}
@@ -116,6 +106,10 @@
                   <kbd>{savesDirPath}</kbd>
                   .
                 </p>
+              {:else if options?.length === 0}
+                {savesDir}
+                does not contain any valid Stardew Valley save files. Please choose
+                another.
               {:else}
                 {savesDir}
                 is an invalid save file path. Please choose another.
@@ -164,7 +158,7 @@
           {/if}
         </CardText>
         <CardActions>
-          <Button text on:click={close}>Cancel</Button>
+          <Button text on:click={() => (active = false)}>Cancel</Button>
           {#if savesDirPath !== null}
             <Button
               text
@@ -176,7 +170,8 @@
               text
               on:click={async () => {
                 if (backend) {
-                  setSavesDir(await backend.chooseFolder());
+                  savesDir = await backend.chooseFolder();
+                  localStorage.setItem("savesDir", savesDir);
                 } else {
                   fileInput.click();
                 }
@@ -188,28 +183,31 @@
           {/if}
         </CardActions>
       {:else}
-        <CardText>
-          <List>
-            {#each options as option}
-              <ListItem
-                selected={option.handle === $save?.handle}
-                on:click={async () => {
-                  save.set(await getSaveFile(option.handle));
-                  close();
-                }}
-              >
-                <img src={option.sprite} alt={option.name} />
-                <span class="pa-4">{option.name}</span>
-              </ListItem>
-            {/each}
-          </List>
-        </CardText>
+        <List>
+          {#each options as option}
+            <ListItem
+              active={option.handle === $save?.handle}
+              on:click={async () => {
+                save.set(await getSaveFile(option.handle));
+                active = false;
+              }}
+            >
+              <img
+                slot="prepend"
+                src={option.sprite}
+                alt={option.name}
+                class="mr-2"
+              />
+              {option.name}
+            </ListItem>
+          {/each}
+        </List>
         <CardActions>
           <Button
             text
             on:click={() => {
+              console.log("button pressed");
               savesDir = null;
-              options = null;
             }}
           >
             Change directory

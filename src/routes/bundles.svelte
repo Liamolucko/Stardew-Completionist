@@ -34,13 +34,13 @@
                 ...gameInfo.items[item.id],
                 completed:
                   $save !== null &&
-                  bundle.id in $save.bundleCompletion &&
-                  $save.bundleCompletion[bundle.id][i],
+                  bundle.id in $save.bundles &&
+                  $save.bundles[bundle.id][i],
               })),
             completedItems: bundle.items
               .filter(
                 ({ id }, i) =>
-                  ($save?.bundleCompletion[bundle.id]?.[i] ?? true) &&
+                  ($save?.bundles[bundle.id]?.[i] ?? true) &&
                   gameInfo.items[id]
               )
               .map(({ id }) => gameInfo.items[id]),
@@ -64,7 +64,7 @@
         <Card outlined class="bundle pa-4">
           <h6>{bundle.name}</h6>
           {#if bundle.gold > 0}
-            {#if $save !== null && $save.bundleCompletion[bundle.id].some((e) => e)}
+            {#if $save !== null && $save.bundles[bundle.id].some((e) => e)}
               <Icon path={mdiCheck} class="green-text" size="64px" />
             {:else}
               <Icon path={mdiClose} class="red-text" size="64px" />

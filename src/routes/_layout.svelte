@@ -23,11 +23,8 @@
   import ItemInfo from "../components/ItemInfo.svelte";
   import SaveSelect from "../components/SaveSelect.svelte";
   import type { Item } from "../game-info.js";
-  import save, { getSaveFile } from "../save";
   import type { SaveGame } from "../save";
-  import * as cookie from "cookie";
-  import * as cborg from "cborg";
-  import * as base64 from "base64-js";
+  import save, { getSaveFile } from "../save";
 
   // A warning is thrown in the browser console if I don't declare this, so it's here even if I don't use it.
   export let segment;
@@ -39,14 +36,13 @@
   if (lastSave) {
     save.set(lastSave);
   } else if (process.browser) {
-    // If this is being used without SSR, we need to check the cookie on the client side.
-    const cookies = cookie.parse(document.cookie);
-    if (cookies.save) {
-      save.set(cborg.decode(base64.toByteArray(cookies.save)));
+    const stored = localStorage.getItem("save");
+    if (stored) {
+      save.set(JSON.parse(stored));
     }
   }
 
-  let saveSelect: SaveSelect;
+  let saveSelectOpen = false;
 
   let itemInfoOpen = false;
   let selectedItem: Item;
@@ -70,19 +66,19 @@
   <div class="container">
     <nav class="nav-rail">
       <div class="nav-section top-section">
-        <a href="dashboard">
-          <Button class="rail-button" icon size="large">
+        <a href="/dashboard">
+          <Button class="rail-button" icon size="large" aria-label="Dashboard">
             <Icon path={mdiViewDashboard} />
           </Button>
         </a>
         {#each ["shipping", "fish", "artifacts", "minerals", "cooking", "crafting", "bundles", "friendship"] as page}
-          <a href={page}>
+          <a href="/{page}">
             <Button class="rail-button" icon size="large">
               <img
                 width="24"
                 height="24"
                 src="./images/{page}.png"
-                alt="{page} icon"
+                alt="{page}"
               />
             </Button>
           </a>
@@ -95,14 +91,6 @@
             icon
             size="large"
             on:click={async () => {
-              if (typeof $save.handle !== "string") {
-                if (
-                  (await $save.handle.requestPermission({
-                    mode: "read",
-                  })) === "denied"
-                )
-                  return;
-              }
               save.set(await getSaveFile($save.handle));
             }}
           >
@@ -111,9 +99,10 @@
         {/if}
         <Button
           class="rail-button"
-          on:click={() => saveSelect.open()}
+          on:click={() => (saveSelectOpen = true)}
           icon
           size="large"
+          aria-label="Choose Save File"
         >
           <Icon path={mdiFolder} />
         </Button>
@@ -132,7 +121,7 @@
     <ItemInfo item={selectedItem} />
   </Dialog>
 
-  <SaveSelect bind:this={saveSelect} />
+  <SaveSelect bind:active={saveSelectOpen} />
 
   <Dialog bind:active={introOpen}>
     <Card>

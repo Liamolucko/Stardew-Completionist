@@ -84,7 +84,7 @@
       };
 
       const rootRecipes = recipes.filter(
-        (recipe) => !$save.collectedItems.includes(recipe.result.id)
+        (recipe) => !$save.collected.includes(recipe.result.id)
       );
 
       // Figure out all the recipes needed to craft other recipes
@@ -142,7 +142,7 @@
           shadow
           grey={$save === null
             ? false
-            : !$save.collectedItems.includes(item.id)}
+            : !$save.collected.includes(item.id)}
         />
       {/each}
     </div>
@@ -159,7 +159,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each recipes.filter((recipe) => !$save.knownRecipes.includes(recipe.name)) as recipe}
+          {#each recipes.filter((recipe) => !$save.recipes.includes(recipe.name)) as recipe}
             <tr>
               <th scope="row">
                 <ItemButton

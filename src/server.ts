@@ -23,9 +23,11 @@ polka() // You can also use Express
           ? null
           : cookie.parse(req.headers.cookie);
         return {
-          lastSave: cookies?.save
-            ? cborg.decode(base64.toByteArray(cookies.save))
-            : null,
+          lastSave: cookies && Object.fromEntries(
+            Object.entries(cookies).map(
+              ([key, value]) => [key, cborg.decode(base64.toByteArray(value))],
+            ),
+          ),
         };
       },
     }),

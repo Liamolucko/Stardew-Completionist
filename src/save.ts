@@ -8,6 +8,7 @@ import Cookies from "universal-cookie";
 import * as cborg from "cborg";
 import * as base64 from "base64-js";
 
+declare var process: { browser: boolean };
 const cookies = new Cookies();
 
 /** Metadata about a save file */
@@ -27,28 +28,26 @@ export interface SaveGame {
   name: string;
   lastSaved: number;
 
-  currentDay: number;
-  currentSeason: number;
-  currentYear: number;
-  currentDate: number;
+  day: number;
+  season: number;
+  year: number;
+  date: number;
 
-  collectedItems: string[];
-  knownRecipes: string[];
+  collected: string[];
+  recipes: string[];
 
   relationships: Record<string, Relationship>;
 
-  bundleCompletion: Record<number, boolean[]>;
+  bundles: Record<number, boolean[]>;
   items: Record<string, number>;
 }
 
 export interface Relationship {
   hearts: number;
-  maxHearts: number;
+  max: number;
   /** Gifts given this week. Shortened so saves will fit inside a cookie. */
   given: number;
 }
-
-export type Handle = string;
 
 const cookieOptions = {
   secure: true,
@@ -72,21 +71,30 @@ export const save = {
               handle: save.handle!,
               data,
             });
-            cookies.set(
-              "save",
-              base64.fromByteArray(cborg.encode(newSave)),
-              cookieOptions,
-            );
+            for (const [key, value] of Object.entries(newSave)) {
+              cookies.set(
+                key,
+                base64.fromByteArray(cborg.encode(value)),
+                cookieOptions,
+              );
+            }
+            // Cookies don't exist in Electron, so we need localStorage too for that.
+            localStorage.setItem("save", JSON.stringify(newSave));
             _save.set(newSave);
           }
         })
       ).then((unsubscriber) => unsubscribeFromLast = unsubscriber);
     } else {
-      cookies.set(
-        "save",
-        base64.fromByteArray(cborg.encode(save)),
-        cookieOptions,
-      );
+      if (save && process.browser) {
+        for (const [key, value] of Object.entries(save)) {
+          cookies.set(
+            key,
+            base64.fromByteArray(cborg.encode(value)),
+            cookieOptions,
+          );
+        }
+        localStorage.setItem("save", JSON.stringify(save));
+      }
 
       _save.set(save);
     }
@@ -117,7 +125,7 @@ export function isValidSaveFile(
 }
 
 export async function processSaveFile(
-  file: XMLDocument | { handle: Handle; data: XMLDocument },
+  file: XMLDocument | { handle: string; data: XMLDocument },
 ): Promise<SaveGame> {
   const save = (file instanceof XMLDocument ? file : file.data)
     .querySelector("SaveGame");
@@ -183,12 +191,12 @@ export async function processSaveFile(
     name: queryText("player > name"),
     lastSaved: queryNumber("player > saveTime"),
 
-    currentDay,
-    currentSeason,
-    currentYear: queryNumber("year"),
-    currentDate: currentSeason * 28 + currentDay,
+    day: currentDay,
+    season: currentSeason,
+    year: queryNumber("year"),
+    date: currentSeason * 28 + currentDay,
 
-    collectedItems: [
+    collected: [
       ...Object.keys(queryMap("player > basicShipped")),
       ...Object.keys(queryMap("player > mineralsFound")),
       ...Object.keys(queryMap("player > recipesCooked")),
@@ -201,7 +209,7 @@ export async function processSaveFile(
         .map(([key]) => gameInfo.recipes[key].result.id),
     ],
 
-    knownRecipes: [
+    recipes: [
       ...Object.keys(queryMap("player > cookingRecipes")),
       ...Object.keys(queryMap("player > craftingRecipes")),
     ],
@@ -214,7 +222,7 @@ export async function processSaveFile(
           if (villager) {
             return [key, {
               hearts: queryNumber("Friendship > Points", value) / 250,
-              maxHearts: queryText("Friendship > Status", value) === "Married"
+              max: queryText("Friendship > Status", value) === "Married"
                 ? 14
                 : villager.datable
                 ? 8
@@ -226,7 +234,7 @@ export async function processSaveFile(
         .filter((item): item is [string, Relationship] => item != null),
     ),
 
-    bundleCompletion: Object.fromEntries(
+    bundles: Object.fromEntries(
       queryMapNodes(
         "bundles",
         findNode(
@@ -237,9 +245,10 @@ export async function processSaveFile(
         parseInt(key),
         queryAllNodes("ArrayOfBoolean > boolean", value)
           .map((el) => el.textContent == "true")
-          .filter((_, i) =>
-            i < gameInfo.bundles[parseInt(key)]?.items.length ?? Infinity
-          ),
+          .filter((_, i) => {
+            const bundle = gameInfo.bundles[parseInt(key)];
+            return bundle?.gold > 0 || i < (bundle?.items.length ?? Infinity);
+          }),
       ]),
     ),
 
@@ -263,7 +272,7 @@ export async function processSaveFile(
   };
 }
 
-export async function getSaveInfo(handle: Handle): Promise<SaveInfo> {
+export async function getSaveInfo(handle: string): Promise<SaveInfo> {
   const file = new DOMParser().parseFromString(
     await backend.getSaveInfo(handle)
       .then((doc) => doc.trim()),
@@ -319,7 +328,7 @@ export async function getSaveInfo(handle: Handle): Promise<SaveInfo> {
   };
 }
 
-export async function getSaveFile(handle: Handle): Promise<SaveGame> {
+export async function getSaveFile(handle: string): Promise<SaveGame> {
   return processSaveFile({
     handle,
     data: new DOMParser().parseFromString(
@@ -333,10 +342,10 @@ export async function getSaveFile(handle: Handle): Promise<SaveGame> {
 export async function getSaveFiles(
   dir?: string,
 ): Promise<SaveInfo[]> {
-  if (typeof dir !== "undefined") backend.setSavesDir(dir);
+  if (dir) backend.setSavesDir(dir);
 
   const saves = await backend.listSaveFiles().then((saves) =>
-    Promise.all(saves.map((save) => getSaveInfo(save).catch(() => null)))
+    Promise.all(saves.map((save) => getSaveInfo(save).catch(console.warn)))
   );
 
   return saves.filter((save): save is SaveInfo => save != null);

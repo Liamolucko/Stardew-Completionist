@@ -17,7 +17,7 @@
 
           // These will be overriden by relationship, but will serve as backup if they haven't yet been met
           hearts: 0,
-          maxHearts: villager.datable ? 8 : 10,
+          max: villager.datable ? 8 : 10,
           given: 0,
 
           ...$save?.relationships[villager.name],
@@ -44,13 +44,13 @@
       </tr>
     </thead>
     <tbody>
-      {#each $villagers.filter((villager) => typeof villager.hearts === "undefined" || villager.hearts < villager.maxHearts) as villager}
+      {#each $villagers.filter((villager) => typeof villager.hearts === "undefined" || villager.hearts < villager.max) as villager}
         <tr>
           <th scope="row">{villager.name}</th>
           {#if $save !== null}
             <td>
               <div class="hearts">
-                {#each [...Array(villager.maxHearts).keys()] as i}
+                {#each [...Array(villager.max).keys()] as i}
                   <img
                     alt="heart"
                     src="./images/heart-{villager.hearts >= i + 1
