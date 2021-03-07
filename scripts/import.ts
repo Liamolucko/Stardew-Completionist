@@ -3,12 +3,10 @@
  * Run as `deno run --allow-read --allow-net --allow-write import.ts <path to stardew valley installation>/Content`
  */
 
-// @deno-types="https://gist.github.com/Liamolucko/b318e25e2cafff7c5eb22ea415ac1d11/raw/939a2732ac2df832e576847590ff03352633ca7b/fast-png.d.ts"
-import * as png from "https://cdn.skypack.dev/fast-png@5.0.2";
 import * as base64 from "https://deno.land/std@0.69.0/encoding/base64.ts";
-import { exists } from "https://deno.land/std@0.69.0/fs/exists.ts";
-import * as path from "https://deno.land/std@0.69.0/path/mod.ts";
+import * as path from "https://deno.land/std@0.89.0/path/mod.ts";
 import { DOMParser } from "https://deno.land/x/deno_dom@v0.1.3-alpha2/deno-dom-wasm.ts";
+import { Image } from "https://deno.land/x/imagescript@1.1.16/ImageScript.js";
 import Wiki from "https://denopkg.com/Liamolucko/deno-mediawiki/wiki.ts";
 import * as xnb from "https://denopkg.com/Liamolucko/deno-xnb/mod.ts";
 import {
@@ -72,10 +70,6 @@ async function importGameFile<T>(
 ): Promise<T> {
   const xnbPath = path.join(installation, filename);
 
-  if (!await exists(xnbPath)) {
-    throw Error(`Missing file ${xnbPath}`);
-  }
-
   return xnb.unpack(await Deno.readFile(xnbPath), expect).content;
 }
 
@@ -102,7 +96,10 @@ async function importGameJson(
 }
 
 async function importGameImage(filename: string) {
-  return await importGameFile(filename, Texture2DReader);
+  const texture = await importGameFile(filename, Texture2DReader);
+  const image = new Image(texture.width, texture.height);
+  image.bitmap.set(texture.data);
+  return image;
 }
 
 const data = {
@@ -199,19 +196,20 @@ function crop<
   };
 }
 
-function getSprite(id: string): string {
+async function getSprite(id: string) {
   const craftable = id.startsWith("c");
   const intId = parseInt(id.replace("c", ""));
 
-  return base64.encode(png.encode(crop(
-    craftable ? data.craftableSpritesheet : data.objectSpritesheet,
-    {
-      x: intId % (craftable ? 8 : 24) * 16,
-      y: Math.floor(intId / (craftable ? 8 : 24)) * (craftable ? 32 : 16),
-      width: 16,
-      height: craftable ? 32 : 16,
-    },
-  )));
+  const image = (craftable ? data.craftableSpritesheet : data.objectSpritesheet)
+    .clone()
+    .crop(
+      intId % (craftable ? 8 : 24) * 16,
+      Math.floor(intId / (craftable ? 8 : 24)) * (craftable ? 32 : 16),
+      16,
+      craftable ? 32 : 16,
+    );
+
+  return base64.encode(await image.encode(3));
 }
 //#endregion Sprites
 
@@ -324,11 +322,11 @@ async function getItemInfo(id: string): Promise<Item> {
 
   const item: Item = {
     id,
-    isCraftable: craftable,
+    craftable,
     name: row[0],
     category: row[3],
     description: row[craftable ? 4 : 5],
-    sprite: getSprite(id),
+    sprite: await getSprite(id),
   };
 
   if (item.category === "Arch") {
@@ -350,12 +348,12 @@ async function getItemInfo(id: string): Promise<Item> {
     item.ingredients = parseDictText(cookingRecipes[id][1]);
   } else if (
     baseId in craftingRecipes &&
-    (craftingRecipes[baseId][4] === "true") === item.isCraftable
+    (craftingRecipes[baseId][4] === "true") === item.craftable
   ) {
     item.ingredients = parseDictText(craftingRecipes[baseId][1]);
   }
 
-  if (id in monsterDrops && !item.isCraftable) {
+  if (id in monsterDrops && !item.craftable) {
     item.monsterDrops = monsterDrops[id];
   }
 
@@ -391,11 +389,23 @@ async function getItemInfo(id: string): Promise<Item> {
 
         if ("season" in infobox) {
           const seasons = infobox.season.toLowerCase();
-          item.seasons = ["spring", "summer", "fall", "winter"]
-            .filter((season) => seasons.includes(season));
+          item.seasons = {
+            spring: seasons.includes("spring"),
+            summer: seasons.includes("summer"),
+            fall: seasons.includes("fall"),
+            winter: seasons.includes("winter"),
+          };
 
-          if (item.seasons.length === 0) {
-            item.seasons = ["spring", "summer", "fall", "winter"];
+          if (
+            !item.seasons.spring && !item.seasons.summer &&
+            !item.seasons.fall && !item.seasons.winter
+          ) {
+            item.seasons = {
+              spring: true,
+              summer: true,
+              fall: true,
+              winter: true,
+            };
           }
         }
 
@@ -503,17 +513,22 @@ const collectionsList = new DOMParser()
   );
 
 const collections = {
-  shipping: [...collectionsList[0], ...collectionsList[1]],
-  fish: collectionsList[2],
-  artifacts: collectionsList[3],
-  minerals: collectionsList[4],
-  cooking: collectionsList[5].map((id) => cookingRecipes[id][0]),
+  shipping: [
+    ...collectionsList[0],
+    ...collectionsList[1],
+    ...collectionsList[2],
+  ],
+  fish: collectionsList[3],
+  artifacts: collectionsList[4],
+  minerals: collectionsList[5],
+  cooking: collectionsList[6].map((id) => cookingRecipes[id][0]),
   crafting: Object.keys(data.craftingRecipes),
 };
 //#endregion Collections
 
+const outPath = new URL("../src/game-info.json", import.meta.url);
 await Deno.writeTextFile(
-  "../static/game-info.json",
+  outPath,
   JSON.stringify({
     ...collections,
     bundles,
@@ -524,10 +539,5 @@ await Deno.writeTextFile(
 );
 
 console.log(
-  `Successfully created ${
-    path.resolve(
-      path.dirname(path.fromFileUrl(import.meta.url)),
-      "../static/game-info.json",
-    )
-  }.`,
+  `Successfully created ${outPath}.`,
 );

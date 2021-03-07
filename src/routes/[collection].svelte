@@ -138,7 +138,7 @@
       {#each items as item}
         <ItemButton
           {item}
-          scale={item.isCraftable ? 2 : 3}
+          scale={item.craftable ? 2 : 3}
           shadow
           grey={$save === null
             ? false
@@ -164,7 +164,7 @@
               <th scope="row">
                 <ItemButton
                   item={recipe.result}
-                  scale={recipe.result.isCraftable ? 1 : 2}
+                  scale={recipe.result.craftable ? 1 : 2}
                 />
                 <span class="pa-3">{recipe.name}</span>
               </th>

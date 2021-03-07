@@ -29,7 +29,7 @@ export interface SaveGame {
   lastSaved: number;
 
   day: number;
-  season: number;
+  season: "spring" | "summer" | "fall" | "winter";
   year: number;
   date: number;
 
@@ -184,7 +184,7 @@ export async function processSaveFile(
   };
 
   const currentDay = queryNumber("dayOfMonth");
-  const currentSeason = seasonValues.get(queryText("currentSeason")) ?? 0;
+  const currentSeason = queryText("currentSeason");
 
   return {
     handle: file instanceof XMLDocument ? null : file.handle,
@@ -192,9 +192,9 @@ export async function processSaveFile(
     lastSaved: queryNumber("player > saveTime"),
 
     day: currentDay,
-    season: currentSeason,
+    season: currentSeason as SaveGame["season"],
     year: queryNumber("year"),
-    date: currentSeason * 28 + currentDay,
+    date: seasonValues.get(currentSeason) ?? 0 * 28 + currentDay,
 
     collected: [
       ...Object.keys(queryMap("player > basicShipped")),
@@ -259,9 +259,9 @@ export async function processSaveFile(
       .flatMap((el) => Array.from(el.querySelectorAll("items > Item")))
       .filter((el) => el.getAttribute("xsi:type") == "Object")
       .reduce<Record<string, number>>((acc, el) => {
-        const isCraftable =
+        const craftable =
           el.querySelector("bigCraftable")?.textContent === "true";
-        const id = (isCraftable ? "c" : "") +
+        const id = (craftable ? "c" : "") +
           queryText("parentSheetIndex", el);
 
         acc[id] ??= 0;

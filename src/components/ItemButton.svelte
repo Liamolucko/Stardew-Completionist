@@ -12,7 +12,7 @@
 
   let dialog = getContext<{ open(item: Item): void }>("item-info-dialog");
 
-  $: size = (item.isCraftable ? 32 : 16) * scale;
+  $: size = (item.craftable ? 32 : 16) * scale;
 </script>
 
 <button

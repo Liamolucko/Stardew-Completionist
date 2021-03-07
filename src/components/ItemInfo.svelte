@@ -18,7 +18,7 @@
       class="dialog-icon"
       src="data:image/png;base64,{item.sprite}"
       alt={item.name}
-      height={item.isCraftable ? 64 : 48}
+      height={item.craftable ? 64 : 48}
     />
     {item.name}
     <a href={item.url}>
@@ -32,25 +32,25 @@
       <Card class="section seasons">
         <h2 class="text-subtitle-2">Seasons</h2>
         <ul class="text-body-2">
-          {#if item.seasons.includes("spring")}
+          {#if item.seasons.spring}
             <li>
               <img src="./images/spring.png" alt="Spring" />
               Spring
             </li>
           {/if}
-          {#if item.seasons.includes("summer")}
+          {#if item.seasons.summer}
             <li>
               <img src="./images/summer.png" alt="Summer" />
               Summer
             </li>
           {/if}
-          {#if item.seasons.includes("fall")}
+          {#if item.seasons.fall}
             <li>
               <img src="./images/fall.png" alt="Fall" />
               Fall
             </li>
           {/if}
-          {#if item.seasons.includes("winter")}
+          {#if item.seasons.winter}
             <li>
               <img src="./images/winter.png" alt="Winter" />
               Winter

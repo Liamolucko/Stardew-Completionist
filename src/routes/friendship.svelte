@@ -65,7 +65,7 @@
           <td>
             <div class="best-gifts">
               {#each villager.bestGifts as item}
-                <ItemButton {item} scale={item.isCraftable ? 1 : 2} />
+                <ItemButton {item} scale={item.craftable ? 1 : 2} />
               {/each}
             </div>
           </td>
