@@ -46,7 +46,7 @@
     <tbody>
       {#each $villagers.filter((villager) => typeof villager.hearts === "undefined" || villager.hearts < villager.max) as villager}
         <tr>
-          <th scope="row">{villager.name}</th>
+          <td>{villager.name}</td>
           {#if $save !== null}
             <td>
               <div class="hearts">

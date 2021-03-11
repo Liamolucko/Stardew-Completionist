@@ -161,13 +161,13 @@
         <tbody>
           {#each recipes.filter((recipe) => !$save.recipes.includes(recipe.name)) as recipe}
             <tr>
-              <th scope="row">
+              <td>
                 <ItemButton
                   item={recipe.result}
                   scale={recipe.result.craftable ? 1 : 2}
                 />
                 <span class="pa-3">{recipe.name}</span>
-              </th>
+              </td>
               <td>
                 {#if recipe.sources != null}
                   <ul class="source-list">

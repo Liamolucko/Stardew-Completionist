@@ -173,9 +173,9 @@
         <tbody>
           {#each $birthdays as birthday}
             <tr>
-              <th scope="row">
+              <td>
                 {birthday.villager}
-              </th>
+              </td>
               <td>
                 <div class="hearts">
                   {#each [...Array(birthday.maxHearts).keys()] as i}
