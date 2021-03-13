@@ -140,7 +140,6 @@
 {/if}
 
 <style lang="scss">
-
   .header {
     display: inline-flex;
     align-items: center;

@@ -78,19 +78,20 @@
                 width="24"
                 height="24"
                 src="./images/{page}.png"
-                alt="{page}"
+                alt={page}
               />
             </Button>
           </a>
         {/each}
       </div>
       <div class="nav-section bottom-section">
-        {#if $save && $save.handle}
+        {#if $save?.handle}
           <Button
             class="rail-button"
             icon
             size="large"
             on:click={async () => {
+              if (!$save?.handle) return;
               save.set(await getSaveFile($save.handle));
             }}
           >

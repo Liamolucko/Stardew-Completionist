@@ -40,8 +40,7 @@
             completedItems: bundle.items
               .filter(
                 ({ id }, i) =>
-                  ($save?.bundles[bundle.id]?.[i] ?? true) &&
-                  gameInfo.items[id]
+                  ($save?.bundles[bundle.id]?.[i] ?? true) && gameInfo.items[id]
               )
               .map(({ id }) => gameInfo.items[id]),
           },

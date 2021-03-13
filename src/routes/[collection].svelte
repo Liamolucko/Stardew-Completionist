@@ -140,9 +140,7 @@
           {item}
           scale={item.craftable ? 2 : 3}
           shadow
-          grey={$save === null
-            ? false
-            : !$save.collected.includes(item.id)}
+          grey={$save === null ? false : !$save.collected.includes(item.id)}
         />
       {/each}
     </div>
@@ -159,7 +157,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each recipes.filter((recipe) => !$save.recipes.includes(recipe.name)) as recipe}
+          {#each recipes.filter((recipe) => $save && !$save.recipes.includes(recipe.name)) as recipe}
             <tr>
               <td>
                 <ItemButton
