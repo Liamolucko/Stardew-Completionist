@@ -9,7 +9,9 @@ jobs:
     name: deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: superfly/flyctl-actions@1.1
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Deploy
+        uses: superfly/flyctl-actions@1.1
         with:
           args: "deploy"
