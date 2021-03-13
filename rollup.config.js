@@ -11,6 +11,7 @@ import { terser } from "rollup-plugin-terser";
 import config from "sapper/config/rollup.js";
 import sveltePreprocess from "svelte-preprocess";
 import pkg from "./package.json";
+import postcssUrl from "postcss-url";
 
 const mode = process.env.NODE_ENV;
 const dev = mode === "development";
@@ -34,7 +35,18 @@ export default {
         preventAssignment: true,
       }),
       svelte({
-        preprocess: sveltePreprocess({ sourceMap: dev }),
+        preprocess: sveltePreprocess({
+          sourceMap: dev,
+          postcss: {
+            plugins: [postcssUrl({
+              url: "inline",
+              basePath: path.join(
+                __dirname,
+                "node_modules/@fontsource/roboto",
+              ),
+            })],
+          },
+        }),
         compilerOptions: {
           dev,
           hydratable: true,
@@ -88,7 +100,20 @@ export default {
         preventAssignment: true,
       }),
       svelte({
-        preprocess: sveltePreprocess({ sourceMap: dev }),
+        preprocess: sveltePreprocess({
+          sourceMap: dev,
+          postcss: {
+            plugins: [
+              postcssUrl({
+                url: "inline",
+                basePath: path.join(
+                  __dirname,
+                  "node_modules/@fontsource/roboto",
+                ),
+              }),
+            ],
+          },
+        }),
         compilerOptions: {
           dev,
           generate: "ssr",

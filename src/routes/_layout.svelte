@@ -146,6 +146,10 @@
 </MaterialApp>
 
 <style lang="scss">
+  @import "@fontsource/roboto/300";
+  @import "@fontsource/roboto/400";
+  @import "@fontsource/roboto/500";
+
   .container {
     width: 100%;
     height: 100vh;

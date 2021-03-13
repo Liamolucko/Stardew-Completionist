@@ -21,8 +21,8 @@
       height={item.craftable ? 64 : 48}
     />
     {item.name}
-    <a href={item.url}>
-      <Button target="_blank" icon>
+    <a href={item.url} target="_blank">
+      <Button icon>
         <Icon path={mdiLaunch} />
       </Button>
     </a>
