@@ -2,6 +2,7 @@
   import { getContext } from "svelte";
   import type { Item } from "../game-info.js";
   import { qualityNames } from "../names";
+  import { stores } from "@sapper/app";
 
   export let item: Item;
   export let scale = 2;
@@ -12,6 +13,14 @@
 
   let dialog = getContext<{ open(item: Item): void }>("item-info-dialog");
 
+  const { page } = stores();
+  // Set to false for a brief instant when the page changes to stop CSS transitions from activating.
+  let transition = true;
+  page.subscribe(() => {
+    transition = false;
+    setTimeout(() => (transition = true), 0);
+  });
+
   $: size = (item.craftable ? 32 : 16) * scale;
 </script>
 
@@ -20,6 +29,7 @@
   on:click={() => {
     dialog.open(item);
   }}
+  class:transition
 >
   <img
     class="sprite"
@@ -58,7 +68,10 @@
     text-align: center;
     vertical-align: middle;
 
-    transition: transform 0.1s ease, filter 0.1s ease;
+    &.transition,
+    &:hover {
+      transition: transform 0.1s ease, filter 0.1s ease;
+    }
 
     img {
       image-rendering: crisp-edges;
