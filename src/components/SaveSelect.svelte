@@ -97,64 +97,48 @@
     {:then options}
       {#if options === null || options.length === 0}
         <CardText>
-          {#if platformName !== null}
-            {#if backend}
+          {#if backend}
+            <p>
               {#if savesDir === null}
-                <p>
-                  Please select your saves directory. On
-                  {platformName}, this is typically located at
-                  <kbd>{savesDirPath}</kbd>
-                  .
-                </p>
+                Please choose your Stardew Valley saves directory.
+              {:else if savesDir === undefined}
+                There aren't any valid save files in the default Stardew Valley
+                save file location. Do you have them in a custom location?
               {:else if options?.length === 0}
-                {savesDir}
-                does not contain any valid Stardew Valley save files. Please choose
-                another.
+                {savesDir} does not contain any valid Stardew Valley save files.
+                Please choose another.
               {:else}
-                {savesDir}
-                is an invalid save file path. Please choose another.
+                {savesDir} is an invalid save file path. Please choose another.
               {/if}
-            {:else}
-              <p>
-                Please select your save file. On
-                {platformName}, this is typically located at
-                <kbd>{savePath}</kbd>
-                .
-              </p>
-            {/if}
+            </p>
+          {:else if platformName !== null}
+            <p>
+              Please select your save file.
+              {#if platformName}
+                On {platformName}, this is typically located at
+                <kbd>{savePath}</kbd>.
+              {/if}
+            </p>
             {#if platformName === "Windows"}
               <p>
-                Paste
-                <kbd>{savesDirPath}</kbd>
-                into the address bar at the top of Explorer and press
-                <kbd>Enter</kbd>
-                to navigate to
-                <kbd>Saves</kbd>
-                .
+                Paste <kbd>{savesDirPath}</kbd> into the address bar at the top
+                of Explorer and press <kbd>Enter</kbd> to navigate to
+                <kbd>Saves</kbd>.
               </p>
             {:else if platformName === "macOS"}
               <p>
-                Press
-                <kbd>⇧</kbd>
-                +
-                <kbd>⌘</kbd>
-                +
-                <kbd>G</kbd>
-                to open Go To Folder and paste
-                <kbd>{savesDirPath}</kbd>
-                into it, then press
+                Press <kbd>⇧</kbd> + <kbd>⌘</kbd> + <kbd>G</kbd> to open Go To
+                Folder and paste <kbd>{savesDirPath}</kbd> into it, then press
                 <kbd>Enter</kbd>
-                to navigate to
-                <kbd>Saves</kbd>
-                .
+                to navigate to <kbd>Saves</kbd>.
               </p>
             {/if}
             {#if !backend && (platformName === "Windows" || platformName === "macOS")}
-              Then navigate to your chosen save file and choose the file with
-              the same name as the enclosing folder.
+              <p>
+                Then navigate to your chosen save file and choose the file with
+                the same name as the enclosing folder.
+              </p>
             {/if}
-          {:else}
-            <p>Please select your save file.</p>
           {/if}
         </CardText>
         <CardActions>
@@ -177,8 +161,7 @@
                 }
               }}
             >
-              Choose
-              {#if backend}directory{:else}file{/if}
+              Choose {#if backend}directory{:else}file{/if}
             </Button>
           {/if}
         </CardActions>

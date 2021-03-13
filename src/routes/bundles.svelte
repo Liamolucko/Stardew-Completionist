@@ -40,7 +40,7 @@
             completedItems: bundle.items
               .filter(
                 ({ id }, i) =>
-                  ($save?.bundles[bundle.id]?.[i] ?? true) && gameInfo.items[id]
+                  ($save?.bundles[bundle.id]?.[i] ?? false) && gameInfo.items[id]
               )
               .map(({ id }) => gameInfo.items[id]),
           },
@@ -78,7 +78,7 @@
                 </span>
               {/each}
             </div>
-            {#if $save !== null && bundle.items.every((item) => item.completed)}
+            {#if $save !== null && bundle.completedItems.length >= bundle.slots}
               <Icon path={mdiCheck} class="green-text" size="64px" />
             {:else}
               <div class="options">

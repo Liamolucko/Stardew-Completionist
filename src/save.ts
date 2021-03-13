@@ -244,11 +244,7 @@ export async function processSaveFile(
       ).map(([key, value]) => [
         parseInt(key),
         queryAllNodes("ArrayOfBoolean > boolean", value)
-          .map((el) => el.textContent == "true")
-          .filter((_, i) => {
-            const bundle = gameInfo.bundles[parseInt(key)];
-            return bundle?.gold > 0 || i < (bundle?.items.length ?? Infinity);
-          }),
+          .map((el) => el.textContent == "true"),
       ]),
     ),
 
