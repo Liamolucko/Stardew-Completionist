@@ -52,6 +52,8 @@
               <div class="hearts">
                 {#each [...Array(villager.max).keys()] as i}
                   <img
+                    width="14"
+                    height="12"
                     alt="heart"
                     src="./images/heart-{villager.hearts >= i + 1
                       ? 'filled'

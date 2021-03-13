@@ -42,13 +42,20 @@
   />
   <img
     class="quality"
+    width={6 * scale}
+    height={6 * scale}
     src="./images/quality-{quality}.png"
     alt="{qualityNames.get(quality)} quality"
   />
   {#if quantity > 1}
     <div class="quantity">
       {#each quantity.toString() as char}
-        <img src="./numbers/{char}.png" alt={char} />
+        <img
+          width={3.5 * scale}
+          height={4.9 * scale}
+          src="./numbers/{char}.png"
+          alt={char}
+        />
       {/each}
     </div>
   {/if}
@@ -105,8 +112,6 @@
         position: absolute;
         left: 0;
         bottom: 0;
-
-        width: calc(6px * var(--scale));
       }
     }
 
@@ -118,10 +123,6 @@
       display: flex;
       flex-flow: row nowrap;
       gap: 1px;
-
-      img {
-        width: calc(3.5px * var(--scale));
-      }
     }
 
     &:hover,
