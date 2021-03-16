@@ -1,7 +1,8 @@
 <script lang="ts">
   import { getContext } from "svelte";
-  import type { Item } from "./game-info.js";
+  import type { Item } from "./game-info";
   import { qualityNames } from "./names";
+  import { page } from "$app/stores";
 
   export let item: Item;
   export let scale = 2;
@@ -12,7 +13,13 @@
 
   let dialog = getContext<{ open(item: Item): void }>("item-info-dialog");
 
-  $: size = (item.isCraftable ? 32 : 16) * scale;
+  // Set to false for a brief instant when the page changes to stop CSS transitions from activating.
+  let transition = true;
+  page.subscribe(() => {
+    transition = false;
+    setTimeout(() => (transition = true), 0);
+  });
+  $: size = (item.craftable ? 32 : 16) * scale;
 </script>
 
 <button
@@ -20,6 +27,7 @@
   on:click={() => {
     dialog.open(item);
   }}
+  class:transition
 >
   <img
     class="sprite"
@@ -32,13 +40,20 @@
   />
   <img
     class="quality"
+    width={6 * scale}
+    height={6 * scale}
     src="./images/quality-{quality}.png"
     alt="{qualityNames.get(quality)} quality"
   />
   {#if quantity > 1}
     <div class="quantity">
       {#each quantity.toString() as char}
-        <img src="./numbers/{char}.png" alt={char} />
+        <img
+          width={3.5 * scale}
+          height={4.9 * scale}
+          src="./numbers/{char}.png"
+          alt={char}
+        />
       {/each}
     </div>
   {/if}
@@ -58,7 +73,10 @@
     text-align: center;
     vertical-align: middle;
 
-    transition: transform 0.1s ease, filter 0.1s ease;
+    &.transition,
+    &:hover {
+      transition: transform 0.1s ease, filter 0.1s ease;
+    }
 
     img {
       image-rendering: crisp-edges;
@@ -92,8 +110,6 @@
         position: absolute;
         left: 0;
         bottom: 0;
-
-        width: calc(6px * var(--scale));
       }
     }
 
@@ -105,10 +121,6 @@
       display: flex;
       flex-flow: row nowrap;
       gap: 1px;
-
-      img {
-        width: calc(3.5px * var(--scale));
-      }
     }
 
     &:hover,

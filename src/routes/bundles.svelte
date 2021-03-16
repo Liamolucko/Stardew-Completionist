@@ -2,10 +2,10 @@
   import { mdiCheck, mdiClose } from "@mdi/js";
   import { Card, Icon } from "svelte-materialify";
   import { derived } from "svelte/store";
-  import ItemButton from "$components/ItemButton.svelte";
-  import type { Bundle, Item } from "$components/game-info.js";
-  import gameInfo from "$components/game-info.js";
-  import save from "$components/save";
+  import ItemButton from "$lib/ItemButton.svelte";
+  import type { Bundle, Item } from "$lib/game-info";
+  import gameInfo from "$lib/game-info";
+  import save from "$lib/save";
 
   const sections = derived(save, ($save) =>
     gameInfo.bundles.reduce<
@@ -40,7 +40,7 @@
             completedItems: bundle.items
               .filter(
                 ({ id }, i) =>
-                  ($save?.bundles[bundle.id]?.[i] ?? true) &&
+                  ($save?.bundles[bundle.id]?.[i] ?? false) &&
                   gameInfo.items[id]
               )
               .map(({ id }) => gameInfo.items[id]),
@@ -79,7 +79,7 @@
                 </span>
               {/each}
             </div>
-            {#if $save !== null && bundle.items.every((item) => item.completed)}
+            {#if $save !== null && bundle.completedItems.length >= bundle.slots}
               <Icon path={mdiCheck} class="green-text" size="64px" />
             {:else}
               <div class="options">

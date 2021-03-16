@@ -1,15 +1,14 @@
 <script lang="ts">
   import "svelte-materialify";
   import { Card } from "svelte-materialify";
-  import Table from "svelte-materialify/dist/components/Table";
+  import Table from "svelte-materialify/dist/components/Table/index.js";
   import type { Readable } from "svelte/store";
   import { derived } from "svelte/store";
-  import ItemButton from "$components/ItemButton.svelte";
-  import type { Item, Recipe } from "$components/game-info.js";
-  import gameInfo from "$components/game-info.js";
-  import { seasonNames } from "$components/names";
-  import type { SaveGame } from "$components/save";
-  import save from "$components/save";
+  import ItemButton from "$lib/ItemButton.svelte";
+  import type { Item, Recipe } from "$lib/game-info";
+  import gameInfo from "$lib/game-info";
+  import type { SaveGame } from "$lib/save";
+  import save from "$lib/save";
 
   interface Birthday {
     villager: string;
@@ -143,9 +142,7 @@
               return (
                 item &&
                 typeof item.seasons !== "undefined" &&
-                item.seasons.includes(
-                  ["spring", "summer", "fall", "winter"][$save!.season]
-                ) &&
+                item.seasons[$save!.season] &&
                 Object.values(item.seasons).filter((value) => value).length < 3
               );
             })
@@ -176,9 +173,9 @@
         <tbody>
           {#each $birthdays as birthday}
             <tr>
-              <th scope="row">
+              <td>
                 {birthday.villager}
-              </th>
+              </td>
               <td>
                 <div class="hearts">
                   {#each [...Array(birthday.maxHearts).keys()] as i}
@@ -195,7 +192,7 @@
               <td>
                 <div class="best-gifts">
                   {#each birthday.bestGifts as item}
-                    <ItemButton {item} scale={item.isCraftable ? 1 : 2} />
+                    <ItemButton {item} scale={item.craftable ? 1 : 2} />
                   {/each}
                 </div>
               </td>
@@ -205,28 +202,14 @@
       </Table>
     </Card>
     <Card outlined class="seasonal">
-      <h6>
-        {seasonNames.get($save.season)}
+      <h6 class="pb-2">
+        {$save.season[0].toUpperCase() + $save.season.slice(1)}
       </h6>
       <div class="seasonal-items">
         {#each Object.entries($seasonalItems) as [id, quantity]}
           <ItemButton
             item={gameInfo.items[id]}
-            scale={gameInfo.items[id].isCraftable ? 2 : 3}
-            {quantity}
-          />
-        {/each}
-      </div>
-    </Card>
-    <Card outlined class="seasonal">
-      <h6>
-        {seasonNames.get($save.season)}
-      </h6>
-      <div class="seasonal-items">
-        {#each Object.entries($seasonalItems) as [id, quantity]}
-          <ItemButton
-            item={gameInfo.items[id]}
-            scale={gameInfo.items[id].isCraftable ? 2 : 3}
+            scale={gameInfo.items[id].craftable ? 2 : 3}
             {quantity}
           />
         {/each}

@@ -1,7 +1,7 @@
 import * as cookie from "cookie";
 import * as cborg from "cborg";
 import * as base64 from "base64-js";
-import save from "$components/save";
+import save from "$lib/save";
 
 export function prepare(headers: Record<string, string>) {
   // Since the save file is global, it's normally maintained across requests during SSR.

@@ -1,42 +1,42 @@
 <script context="module" lang="ts">
   import { page } from "$app/stores";
   import { Card } from "svelte-materialify";
-  import Table from "svelte-materialify/dist/components/Table";
+  import Table from "svelte-materialify/dist/components/Table/index.js";
   import { derived } from "svelte/store";
-  import ItemButton from "$components/ItemButton.svelte";
-  import type { Item, Recipe } from "$components/game-info.js";
-  import gameInfo from "$components/game-info.js";
-  import { categories, categoryNames } from "$components/names";
-  import save from "$components/save";
+  import ItemButton from "$lib/ItemButton.svelte";
+  import type { Item, Recipe } from "$lib/game-info";
+  import gameInfo from "$lib/game-info";
+  import { categories, categoryNames } from "$lib/names";
+  import save from "$lib/save";
 
-  export async function preload(
-    this: { error: (status: number, error: string | Error) => void },
+  type Loaded = {
+    status?: number;
+    error?: Error | string;
+    redirect?: string;
+    maxage?: number;
+    props?: Record<string, any>;
+    context?: Record<string, any>;
+  };
+
+  export async function load({
+    page,
+  }: {
     page: {
-      host: string;
-      path: string;
-      params: {
-        collection:
-          | "shipping"
-          | "fish"
-          | "artifacts"
-          | "minerals"
-          | "cooking"
-          | "crafting";
-      };
-      query: Record<string, string | boolean>;
-    }
-  ) {
+      params: { collection: string };
+    };
+  }): Promise<Loaded> {
     if (
-      ![
-        "shipping",
-        "fish",
-        "artifacts",
-        "minerals",
-        "cooking",
-        "crafting",
-      ].includes(page.params.collection)
+      page.params.collection !== "shipping" &&
+      page.params.collection !== "fish" &&
+      page.params.collection !== "artifacts" &&
+      page.params.collection !== "minerals" &&
+      page.params.collection !== "cooking" &&
+      page.params.collection !== "crafting"
     ) {
-      return this.error(404, "Not found");
+      return {
+        status: 404,
+        error: "Not found",
+      };
     }
 
     if (
@@ -44,15 +44,21 @@
       page.params.collection === "crafting"
     ) {
       return {
-        title: categoryNames.get(page.params.collection),
-        recipes: gameInfo[page.params.collection],
-        items: gameInfo[page.params.collection].map((recipe) => recipe.result),
+        props: {
+          title: categoryNames.get(page.params.collection),
+          recipes: gameInfo[page.params.collection],
+          items: gameInfo[page.params.collection].map(
+            (recipe) => recipe.result
+          ),
+        },
       };
     } else {
       return {
-        title: categoryNames.get(page.params.collection),
-        items: gameInfo[page.params.collection],
-        recipes: undefined,
+        props: {
+          title: categoryNames.get(page.params.collection),
+          items: gameInfo[page.params.collection],
+          recipes: undefined,
+        },
       };
     }
   }
@@ -138,7 +144,7 @@
       {#each items as item}
         <ItemButton
           {item}
-          scale={item.isCraftable ? 2 : 3}
+          scale={item.craftable ? 2 : 3}
           shadow
           grey={$save === null ? false : !$save.collected.includes(item.id)}
         />
@@ -157,15 +163,15 @@
           </tr>
         </thead>
         <tbody>
-          {#each recipes.filter((recipe) => !$save.recipes.includes(recipe.name)) as recipe}
+          {#each recipes.filter((recipe) => $save && !$save.recipes.includes(recipe.name)) as recipe}
             <tr>
-              <th scope="row">
+              <td>
                 <ItemButton
                   item={recipe.result}
-                  scale={recipe.result.isCraftable ? 1 : 2}
+                  scale={recipe.result.craftable ? 1 : 2}
                 />
                 <span class="pa-3">{recipe.name}</span>
-              </th>
+              </td>
               <td>
                 {#if recipe.sources != null}
                   <ul class="source-list">

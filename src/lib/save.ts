@@ -1,6 +1,6 @@
 import { writable } from "svelte/store";
 import backend from "./backend";
-import gameInfo from "./game-info.js";
+import gameInfo from "./game-info";
 import { Image } from "imagescript";
 import { seasonValues } from "./names";
 import { createFarmerSprite } from "./sprite";
@@ -8,7 +8,6 @@ import Cookies from "universal-cookie";
 import * as cborg from "cborg";
 import * as base64 from "base64-js";
 
-declare var process: { browser: boolean };
 const cookies = new Cookies();
 
 /** Metadata about a save file */
@@ -29,7 +28,7 @@ export interface SaveGame {
   lastSaved: number;
 
   day: number;
-  season: number;
+  season: "spring" | "summer" | "fall" | "winter";
   year: number;
   date: number;
 
@@ -184,7 +183,7 @@ export async function processSaveFile(
   };
 
   const currentDay = queryNumber("dayOfMonth");
-  const currentSeason = seasonValues.get(queryText("currentSeason")) ?? 0;
+  const currentSeason = queryText("currentSeason");
 
   return {
     handle: file instanceof XMLDocument ? null : file.handle,
@@ -192,9 +191,9 @@ export async function processSaveFile(
     lastSaved: queryNumber("player > saveTime"),
 
     day: currentDay,
-    season: currentSeason,
+    season: currentSeason as SaveGame["season"],
     year: queryNumber("year"),
-    date: currentSeason * 28 + currentDay,
+    date: seasonValues.get(currentSeason) ?? 0 * 28 + currentDay,
 
     collected: [
       ...Object.keys(queryMap("player > basicShipped")),
@@ -244,11 +243,7 @@ export async function processSaveFile(
       ).map(([key, value]) => [
         parseInt(key),
         queryAllNodes("ArrayOfBoolean > boolean", value)
-          .map((el) => el.textContent == "true")
-          .filter((_, i) => {
-            const bundle = gameInfo.bundles[parseInt(key)];
-            return bundle?.gold > 0 || i < (bundle?.items.length ?? Infinity);
-          }),
+          .map((el) => el.textContent == "true"),
       ]),
     ),
 
@@ -259,9 +254,9 @@ export async function processSaveFile(
       .flatMap((el) => Array.from(el.querySelectorAll("items > Item")))
       .filter((el) => el.getAttribute("xsi:type") == "Object")
       .reduce<Record<string, number>>((acc, el) => {
-        const isCraftable =
+        const craftable =
           el.querySelector("bigCraftable")?.textContent === "true";
-        const id = (isCraftable ? "c" : "") +
+        const id = (craftable ? "c" : "") +
           queryText("parentSheetIndex", el);
 
         acc[id] ??= 0;

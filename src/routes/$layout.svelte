@@ -1,8 +1,15 @@
 <script context="module" lang="ts">
-  declare var process: { browser: boolean };
+  type Loaded = {
+    status?: number;
+    error?: Error | string;
+    redirect?: string;
+    maxage?: number;
+    props?: Record<string, any>;
+    context?: Record<string, any>;
+  };
 
-  export async function preload(_: unknown, session: unknown) {
-    return session;
+  export function load({ session }: { session: Record<string, any> }): Loaded {
+    return { props: session };
   }
 </script>
 
@@ -19,12 +26,14 @@
     Icon,
     MaterialApp,
   } from "svelte-materialify";
-  import backend from "$components/backend";
-  import ItemInfo from "$components/ItemInfo.svelte";
-  import SaveSelect from "$components/SaveSelect.svelte";
-  import type { Item } from "$components/game-info.js";
-  import type { SaveGame } from "$components/save";
-  import save, { getSaveFile } from "$components/save";
+  import backend from "$lib/backend";
+  import ItemInfo from "$lib/ItemInfo.svelte";
+  import SaveSelect from "$lib/SaveSelect.svelte";
+  import type { Item } from "$lib/game-info";
+  import type { SaveGame } from "$lib/save";
+  import save, { getSaveFile } from "$lib/save";
+  // svelte-materialify requires this to be able to tab through buttons
+  import "focus-visible";
 
   // A warning is thrown in the browser console if I don't declare this, so it's here even if I don't use it.
   export let segment;
@@ -66,13 +75,13 @@
   <div class="container">
     <nav class="nav-rail">
       <div class="nav-section top-section">
-        <a href="/dashboard">
+        <a href="/dashboard" tabindex="-1">
           <Button class="rail-button" icon size="large" aria-label="Dashboard">
             <Icon path={mdiViewDashboard} />
           </Button>
         </a>
         {#each ["shipping", "fish", "artifacts", "minerals", "cooking", "crafting", "bundles", "friendship"] as page}
-          <a href="/{page}">
+          <a href="/{page}" tabindex="-1">
             <Button class="rail-button" icon size="large">
               <img
                 width="24"
@@ -85,12 +94,13 @@
         {/each}
       </div>
       <div class="nav-section bottom-section">
-        {#if $save && $save.handle}
+        {#if $save?.handle}
           <Button
             class="rail-button"
             icon
             size="large"
             on:click={async () => {
+              if (!$save?.handle) return;
               save.set(await getSaveFile($save.handle));
             }}
           >
@@ -210,36 +220,41 @@
     // Copied from the theme--dark class.
     @media (prefers-color-scheme: dark) {
       .s-app {
-        --theme-surface: #212121;
-        --theme-icons-active: #fff;
-        --theme-icons-inactive: hsla(0, 0%, 100%, 0.5);
-        --theme-text-primary: #fff;
-        --theme-text-secondary: hsla(0, 0%, 100%, 0.7);
-        --theme-text-disabled: hsla(0, 0%, 100%, 0.5);
-        --theme-text-link: #82b1ff;
-        --theme-inputs-box: #fff;
-        --theme-buttons-disabled: hsla(0, 0%, 100%, 0.3);
-        --theme-tabs: hsla(0, 0%, 100%, 0.6);
-        --theme-text-fields-filled: hsla(0, 0%, 100%, 0.08);
-        --theme-text-fields-filled-hover: hsla(0, 0%, 100%, 0.16);
-        --theme-text-fields-outlined: hsla(0, 0%, 100%, 0.24);
-        --theme-text-fields-outlined-disabled: hsla(0, 0%, 100%, 0.16);
-        --theme-text-fields-border: hsla(0, 0%, 100%, 0.7);
-        --theme-controls-disabled: hsla(0, 0%, 100%, 0.3);
-        --theme-controls-thumb-inactive: #bdbdbd;
-        --theme-controls-thumb-disabled: #424242;
-        --theme-controls-track-inactive: hsla(0, 0%, 100%, 0.3);
-        --theme-controls-track-disabled: hsla(0, 0%, 100%, 0.1);
-        --theme-tables-active: #505050;
-        --theme-tables-hover: #616161;
-        --theme-tables-group: #616161;
-        --theme-dividers: hsla(0, 0%, 100%, 0.12);
-        --theme-chips: #555;
-        --theme-cards: #1e1e1e;
-        --theme-app-bar: #272727;
-        --theme-navigation-drawer: #363636;
-        background-color: var(--theme-surface);
-        color: var(--theme-text-primary);
+        --theme-surface: #212121 !important;
+        --theme-icons-active: #fff !important;
+        --theme-icons-inactive: hsla(0, 0%, 100%, 0.5) !important;
+        --theme-text-primary: #fff !important;
+        --theme-text-secondary: hsla(0, 0%, 100%, 0.7) !important;
+        --theme-text-disabled: hsla(0, 0%, 100%, 0.5) !important;
+        --theme-text-link: #82b1ff !important;
+        --theme-inputs-box: #fff !important;
+        --theme-buttons-disabled: hsla(0, 0%, 100%, 0.3) !important;
+        --theme-tabs: hsla(0, 0%, 100%, 0.6) !important;
+        --theme-text-fields-filled: hsla(0, 0%, 100%, 0.08) !important;
+        --theme-text-fields-filled-hover: hsla(0, 0%, 100%, 0.16) !important;
+        --theme-text-fields-outlined: hsla(0, 0%, 100%, 0.24) !important;
+        --theme-text-fields-outlined-disabled: hsla(
+          0,
+          0%,
+          100%,
+          0.16
+        ) !important;
+        --theme-text-fields-border: hsla(0, 0%, 100%, 0.7) !important;
+        --theme-controls-disabled: hsla(0, 0%, 100%, 0.3) !important;
+        --theme-controls-thumb-inactive: #bdbdbd !important;
+        --theme-controls-thumb-disabled: #424242 !important;
+        --theme-controls-track-inactive: hsla(0, 0%, 100%, 0.3) !important;
+        --theme-controls-track-disabled: hsla(0, 0%, 100%, 0.1) !important;
+        --theme-tables-active: #505050 !important;
+        --theme-tables-hover: #616161 !important;
+        --theme-tables-group: #616161 !important;
+        --theme-dividers: hsla(0, 0%, 100%, 0.12) !important;
+        --theme-chips: #555 !important;
+        --theme-cards: #1e1e1e !important;
+        --theme-app-bar: #272727 !important;
+        --theme-navigation-drawer: #363636 !important;
+        background-color: var(--theme-surface) !important;
+        color: var(--theme-text-primary) !important;
       }
 
       .s-app a {
@@ -258,5 +273,9 @@
         color: var(--theme-text-disabled);
       }
     }
+  }
+
+  :global(.s-btn) {
+    outline: none;
   }
 </style>

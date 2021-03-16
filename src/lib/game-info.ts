@@ -1,4 +1,4 @@
-import _json from "./game-info.json";
+import _json from "./_game-info.json";
 import type { RawGameInfo } from "./game-info-types";
 export type {
   Bundle,

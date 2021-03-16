@@ -1,12 +1,12 @@
 <script lang="ts">
   import { Card } from "svelte-materialify";
-  import Table from "svelte-materialify/dist/components/Table";
+  import Table from "svelte-materialify/dist/components/Table/index.js";
   import { derived } from "svelte/store";
-  import ItemButton from "$components/ItemButton.svelte";
-  import type { Villager } from "$components/game-info.js";
-  import gameInfo from "$components/game-info.js";
-  import type { Relationship } from "$components/save";
-  import save from "$components/save";
+  import ItemButton from "$lib/ItemButton.svelte";
+  import type { Villager } from "$lib/game-info";
+  import gameInfo from "$lib/game-info";
+  import type { Relationship } from "$lib/save";
+  import save from "$lib/save";
 
   let villagers = derived<typeof save, (Villager & Relationship)[]>(
     save,
@@ -46,12 +46,14 @@
     <tbody>
       {#each $villagers.filter((villager) => typeof villager.hearts === "undefined" || villager.hearts < villager.max) as villager}
         <tr>
-          <th scope="row">{villager.name}</th>
+          <td>{villager.name}</td>
           {#if $save !== null}
             <td>
               <div class="hearts">
                 {#each [...Array(villager.max).keys()] as i}
                   <img
+                    width="14"
+                    height="12"
                     alt="heart"
                     src="./images/heart-{villager.hearts >= i + 1
                       ? 'filled'
@@ -65,7 +67,7 @@
           <td>
             <div class="best-gifts">
               {#each villager.bestGifts as item}
-                <ItemButton {item} scale={item.isCraftable ? 1 : 2} />
+                <ItemButton {item} scale={item.craftable ? 1 : 2} />
               {/each}
             </div>
           </td>

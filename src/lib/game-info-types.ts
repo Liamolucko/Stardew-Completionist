@@ -51,14 +51,19 @@ export interface Recipe {
 
 export interface Item {
   id: string;
-  isCraftable: boolean;
+  craftable: boolean;
   name: string;
   description: string;
   category: string;
   sprite: string;
   url?: string;
   sources?: string[];
-  seasons?: string[];
+  seasons?: {
+    spring: boolean;
+    summer: boolean;
+    fall: boolean;
+    winter: boolean;
+  };
   locations?: string[];
   time?: string;
   weather?: string;
@@ -74,11 +79,11 @@ export interface Bundle {
   id: number;
   section: string;
   slots: number;
-  items: {
+  items: Array<{
     id: string;
     amount: number;
     quality: number;
-  }[];
+  }>;
   gold: number;
 }
 
@@ -89,6 +94,3 @@ export interface Villager {
   birthday: string;
   birthDate: number;
 }
-
-// Snowpack breaks on empty files right now, so make sure this isn't transpiled to an empty file
-export const _ = null;

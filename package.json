@@ -15,34 +15,30 @@
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
-    "start": "svelte-kit start",
-    "deploy": "pnpm run export && gh-pages -d __sapper__/export"
+    "start": "svelte-kit start"
   },
   "devDependencies": {
-    "@material/card": "^10.0.0",
-    "@material/data-table": "^10.0.0",
     "@mdi/js": "^5.9.55",
-    "@snowpack/plugin-typescript": "^1.2.1",
     "@sveltejs/adapter-node": "next",
     "@sveltejs/kit": "next",
-    "@sveltejs/snowpack-config": "next",
-    "@types/wicg-file-system-access": "^2020.9.1",
     "base64-js": "^1.5.1",
     "cborg": "github:Liamolucko/cborg#browser-only",
     "cookie": "^0.4.1",
+    "focus-visible": "^5.2.0",
     "gh-pages": "^3.1.0",
-    "imagescript": "github:matmen/ImageScript#browser",
-    "localforage": "^1.9.0",
-    "postcss": "^8.2.6",
+    "imagescript": "github:matmen/ImageScript#9f7f149f76d01834a3da21fd4be4b68370cf707a",
+    "postcss": "^8.2.8",
     "sass": "^1.32.8",
-    "snowpack": "next",
-    "svelte": "^3.34.0",
-    "svelte-hmr": "^0.12.6",
-    "svelte-materialify": "^0.3.5",
+    "svelte": "^3.35.0",
+    "svelte-materialify": "^0.3.6",
     "svelte-preprocess": "^4.6.9",
     "tslib": "^2.1.0",
-    "typescript": "^4.2.2",
-    "universal-cookie": "^4.0.4"
+    "typescript": "^4.2.3",
+    "universal-cookie": "^4.0.4",
+    "vite": "^2.1.0"
   },
-  "type": "module"
+  "type": "module",
+  "engines": {
+    "node": ">= 12.17.0"
+  }
 }
