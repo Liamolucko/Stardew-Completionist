@@ -4,7 +4,7 @@
 	"name": "Stardew Completionist",
 	"short_name": "Stardew Completionist",
 	"display": "minimal-ui",
-	"start_url": "/dashboard/",
+	"start_url": "/dashboard",
 	"icons": [
 		{
 			"src": "logo-192.png",

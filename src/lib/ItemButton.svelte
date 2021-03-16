@@ -19,6 +19,7 @@
     transition = false;
     setTimeout(() => (transition = true), 0);
   });
+  
   $: size = (item.craftable ? 32 : 16) * scale;
 </script>
 
