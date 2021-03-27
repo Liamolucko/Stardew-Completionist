@@ -1,7 +1,7 @@
 <script lang="ts">
   import "svelte-materialify";
   import { Card } from "svelte-materialify";
-  import Table from "svelte-materialify/dist/components/Table/index.js";
+  import Table from "svelte-materialify/dist/components/Table/Table.svelte";
   import type { Readable } from "svelte/store";
   import { derived } from "svelte/store";
   import ItemButton from "$lib/ItemButton.svelte";

@@ -19,6 +19,7 @@
     "baseUrl": ".",
     "allowJs": true,
     "checkJs": true,
+    "noEmit": true,
     "paths": {
       "$app/*": [
         ".svelte/dev/runtime/app/*",
@@ -26,6 +27,9 @@
       ],
       "$lib/*": [
         "src/lib/*"
+      ],
+      "$service-worker": [
+        ".svelte/build/runtime/service-worker"
       ]
     },
     "strict": true,
@@ -33,6 +37,7 @@
     "resolveJsonModule": true
   },
   "include": [
+    "src/**/*.d.ts",
     "src/**/*.js",
     "src/**/*.ts",
     "src/**/*.svelte"

@@ -1,7 +1,7 @@
 <script context="module" lang="ts">
   import { page } from "$app/stores";
   import { Card } from "svelte-materialify";
-  import Table from "svelte-materialify/dist/components/Table/index.js";
+  import Table from "svelte-materialify/dist/components/Table/Table.svelte";
   import { derived } from "svelte/store";
   import ItemButton from "$lib/ItemButton.svelte";
   import type { Item, Recipe } from "$lib/game-info";

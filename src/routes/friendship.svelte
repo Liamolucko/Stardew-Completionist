@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Card } from "svelte-materialify";
-  import Table from "svelte-materialify/dist/components/Table/index.js";
+  import Table from "svelte-materialify/dist/components/Table/Table.svelte";
   import { derived } from "svelte/store";
   import ItemButton from "$lib/ItemButton.svelte";
   import type { Villager } from "$lib/game-info";

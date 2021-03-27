@@ -35,11 +35,6 @@
   // svelte-materialify requires this to be able to tab through buttons
   import "focus-visible";
 
-  // A warning is thrown in the browser console if I don't declare this, so it's here even if I don't use it.
-  export let segment;
-  // Stop Svelte complaining it's unused.
-  segment;
-
   export let lastSave: SaveGame | null;
 
   if (lastSave) {
